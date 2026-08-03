@@ -12,7 +12,9 @@ export const useLogin = () => {
     mutationFn: (data: LoginFormData) => authService.login(data),
     onSuccess: (res) => {
       setAuth(res.data.user, res.data.token.access_token);
-      router.push('/dashboard'); // assuming /dashboard exists
+      // Set cookie for Next.js middleware
+      document.cookie = `token=${res.data.token.access_token}; path=/; max-age=86400`;
+      router.push('/dashboard');
     },
   });
 };

@@ -92,8 +92,13 @@ export function ProjectTable() {
                   <td className="px-6 py-4 text-slate-500 font-medium">
                     {(page - 1) * limit + index + 1}
                   </td>
-                  <td className="px-6 py-4 font-medium text-slate-900 dark:text-slate-100">
-                    {project.code}
+                  <td className="px-6 py-4 font-medium">
+                    <Link
+                      href={`/projects/${project.id}`}
+                      className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                    >
+                      {project.code}
+                    </Link>
                   </td>
                   <td className="px-6 py-4 text-slate-600 dark:text-slate-300">
                     {project.name}
@@ -116,13 +121,6 @@ export function ProjectTable() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2">
-                      <Link
-                        href={`/projects/${project.id}`}
-                        className="p-2 text-slate-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-lg transition-colors"
-                        title="View Detail"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </Link>
                       <Link
                         href={`/projects/${project.id}/modules`}
                         className="p-2 text-slate-400 hover:text-violet-500 hover:bg-violet-50 dark:hover:bg-violet-500/10 rounded-lg transition-colors"

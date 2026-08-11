@@ -51,7 +51,6 @@ export function IssueTable() {
     const lower = search.toLowerCase();
     return safe.filter(
       (i) =>
-        i.title.toLowerCase().includes(lower) ||
         (i.issue_code && i.issue_code.toLowerCase().includes(lower)) ||
         (i.project_name && i.project_name.toLowerCase().includes(lower))
     );
@@ -127,7 +126,6 @@ export function IssueTable() {
               <tr>
                 <th className="px-6 py-4 w-16">No</th>
                 <th className="px-6 py-4">Issue Code</th>
-                <th className="px-6 py-4">Title</th>
                 <th className="px-6 py-4">Project</th>
                 <th className="px-6 py-4">Priority</th>
                 <th className="px-6 py-4">Status</th>
@@ -138,19 +136,19 @@ export function IssueTable() {
             <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
               {isLoading ? (
                 <tr>
-                  <td colSpan={8} className="px-6 py-12 text-center">
+                  <td colSpan={7} className="px-6 py-12 text-center">
                     <Loader2 className="w-8 h-8 animate-spin text-indigo-500 mx-auto" />
                   </td>
                 </tr>
               ) : isError ? (
                 <tr>
-                  <td colSpan={8} className="px-6 py-12 text-center text-red-500">
+                  <td colSpan={7} className="px-6 py-12 text-center text-red-500">
                     Failed to load issues.
                   </td>
                 </tr>
               ) : currentIssues.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-6 py-12 text-center text-slate-500">
+                  <td colSpan={7} className="px-6 py-12 text-center text-slate-500">
                     No issues found. Click "Add Issue" to create one.
                   </td>
                 </tr>
@@ -164,10 +162,13 @@ export function IssueTable() {
                       {(page - 1) * limit + index + 1}
                     </td>
                     <td className="px-6 py-4 font-semibold text-indigo-600 dark:text-indigo-400">
-                      {issue.issue_code || '-'}
-                    </td>
-                    <td className="px-6 py-4 font-medium text-slate-900 dark:text-slate-100 max-w-xs truncate">
-                      {issue.title}
+                      {issue.issue_code ? (
+                        <Link href={`/issues/${issue.id}`} className="hover:underline">
+                          {issue.issue_code}
+                        </Link>
+                      ) : (
+                        '-'
+                      )}
                     </td>
                     <td className="px-6 py-4 text-slate-500">
                       {issue.project_name || '-'}
@@ -197,13 +198,6 @@ export function IssueTable() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <Link
-                          href={`/issues/${issue.id}`}
-                          className="p-2 text-slate-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-lg transition-colors"
-                          title="View Detail"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </Link>
                         <button
                           onClick={() => openEdit(issue)}
                           className="p-2 text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-lg transition-colors"
@@ -286,7 +280,7 @@ export function IssueTable() {
             <p className="text-slate-600 dark:text-slate-400 text-sm mb-6">
               Are you sure you want to delete issue{' '}
               <span className="font-semibold text-slate-900 dark:text-slate-100">
-                {issueToDelete.title}
+                {issueToDelete.issue_code}
               </span>
               ? This action cannot be undone.
             </p>

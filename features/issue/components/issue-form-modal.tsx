@@ -19,8 +19,6 @@ interface IssueFormModalProps {
 
 export function IssueFormModal({ isOpen, onClose, issueToEdit }: IssueFormModalProps) {
   const router = useRouter();
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
   const [status, setStatus] = useState('open');
   const [priority, setPriority] = useState('medium');
   const [projectId, setProjectId] = useState('');
@@ -34,8 +32,6 @@ export function IssueFormModal({ isOpen, onClose, issueToEdit }: IssueFormModalP
   useEffect(() => {
     if (isOpen) {
       const today = new Date().toISOString().split('T')[0];
-      setTitle(issueToEdit?.title ?? '');
-      setDescription(issueToEdit?.description ?? '');
       setStatus(issueToEdit?.status ?? 'open');
       setPriority(issueToEdit?.priority ?? 'medium');
       setProjectId(issueToEdit?.project_id ?? '');
@@ -51,11 +47,8 @@ export function IssueFormModal({ isOpen, onClose, issueToEdit }: IssueFormModalP
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim()) return;
 
     const payload = {
-      title: title.trim(),
-      description: description.trim() || null,
       status,
       priority,
       project_id: projectId || null,
@@ -120,20 +113,6 @@ export function IssueFormModal({ isOpen, onClose, issueToEdit }: IssueFormModalP
             </div>
           )}
 
-          {/* Title */}
-          <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-              Title <span className="text-red-500">*</span>
-            </label>
-            <input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Describe the issue..."
-              autoFocus
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-colors"
-            />
-          </div>
-
           {/* Project (Full width) */}
           <div>
             <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
@@ -192,27 +171,13 @@ export function IssueFormModal({ isOpen, onClose, issueToEdit }: IssueFormModalP
             />
           </div>
 
-          {/* Description */}
-          <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-              Description <span className="text-slate-400 font-normal">(Optional)</span>
-            </label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Issue description..."
-              rows={3}
-              className="w-full px-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-colors resize-none"
-            />
-          </div>
-
           <div className="pt-2 flex items-center justify-end gap-3">
             <button type="button" onClick={onClose} className="px-5 py-2.5 rounded-xl font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
               Cancel
             </button>
             <button
               type="submit"
-              disabled={isPending || !title.trim()}
+              disabled={isPending}
               className="px-5 py-2.5 rounded-xl font-medium text-white bg-indigo-600 hover:bg-indigo-500 flex items-center gap-2 disabled:opacity-70 shadow-sm shadow-indigo-500/20 transition-all"
             >
               {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}

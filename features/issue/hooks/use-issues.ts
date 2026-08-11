@@ -46,3 +46,15 @@ export const useDeleteIssue = () => {
     },
   });
 };
+
+export const useUpdateIssueItemStatus = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ issueId, itemId, status }: { issueId: string; itemId: string; status: string }) => 
+      issueService.updateItemStatus(itemId, status),
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['issues'] });
+      queryClient.invalidateQueries({ queryKey: ['issues', variables.issueId] });
+    },
+  });
+};

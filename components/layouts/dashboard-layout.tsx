@@ -6,7 +6,7 @@ import { useLogout } from '../../features/auth/hooks/use-logout';
 import { ThemeToggle } from '../theme-toggle';
 import {
   LogOut, User as UserIcon, LayoutDashboard, Users, Briefcase,
-  Database, ChevronDown, ChevronRight, AlertCircle, FileText
+  Database, ChevronDown, ChevronRight, AlertCircle, FileText, Zap, FileSpreadsheet
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -92,7 +92,9 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Projects', href: '/projects', icon: Briefcase },
     { name: 'Issues', href: '/issues', icon: AlertCircle },
+    { name: 'Additional Features', href: '/additional-features', icon: Zap },
     { name: 'Minutes of Meeting', href: '/moms', icon: FileText },
+    { name: 'Templates', href: '/templates', icon: FileSpreadsheet },
     {
       name: 'Master Data',
       icon: Database,

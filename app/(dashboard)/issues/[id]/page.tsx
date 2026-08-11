@@ -3,12 +3,13 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import 'react-quill-new/dist/quill.snow.css';
 import { format } from 'date-fns';
 import {
   ArrowLeft, Calendar, Hash, Info, Building2, Briefcase,
-  Loader2, Edit2, ShieldAlert, FolderOpen, Box, GitBranch, Save, ListChecks
+  Loader2, Edit2, ShieldAlert, FolderOpen, Box, GitBranch, Save, ListChecks, X
 } from 'lucide-react';
-import { useIssue, useUpdateIssue } from '../../../../features/issue/hooks/use-issues';
+import { useIssue, useUpdateIssue, useUpdateIssueItemStatus } from '../../../../features/issue/hooks/use-issues';
 import { useProjects } from '../../../../features/project/hooks/use-projects';
 import { useModules } from '../../../../features/module/hooks/use-modules';
 import { useFeatures } from '../../../../features/feature/hooks/use-features';
@@ -46,9 +47,22 @@ export default function IssueDetailPage() {
   const router = useRouter();
   const issueId = params.id as string;
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+  const [selectedItemDescription, setSelectedItemDescription] = useState<string | null>(null);
+
+  const closeDescriptionModal = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsDescriptionModalOpen(false);
+      setIsClosing(false);
+      setSelectedItemDescription(null);
+    }, 200);
+  };
 
   const { data: issue, isLoading, isError } = useIssue(issueId);
   const { mutate: updateIssue, isPending: isUpdating } = useUpdateIssue();
+  const { mutate: updateItemStatus } = useUpdateIssueItemStatus();
 
   // Cascading dropdown states
   const [selectedProjectId, setSelectedProjectId] = useState<string>('');
@@ -111,12 +125,43 @@ export default function IssueDetailPage() {
   const hasItems = issue.items && issue.items.length > 0;
 
   return (
-    <div className="space-y-6 max-w-5xl">
-      <IssueFormModal
-        isOpen={isEditOpen}
-        onClose={() => setIsEditOpen(false)}
-        issueToEdit={issue}
-      />
+    <>
+      {/* Description Modal */}
+      {isDescriptionModalOpen && selectedItemDescription && (
+        <div className={`fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm duration-200 ${isClosing ? 'animate-out fade-out' : 'animate-in fade-in'}`}>
+          <div className={`bg-white dark:bg-slate-900 w-full max-w-4xl max-h-[90vh] flex flex-col rounded-2xl shadow-xl overflow-hidden duration-200 ${isClosing ? 'animate-out zoom-out-95' : 'animate-in zoom-in-95'}`}>
+            <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-800">
+              <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                <Info className="w-5 h-5 text-indigo-500" />
+                Item Description
+              </h2>
+              <button onClick={closeDescriptionModal} className="p-2 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto overflow-x-hidden">
+              <div className="ql-snow">
+                <div 
+                  className="ql-editor text-sm text-slate-700 dark:text-slate-300 break-words whitespace-pre-wrap max-w-none p-0"
+                  dangerouslySetInnerHTML={{ __html: selectedItemDescription }}
+                />
+              </div>
+            </div>
+            <div className="p-6 border-t border-slate-200 dark:border-slate-800 flex justify-end">
+              <button onClick={closeDescriptionModal} className="px-5 py-2.5 rounded-xl font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="space-y-6">
+        <IssueFormModal
+          isOpen={isEditOpen}
+          onClose={() => setIsEditOpen(false)}
+          issueToEdit={issue}
+        />
 
       {/* Back + Header */}
       <div className="flex items-start gap-4">
@@ -129,7 +174,7 @@ export default function IssueDetailPage() {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-3 flex-wrap">
             <h1 className="text-2xl font-bold text-slate-900 dark:text-white truncate">
-              {issue.title}
+              {issue.issue_code}
             </h1>
             <span
               className={`px-2.5 py-1 rounded-full text-xs font-medium uppercase tracking-wider ${statusStyle(
@@ -146,9 +191,6 @@ export default function IssueDetailPage() {
               {issue.priority} priority
             </span>
           </div>
-          <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm font-semibold">
-            {issue.issue_code}
-          </p>
         </div>
         <button
           onClick={() => setIsEditOpen(true)}
@@ -227,20 +269,6 @@ export default function IssueDetailPage() {
                   </dd>
                 </div>
               </div>
-
-              <div className="sm:col-span-2 flex items-start gap-3 border-t border-slate-100 dark:border-slate-800 pt-4 mt-2">
-                <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg flex-shrink-0">
-                  <Info className="w-4 h-4 text-slate-500" />
-                </div>
-                <div>
-                  <dt className="text-xs font-medium text-slate-500 uppercase tracking-wide">
-                    Overall Description
-                  </dt>
-                  <dd className="text-sm text-slate-700 dark:text-slate-300 mt-1 whitespace-pre-wrap">
-                    {issue.description || 'No overall description provided.'}
-                  </dd>
-                </div>
-              </div>
             </dl>
           </div>
 
@@ -264,10 +292,33 @@ export default function IssueDetailPage() {
                     key={item.id || index}
                     className="p-4 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 rounded-xl space-y-3"
                   >
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between border-b border-slate-200/50 dark:border-slate-700/50 pb-2 mb-2">
                       <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
                         Item #{index + 1}
                       </span>
+                      <select
+                        value={item.status || 'open'}
+                        onChange={(e) => {
+                          if (item.id) {
+                            updateItemStatus({
+                              issueId,
+                              itemId: item.id,
+                              status: e.target.value
+                            }, {
+                              onSuccess: () => toast.success('Item status updated')
+                            });
+                          }
+                        }}
+                        className={`text-xs font-semibold px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${
+                          item.status === 'resolved' || item.status === 'closed' ? 'text-emerald-600 dark:text-emerald-400' :
+                          item.status === 'in_progress' ? 'text-amber-600 dark:text-amber-400' : 'text-slate-700 dark:text-slate-300'
+                        }`}
+                      >
+                        <option value="open">Open</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="resolved">Resolved</option>
+                        <option value="closed">Closed</option>
+                      </select>
                     </div>
 
                     <div className="flex items-center gap-2 flex-wrap text-xs">
@@ -301,10 +352,24 @@ export default function IssueDetailPage() {
                       )}
                     </div>
 
+                    {item.title && (
+                      <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mt-2">
+                        {item.title}
+                      </h4>
+                    )}
                     {item.description && (
-                      <p className="text-xs text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-900 p-3 rounded-lg border border-slate-200/60 dark:border-slate-800 whitespace-pre-wrap">
-                        {item.description}
-                      </p>
+                      <div className="mt-1">
+                        <button
+                          onClick={() => {
+                            setSelectedItemDescription(item.description!);
+                            setIsDescriptionModalOpen(true);
+                          }}
+                          className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1.5"
+                        >
+                          <Info className="w-3.5 h-3.5" />
+                          Show Description
+                        </button>
+                      </div>
                     )}
                   </div>
                 ))}
@@ -355,5 +420,6 @@ export default function IssueDetailPage() {
         </div>
       </div>
     </div>
+  </>
   );
 }

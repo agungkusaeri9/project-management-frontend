@@ -9,6 +9,7 @@ export interface IssueItem {
   feature_name?: string | null;
   sub_feature_id: string | null;
   sub_feature_name?: string | null;
+  title?: string;
   description: string | null;
   status?: string;
 }
@@ -26,8 +27,6 @@ export interface Issue {
   sub_feature_id: string | null;
   sub_feature_name: string | null;
   issue_code: string;
-  title: string;
-  description: string | null;
   issue_date: string | null;
   status: string;
   priority: string;
@@ -56,5 +55,8 @@ export const issueService = {
   },
   delete: async (id: string): Promise<void> => {
     await api.delete(`/issues/${id}`);
+  },
+  updateItemStatus: async (itemId: string, status: string): Promise<void> => {
+    await api.patch(`/issues/items/${itemId}/status`, { status });
   },
 };

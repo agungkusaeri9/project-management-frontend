@@ -1,6 +1,6 @@
 'use client';
 
-import { useDashboardSummary, UserProgress, ProjectFeatureProgress } from '../../../features/dashboard/hooks/use-dashboard';
+import { useDashboardSummary, UserProjectProgress, ProjectFeatureProgress } from '../../../features/dashboard/hooks/use-dashboard';
 import {
   AlertCircle,
   CheckCircle2,
@@ -45,7 +45,7 @@ export default function DashboardPage() {
   const totalOngoingAllMonths = monthlyStats.reduce((acc, m) => acc + m.ongoing, 0);
   const totalCompletedAllMonths = monthlyStats.reduce((acc, m) => acc + m.completed, 0);
 
-  const renderUserTable = (users: UserProgress[], roleTitle: string, Icon: any, badgeColor: string) => (
+  const renderUserTable = (users: UserProjectProgress[], roleTitle: string, Icon: any, badgeColor: string) => (
     <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 shadow-sm space-y-4 flex flex-col justify-between">
       <div className="space-y-3">
         <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
@@ -126,7 +126,7 @@ export default function DashboardPage() {
   );
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto">
+    <div className="space-y-8">
       {/* Summary KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {/* Card 1: Open Issues */}

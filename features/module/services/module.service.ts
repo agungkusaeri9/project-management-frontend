@@ -6,6 +6,8 @@ export interface Module {
   name: string;
   description: string | null;
   sort_order: number;
+  is_additional?: boolean;
+  additional_feature_id?: string | null;
   created_at: string;
   updated_at: string;
 }

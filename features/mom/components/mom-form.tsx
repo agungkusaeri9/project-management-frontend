@@ -115,7 +115,7 @@ export function MoMForm({ momToEdit }: MoMFormProps) {
           {
             onSuccess: () => {
               toast.success('MoM updated successfully');
-              router.push('/moms');
+              router.push('/dashboard/moms');
             },
             onError: () => toast.error('Failed to update MoM'),
           }
@@ -136,7 +136,7 @@ export function MoMForm({ momToEdit }: MoMFormProps) {
           {
             onSuccess: () => {
               toast.success('MoM created successfully');
-              router.push('/moms');
+              router.push('/dashboard/moms');
             },
             onError: () => toast.error('Failed to create MoM'),
           }
@@ -152,7 +152,7 @@ export function MoMForm({ momToEdit }: MoMFormProps) {
       {/* Header */}
       <div className="flex items-center gap-3">
         <Link
-          href="/moms"
+          href="/dashboard/moms"
           className="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
         >
           <ChevronLeft className="w-5 h-5" />
@@ -405,7 +405,7 @@ export function MoMForm({ momToEdit }: MoMFormProps) {
       {/* Actions */}
       <div className="flex items-center justify-end gap-3">
         <Link
-          href="/moms"
+          href="/dashboard/moms"
           className="px-5 py-2.5 rounded-xl text-sm font-medium border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
         >
           Cancel

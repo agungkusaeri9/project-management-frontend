@@ -1,0 +1,207 @@
+{
+  "id": "dotnet",
+  "title": ".NET Technology Relationship Standard",
+  "subtitle": "Comprehensive specification of .NET architecture, data access, logging, security, messaging, testing, and deployment integration.",
+  "coreTechnology": [
+    { "category": "Language", "technology": "C#", "usage": "Bahasa utama untuk pengembangan backend" },
+    { "category": "Runtime", "technology": ".NET (LTS)", "usage": "Runtime aplikasi backend berkinerja tinggi" },
+    { "category": "Framework", "technology": "ASP.NET Core", "usage": "Web API, middleware, dependency injection" },
+    { "category": "ORM", "technology": "Entity Framework Core", "usage": "Database access menggunakan ORM, LINQ, migration" },
+    { "category": "Micro ORM", "technology": "Dapper", "usage": "Query SQL manual berkinerja tinggi & reporting" },
+    { "category": "Database", "technology": "SQL Server / PostgreSQL / MySQL", "usage": "Relational database" },
+    { "category": "API Documentation", "technology": "Swagger / OpenAPI", "usage": "Dokumentasi dan interactive API testing" }
+  ],
+  "architectures": [
+    {
+      "name": "Repository + Service",
+      "flow": "Controller ➔ Service ➔ Repository ➔ Database",
+      "description": "Pola berlapis memisahkan Controller (HTTP), Service (Business Logic), dan Repository (Data Access).",
+      "suitability": "Aplikasi dengan struktur sederhana sampai menengah.",
+      "components": [
+        { "name": "Controller", "role": "Menangani HTTP request dan response" },
+        { "name": "Service", "role": "Menangani core business logic dan validasi aturan bisnis" },
+        { "name": "Repository", "role": "Menangani isolasi akses database via EF Core / Dapper" },
+        { "name": "Database", "role": "Penyimpanan data relasional" }
+      ]
+    },
+    {
+      "name": "Clean Architecture",
+      "flow": "Presentation (API) ➔ Application ➔ Domain ➔ Infrastructure",
+      "description": "Dependency inversion dengan Domain sebagai pusat, direkomendasikan untuk sistem kompleks dengan siklus hidup panjang.",
+      "suitability": "Aplikasi enterprise, domain logic rumit, butuh testability dan maintainability jangka panjang.",
+      "layers": [
+        { "layer": "API / Presentation", "content": "Controller, Middleware, Authentication, Filter" },
+        { "layer": "Application", "content": "Commands, Queries, Use Cases, Service, DTO, FluentValidation" },
+        { "layer": "Domain", "content": "Entities, Value Objects, Enums, Domain Exceptions & Business Rules" },
+        { "layer": "Infrastructure", "content": "EF Core DbContext, Dapper, Repositories, External API, Message Publisher" }
+      ]
+    }
+  ],
+  "dataAccess": {
+    "efCore": {
+      "title": "Entity Framework Core",
+      "whenToUse": [
+        "Membutuhkan ORM lengkap dengan Change Tracker",
+        "Menggunakan entity dan complex navigation relationships",
+        "Membutuhkan auto database migration",
+        "Standar CRUD operations",
+        "Query ekspresif menggunakan LINQ"
+      ],
+      "relationship": "Service ➔ Repository ➔ EF Core ➔ Database"
+    },
+    "dapper": {
+      "title": "Dapper (Micro ORM)",
+      "whenToUse": [
+        "Query membutuhkan raw SQL teroptimasi",
+        "Query analitik / reporting agregasi kompleks",
+        "Performa query kritis dengan latency minimal",
+        "Mapping object sederhana langsung dari hasil SQL"
+      ],
+      "relationship": "Service ➔ Repository ➔ Dapper ➔ SQL Query ➔ Database"
+    },
+    "hybrid": {
+      "title": "EF Core + Dapper (Hybrid Approach)",
+      "guideline": "Gunakan EF Core sebagai default untuk CRUD dan relasi entitas. Gunakan Dapper untuk reporting atau query berat yang membutuhkan optimasi SQL manual. Hindari penggunaan 2 ORM untuk tabel yang sama tanpa kebutuhan yang jelas."
+    }
+  },
+  "validation": {
+    "primaryTool": "FluentValidation",
+    "alternatives": ["Data Annotations", "Custom Validation"],
+    "flow": "Controller ➔ Request DTO ➔ FluentValidation ➔ Service ➔ Business Logic",
+    "guidelines": [
+      "Input Validation: Validasi format, required field, numeric range, string length, regex.",
+      "Business Validation: Validasi aturan bisnis di service layer (misal cek saldo, unik nama produk).",
+      "Database Constraint: Validasi integritas tingkat database (foreign key, unique constraint)."
+    ]
+  },
+  "logging": {
+    "framework": "Serilog",
+    "sinks": ["Console (Development)", "File Sink (Local/Specific)", "Elasticsearch / Loki / Seq / Application Insights (Centralized)"],
+    "flow": "Controller ➔ Service ➔ Repository ➔ Serilog ➔ Log Storage / Monitoring",
+    "minimalScopes": [
+      "Request metadata (Method, Path, CorrelationId, Duration, Status)",
+      "Error / Unhandled Exception dengan stack trace",
+      "Critical Business Processes",
+      "External Service & 3rd Party API Calls",
+      "Database Errors & Timeout",
+      "Background Worker & Cron execution"
+    ],
+    "sanitizationRules": [
+      "Dilarang mencatat Password, Secret Key, Token JWT, Refresh Token",
+      "Dilarang mencatat PII sensitif (Nomor KTP, Nomor Kartu Kredit)"
+    ]
+  },
+  "auth": {
+    "technologies": [
+      { "name": "JWT Bearer Authentication", "type": "Token-Based", "desc": "Stateless token validation dengan custom claims" },
+      { "name": "ASP.NET Core Identity", "type": "User Management", "desc": "Manajemen user, role, password hashing, 2FA" },
+      { "name": "OAuth 2.0 / OpenID Connect", "type": "Identity Provider", "desc": "Federasi SSO (Keycloak, Azure AD, Auth0)" }
+    ],
+    "authorizationTypes": ["Role-Based Authorization", "Policy-Based Authorization", "Permission-Based Authorization"],
+    "flow": "Client ➔ API ➔ Authentication Middleware ➔ JWT Validation ➔ Authorization Policy ➔ Controller"
+  },
+  "backgroundJobs": {
+    "simple": {
+      "technologies": ["IHostedService", "BackgroundService"],
+      "useCase": "Task asynchronous internal sederhana tanpa kebutuhan retry schedule UI"
+    },
+    "advanced": {
+      "technologies": ["Hangfire", "Quartz.NET"],
+      "useCase": "Scheduled job, cron, retry mechanism, job history, delayed execution, dashboard monitoring"
+    },
+    "flow": "Application ➔ Background Worker ➔ Service ➔ Repository / External Service"
+  },
+  "messaging": {
+    "technologies": [
+      { "name": "RabbitMQ", "fit": "Backend-to-backend communication, worker queues, event-driven architecture" },
+      { "name": "MQTT", "fit": "IoT devices, lightweight telemetry, high connection density" },
+      { "name": "Apache Kafka", "fit": "High-throughput event streaming & log aggregation" },
+      { "name": "Azure Service Bus", "fit": "Enterprise cloud messaging dengan enterprise queue guarantees" }
+    ],
+    "flow": "Application ➔ Publisher ➔ Message Broker ➔ Consumer / Worker ➔ Service"
+  },
+  "caching": {
+    "inMemory": { "name": "IMemoryCache", "useCase": "Single-instance / standalone simple application" },
+    "distributed": { "name": "Redis (IDistributedCache)", "useCase": "Multi-instance load-balanced cluster" },
+    "flow": "Controller ➔ Service ➔ Cache (Hit/Miss) ➔ Database"
+  },
+  "testing": [
+    { "type": "Unit Test", "technology": "xUnit / NUnit", "scope": "Service & Business Logic isolasi" },
+    { "type": "Mocking", "technology": "Moq / NSubstitute", "scope": "Mock dependencies & repository interfaces" },
+    { "type": "Integration Test", "technology": "WebApplicationFactory", "scope": "Full HTTP request pipeline & middleware" },
+    { "type": "Database Test", "technology": "Testcontainers", "scope": "Real isolated database instance dalam Docker" },
+    { "type": "API Testing", "technology": "Postman / Bruno / Swagger", "scope": "Contract & manual endpoint validation" }
+  ],
+  "containerization": {
+    "tools": ["Docker", "Docker Compose"],
+    "flow": ".NET Application ➔ Multi-stage Dockerfile ➔ Container ➔ Docker Compose / Container Platform",
+    "typicalStack": ["Application Container", "Database (SQL Server/PostgreSQL)", "Redis Container", "RabbitMQ / MQTT Container"]
+  },
+  "deployment": [
+    {
+      "method": "Docker + Linux VM",
+      "flow": "Git Repo ➔ CI/CD (GitHub Actions/GitLab) ➔ Docker Image ➔ Linux VM ➔ Docker Container",
+      "tools": ["Docker", "Linux VM", "systemd", "Nginx Reverse Proxy"]
+    },
+    {
+      "method": "Kubernetes (K8s)",
+      "flow": "Git Repo ➔ CI/CD ➔ Container Registry ➔ Kubernetes Cluster ➔ Pod / Service",
+      "tools": ["kubectl", "Helm", "OCI Registry", "K8s Cluster"]
+    }
+  ],
+  "configuration": {
+    "sources": [
+      "appsettings.json (Base defaults)",
+      "appsettings.{Environment}.json (Per-environment overrides)",
+      "Environment Variables (Container & CI/CD injection)",
+      "Secret Manager / Azure Key Vault / HashiCorp Vault (Production secrets)"
+    ],
+    "rule": "Secret seperti database password, JWT secret, dan API key tidak boleh dicatat langsung di source code."
+  },
+  "apiDocumentation": {
+    "tool": "Swagger / OpenAPI (Swashbuckle / Microsoft.AspNetCore.OpenApi)",
+    "capabilities": ["Endpoint discovery", "Schema inspection", "Interactive try-it-out API test", "Client SDK generation"]
+  },
+  "observability": {
+    "pillars": ["Logs (Serilog)", "Metrics (Prometheus / Grafana)", "Traces (OpenTelemetry)", "APM (Application Insights / Elasticsearch)"],
+    "monitoredItems": ["Application Health", "Error Rate & Status Codes", "Response Time / Latency", "DB Query Performance", "Worker Job Status"]
+  },
+  "recommendedStack": {
+    "language": "C#",
+    "framework": "ASP.NET Core Web API",
+    "architecture": "Clean Architecture",
+    "orm": ["Entity Framework Core (Default)", "Dapper (Reporting/Raw SQL)"],
+    "validation": "FluentValidation",
+    "logging": "Serilog (Structured JSON)",
+    "auth": "JWT Bearer Token",
+    "backgroundJobs": ["BackgroundService", "Hangfire / Quartz.NET"],
+    "messaging": ["RabbitMQ", "MQTT"],
+    "caching": "Redis",
+    "testing": ["xUnit", "Moq / NSubstitute", "Testcontainers"],
+    "apiDoc": "Swagger / OpenAPI",
+    "container": "Docker",
+    "deployment": ["Docker Compose", "Linux VM", "Kubernetes"],
+    "ciCd": ["GitHub Actions", "GitLab CI/CD", "Azure DevOps"],
+    "observability": ["Serilog", "OpenTelemetry", "Prometheus", "Grafana"]
+  },
+  "matrix": [
+    { "area": "Language", "default": "C#", "alternative": "-" },
+    { "area": "Framework", "default": "ASP.NET Core", "alternative": "-" },
+    { "area": "Architecture", "default": "Clean Architecture", "alternative": "Repository + Service" },
+    { "area": "ORM", "default": "Entity Framework Core", "alternative": "Dapper" },
+    { "area": "Validation", "default": "FluentValidation", "alternative": "Data Annotations" },
+    { "area": "Logging", "default": "Serilog", "alternative": "Built-in ILogger" },
+    { "area": "Authentication", "default": "JWT Bearer", "alternative": "OAuth2 / OIDC" },
+    { "area": "Background Job", "default": "BackgroundService", "alternative": "Hangfire / Quartz.NET" },
+    { "area": "Messaging", "default": "RabbitMQ", "alternative": "Kafka / Azure Service Bus" },
+    { "area": "IoT Messaging", "default": "MQTT", "alternative": "-" },
+    { "area": "Cache", "default": "Redis", "alternative": "IMemoryCache" },
+    { "area": "Testing", "default": "xUnit", "alternative": "NUnit" },
+    { "area": "Mocking", "default": "Moq", "alternative": "NSubstitute" },
+    { "area": "API Documentation", "default": "Swagger / OpenAPI", "alternative": "-" },
+    { "area": "Container", "default": "Docker", "alternative": "-" },
+    { "area": "Deployment", "default": "Docker + Linux VM", "alternative": "Kubernetes" },
+    { "area": "CI/CD", "default": "GitHub Actions", "alternative": "GitLab CI / Azure DevOps" },
+    { "area": "Monitoring", "default": "OpenTelemetry + Grafana", "alternative": "Application Insights" }
+  ]
+}

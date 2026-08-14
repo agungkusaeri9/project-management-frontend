@@ -111,7 +111,7 @@ export function IssueTable() {
             />
           </div>
           <Link
-            href="/issues/create"
+            href="/dashboard/issues/create"
             className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors"
           >
             <Plus className="w-4 h-4" />
@@ -163,7 +163,7 @@ export function IssueTable() {
                     </td>
                     <td className="px-6 py-4 font-semibold text-indigo-600 dark:text-indigo-400">
                       {issue.issue_code ? (
-                        <Link href={`/issues/${issue.id}`} className="hover:underline">
+                        <Link href={`/dashboard/issues/${issue.id}`} className="hover:underline">
                           {issue.issue_code}
                         </Link>
                       ) : (
@@ -197,20 +197,28 @@ export function IssueTable() {
                         : '-'}
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
+                      <div className="flex items-center justify-end gap-1.5">
+                        <Link
+                          href={`/dashboard/issues/${issue.id}`}
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 rounded-xl transition-colors shadow-2xs border border-indigo-200/80 dark:border-indigo-900/50"
+                          title="Lihat Detail Issue"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                          <span>Detail</span>
+                        </Link>
                         <button
                           onClick={() => openEdit(issue)}
-                          className="p-2 text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-lg transition-colors"
+                          className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-xl transition-colors border border-slate-200 dark:border-slate-800"
                           title="Edit Issue"
                         >
-                          <Edit2 className="w-4 h-4" />
+                          <Edit2 className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={() => setIssueToDelete(issue)}
-                          className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors"
+                          className="p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-colors border border-slate-200 dark:border-slate-800"
                           title="Delete Issue"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </div>
                     </td>

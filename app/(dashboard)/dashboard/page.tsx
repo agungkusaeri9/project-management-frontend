@@ -1,6 +1,6 @@
 'use client';
 
-import { useDashboardSummary, UserProjectProgress, ProjectFeatureProgress } from '../../../features/dashboard/hooks/use-dashboard';
+import { useDashboardSummary, UserProjectProgress, ProjectFeatureProgress } from '@/features/dashboard/hooks/use-dashboard';
 import {
   AlertCircle,
   CheckCircle2,
@@ -131,7 +131,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {/* Card 1: Open Issues */}
         <Link
-          href="/issues"
+          href="/dashboard/issues"
           className="group bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5"
         >
           <div className="flex items-center justify-between">
@@ -158,7 +158,7 @@ export default function DashboardPage() {
 
         {/* Card 2: Ongoing Projects */}
         <Link
-          href="/projects"
+          href="/dashboard/projects"
           className="group bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5"
         >
           <div className="flex items-center justify-between">
@@ -185,7 +185,7 @@ export default function DashboardPage() {
 
         {/* Card 3: Completed Projects */}
         <Link
-          href="/projects"
+          href="/dashboard/projects"
           className="group bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5"
         >
           <div className="flex items-center justify-between">
@@ -212,7 +212,7 @@ export default function DashboardPage() {
 
         {/* Card 4: Total Team Members */}
         <Link
-          href="/users"
+          href="/dashboard/users"
           className="group bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5"
         >
           <div className="flex items-center justify-between">
@@ -380,7 +380,7 @@ export default function DashboardPage() {
           </div>
 
           <Link
-            href="/projects"
+            href="/dashboard/projects"
             className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
           >
             All Projects <ChevronRight className="w-3.5 h-3.5" />
@@ -519,7 +519,7 @@ export default function DashboardPage() {
             </div>
           </div>
           <Link
-            href="/users"
+            href="/dashboard/users"
             className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
           >
             Manage Users <ChevronRight className="w-3.5 h-3.5" />

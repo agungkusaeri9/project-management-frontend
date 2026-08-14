@@ -152,7 +152,7 @@ export function MoMTable() {
 
               {/* Add Button */}
               <Link
-                href="/moms/create"
+                href="/dashboard/moms/create"
                 className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white transition-colors shadow-sm"
               >
                 <Plus className="w-4 h-4" />
@@ -179,7 +179,7 @@ export function MoMTable() {
               </div>
               <p className="text-sm text-slate-500 dark:text-slate-400">No minutes of meetings found</p>
               <Link
-                href="/moms/create"
+                href="/dashboard/moms/create"
                 className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
               >
                 Create your first MoM
@@ -244,14 +244,14 @@ export function MoMTable() {
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-1">
                         <Link
-                          href={`/moms/${mom.id}`}
+                          href={`/dashboard/moms/${mom.id}`}
                           className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-colors"
                           title="View"
                         >
                           <Eye className="w-4 h-4" />
                         </Link>
                         <Link
-                          href={`/moms/${mom.id}/edit`}
+                          href={`/dashboard/moms/${mom.id}/edit`}
                           className="p-1.5 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-500/10 transition-colors"
                           title="Edit"
                         >

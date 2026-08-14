@@ -94,14 +94,19 @@ export function ProjectTable() {
                   </td>
                   <td className="px-6 py-4 font-medium">
                     <Link
-                      href={`/projects/${project.id}`}
-                      className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                      href={`/dashboard/projects/${project.id}`}
+                      className="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold"
                     >
                       {project.code}
                     </Link>
                   </td>
-                  <td className="px-6 py-4 text-slate-600 dark:text-slate-300">
-                    {project.name}
+                  <td className="px-6 py-4 text-slate-600 dark:text-slate-300 font-medium">
+                    <Link
+                      href={`/dashboard/projects/${project.id}`}
+                      className="text-slate-900 dark:text-slate-100 hover:text-indigo-600 dark:hover:text-indigo-400 font-semibold transition-colors"
+                    >
+                      {project.name}
+                    </Link>
                   </td>
                   <td className="px-6 py-4 text-slate-600 dark:text-slate-300">
                     {project.customer_name || '-'}
@@ -120,26 +125,35 @@ export function ProjectTable() {
                     {format(new Date(project.created_at), 'dd MMM yyyy')}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
+                    <div className="flex items-center justify-end gap-1.5">
                       <Link
-                        href={`/projects/${project.id}/modules`}
-                        className="p-2 text-slate-400 hover:text-violet-500 hover:bg-violet-50 dark:hover:bg-violet-500/10 rounded-lg transition-colors"
-                        title="Manage Modules"
+                        href={`/dashboard/projects/${project.id}`}
+                        className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 rounded-xl transition-colors shadow-2xs border border-indigo-200/80 dark:border-indigo-900/50"
+                        title="Lihat Detail Project"
                       >
-                        <Layers className="w-4 h-4" />
+                        <Eye className="w-3.5 h-3.5" />
+                        <span>Detail</span>
                       </Link>
                       <Link
-                        href={`/projects/${project.id}/edit`}
-                        className="p-2 text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-lg transition-colors"
+                        href={`/dashboard/projects/${project.id}/modules`}
+                        className="p-1.5 text-slate-500 hover:text-violet-600 hover:bg-violet-50 dark:hover:bg-violet-500/10 rounded-xl transition-colors border border-slate-200 dark:border-slate-800"
+                        title="Manage Modules"
+                      >
+                        <Layers className="w-3.5 h-3.5" />
+                      </Link>
+                      <Link
+                        href={`/dashboard/projects/${project.id}/edit`}
+                        className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-xl transition-colors border border-slate-200 dark:border-slate-800"
                         title="Edit Project"
                       >
-                        <Edit2 className="w-4 h-4" />
+                        <Edit2 className="w-3.5 h-3.5" />
                       </Link>
                       <button
                         onClick={() => setProjectToDelete(project)}
-                        className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors"
+                        className="p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-colors border border-slate-200 dark:border-slate-800"
+                        title="Delete Project"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </td>

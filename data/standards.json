@@ -1,0 +1,462 @@
+{
+  "portal": {
+    "title": "Software Engineering Technology Standardization",
+    "subtitle": "Define, standardize, and document the technologies and engineering practices used across your projects.",
+    "version": "v1.0.0",
+    "organization": "Software Engineering Standardization"
+  },
+  "categories": [
+    {
+      "id": "technology",
+      "title": "Technology Stack",
+      "description": "Define the technologies used by the application, including frontend, backend, mobile, database, and supporting services.",
+      "href": "/technology",
+      "iconKey": "layers",
+      "tags": [
+        "Frontend",
+        "Backend",
+        "Mobile",
+        "Database",
+        "Cache",
+        "Message Broker"
+      ]
+    },
+    {
+      "id": "architecture",
+      "title": "Architecture",
+      "description": "Define the architectural pattern and project structure used to build and maintain the application.",
+      "href": "/architecture",
+      "iconKey": "network",
+      "tags": [
+        "MVC",
+        "Repository + Service",
+        "Clean Architecture",
+        "Modular Monolith",
+        "Microservices"
+      ]
+    },
+    {
+      "id": "deployment",
+      "title": "Deployment",
+      "description": "Define how applications are packaged, deployed, and operated across development, staging, and production environments.",
+      "href": "/deployment",
+      "iconKey": "server",
+      "tags": [
+        "Docker",
+        "Docker Compose",
+        "Windows Service",
+        "Linux Service",
+        "Nginx",
+        "Kubernetes"
+      ]
+    },
+    {
+      "id": "logging",
+      "title": "Logging",
+      "description": "Define application logging levels, structured logging, log fields, storage, and observability standards.",
+      "href": "/logging",
+      "iconKey": "file-text",
+      "tags": [
+        "Structured Logging",
+        "Serilog",
+        "OpenTelemetry",
+        "Elasticsearch",
+        "Kibana"
+      ]
+    },
+    {
+      "id": "security",
+      "title": "Security",
+      "description": "Define authentication, authorization, application security, secret management, and security best practices.",
+      "href": "/security",
+      "iconKey": "shield",
+      "tags": [
+        "JWT",
+        "OAuth 2.0",
+        "RBAC",
+        "HTTPS",
+        "Rate Limiting",
+        "Secret Management"
+      ]
+    }
+  ],
+  "technologyCatalog": {
+    "frontend": [
+      {
+        "name": "Next.js",
+        "type": "Framework",
+        "description": "React framework for server-rendered and static web applications."
+      },
+      {
+        "name": "React.js",
+        "type": "Library",
+        "description": "Declarative UI component library."
+      },
+      {
+        "name": "Vue.js",
+        "type": "Framework",
+        "description": "Progressive JavaScript framework for building user interfaces."
+      },
+      {
+        "name": "Nuxt.js",
+        "type": "Framework",
+        "description": "Intuitive Vue framework for modern web applications."
+      }
+    ],
+    "backend": [
+      {
+        "name": "ASP.NET Core",
+        "type": "Framework",
+        "description": "High-performance, cross-platform .NET framework.",
+        "href": "/technology/dotnet"
+      },
+      {
+        "name": "Laravel",
+        "type": "Framework",
+        "description": "Expressive, robust PHP web application framework."
+      },
+      {
+        "name": "Express.js",
+        "type": "Framework",
+        "description": "Fast, unopinionated, minimalist web framework for Node.js."
+      }
+    ],
+    "mobile": [
+      {
+        "name": "React Native",
+        "type": "Cross-Platform",
+        "description": "Build native mobile apps using React and JavaScript."
+      },
+      {
+        ".NET MAUI": ".NET MAUI",
+        "name": ".NET MAUI",
+        "type": "Cross-Platform",
+        "description": "Cross-platform framework for native mobile and desktop apps with C#."
+      }
+    ],
+    "database": [
+      {
+        "name": "SQL Server",
+        "type": "Relational",
+        "description": "Enterprise relational database management system by Microsoft."
+      },
+      {
+        "name": "MySQL",
+        "type": "Relational",
+        "description": "Widely adopted open-source relational database."
+      },
+      {
+        "name": "PostgreSQL",
+        "type": "Relational",
+        "description": "Advanced open-source object-relational database with ACID compliance."
+      },
+
+      {
+        "name": "Redis",
+        "type": "In-Memory Key-Value",
+        "description": "In-memory data structure store used as database, cache, and message broker."
+      }
+    ],
+    "supporting": [
+      {
+        "name": "RabbitMQ",
+        "type": "Message Broker",
+        "description": "Reliable AMQP message broker for distributed asynchronous processing."
+      },
+      {
+        "name": "MQTT",
+        "type": "IoT Protocol",
+        "description": "Lightweight publish/subscribe messaging protocol for IoT/telemetry."
+      },
+      {
+        "name": "Redis",
+        "type": "Cache / PubSub",
+        "description": "High-speed caching layer and lightweight pub/sub."
+      },
+      {
+        "name": "Elasticsearch",
+        "type": "Search & Analytics",
+        "description": "Distributed, JSON-based search and analytics engine."
+      }
+    ]
+  },
+  "architectureCatalog": [
+    {
+      "name": "MVC",
+      "description": "Model-View-Controller pattern separating internal representations of information from user interface.",
+      "useCase": "Monolithic web applications, simple to medium complexity CRUD systems.",
+      "projectStructure": "Controllers / Models / Views (or Services)",
+      "dependencyRules": "Views depend on Models; Controllers orchestrate Model and View interaction.",
+      "recommendedTech": [
+        "ASP.NET Core MVC",
+        "Laravel",
+        "Django",
+        "Spring Boot MVC"
+      ]
+    },
+    {
+      "name": "Repository + Service",
+      "description": "Layered architecture separating data access logic (Repository) from business rules (Service) and transport (Controller/Handler).",
+      "useCase": "Standard enterprise REST APIs and web services with moderate business logic.",
+      "projectStructure": "Controllers -> Services -> Repositories -> Database",
+      "dependencyRules": "Upper layers depend on lower layer interfaces; data access is decoupled from controllers.",
+      "recommendedTech": [
+        "Go",
+        "NestJS",
+        "ASP.NET Core",
+        "Spring Boot",
+        "Laravel"
+      ]
+    },
+    {
+      "name": "Clean Architecture",
+      "description": "Hexagonal / Onion inspired architecture putting Domain Entities and Use Cases at the core with dependency inversion.",
+      "useCase": "Complex domain logic, long-lifecycle systems needing framework independence and testability.",
+      "projectStructure": "Domain -> Use Cases -> Interface Adapters -> Frameworks & Drivers",
+      "dependencyRules": "Source code dependencies point inwards only. Domain entities know nothing of external systems.",
+      "recommendedTech": ["Go", "TypeScript", "C# / .NET", "Java / Kotlin"]
+    },
+    {
+      "name": "Modular Monolith",
+      "description": "Single deployable unit structured strictly into bounded modules with clear public APIs and isolated schemas.",
+      "useCase": "Scaling development across multiple teams while avoiding premature microservices complexity.",
+      "projectStructure": "Modules / [ModuleA, ModuleB, ModuleC] / Shared Kernel",
+      "dependencyRules": "Modules only interact via public contracts/interfaces or asynchronous events.",
+      "recommendedTech": ["Next.js", "NestJS", "Go", ".NET", "Spring Boot"]
+    }
+  ],
+  "deploymentCatalog": [
+    {
+      "name": "Docker",
+      "description": "Container platform providing lightweight virtualization to package applications and dependencies into standardized containers.",
+      "useCase": "Local development, reproducible testing environments, and standard deployment artifacts.",
+      "requirements": ["Docker Engine", "Dockerfile"],
+      "deploymentFlow": "Code -> Build Image -> Tag -> Push to Registry -> Run Container",
+      "advantages": [
+        "Consistency across environments",
+        "Isolation",
+        "Fast startup"
+      ],
+      "disadvantages": [
+        "Overhead vs bare metal",
+        "Storage management for image layers"
+      ]
+    },
+    {
+      "name": "Docker Compose",
+      "description": "Multi-container orchestration tool for defining and running multi-container Docker applications via YAML specification.",
+      "useCase": "Small to medium self-hosted deployments, staging environments, developer local setups.",
+      "requirements": ["Docker Compose CLI", "docker-compose.yml"],
+      "deploymentFlow": "Git Pull -> docker compose up -d --build",
+      "advantages": [
+        "Simple single-file configuration",
+        "Built-in networking and volumes",
+        "Easy service linking"
+      ],
+      "disadvantages": [
+        "Limited automated scaling and zero-downtime rolling updates compared to K8s"
+      ]
+    },
+    {
+      "name": "Windows Service",
+      "description": "Long-running executable applications that run in their own Windows session without requiring a logged-in user.",
+      "useCase": "On-premise enterprise Windows environments, legacy integration, local hardware daemon.",
+      "requirements": [
+        "Windows Server / OS",
+        ".NET Runtime / NSSM",
+        "Service Control Manager (SC)"
+      ],
+      "deploymentFlow": "Publish binary -> Register Service (sc create / nssm) -> Start Service",
+      "advantages": [
+        "Direct OS integration",
+        "Automatic restart on crash",
+        "No container overhead"
+      ],
+      "disadvantages": [
+        "Platform locked to Windows",
+        "Manual dependency provisioning"
+      ]
+    },
+    {
+      "name": "Linux Service (systemd)",
+      "description": "System and service manager for Linux operating systems providing process supervision and logging.",
+      "useCase": "Bare-metal or VPS Linux deployments for compiled binaries (Go, Rust, .NET Core) or Node daemons.",
+      "requirements": ["Linux OS with systemd", "systemd unit file (.service)"],
+      "deploymentFlow": "Copy binary -> Write /etc/systemd/system/app.service -> systemctl daemon-reload -> systemctl enable --now app",
+      "advantages": [
+        "Extremely lightweight",
+        "Native journald logging",
+        "Precise restart policies"
+      ],
+      "disadvantages": [
+        "Manual host configuration",
+        "Potential host environment drift"
+      ]
+    }
+  ],
+  "loggingStandard": {
+    "format": "Structured JSON Logging",
+    "levels": [
+      {
+        "level": "Trace",
+        "description": "Most detailed diagnostic messages containing full payloads and step-by-step state."
+      },
+      {
+        "level": "Debug",
+        "description": "Information useful during development and debugging sessions."
+      },
+      {
+        "level": "Information",
+        "description": "Normal operational events tracking general flow of application."
+      },
+      {
+        "level": "Warning",
+        "description": "Unexpected events or degraded performance that did not stop execution."
+      },
+      {
+        "level": "Error",
+        "description": "Failures and exceptions that prevent standard operation of a specific request."
+      },
+      {
+        "level": "Critical",
+        "description": "Severe failures requiring immediate system-wide attention or causing service outage."
+      }
+    ],
+    "categories": [
+      "Application",
+      "API",
+      "Authentication",
+      "Authorization",
+      "Database",
+      "Integration",
+      "Background Job",
+      "Security",
+      "Audit"
+    ],
+    "standardFields": [
+      {
+        "field": "Timestamp",
+        "type": "ISO 8601 UTC string",
+        "example": "2026-08-14T10:30:00.000Z"
+      },
+      {
+        "field": "Level",
+        "type": "String",
+        "example": "Information | Error | Warning"
+      },
+      {
+        "field": "Service",
+        "type": "String",
+        "example": "project-management-api"
+      },
+      {
+        "field": "Environment",
+        "type": "String",
+        "example": "development | staging | production"
+      },
+      { "field": "Category", "type": "String", "example": "API" },
+      {
+        "field": "CorrelationId",
+        "type": "UUID",
+        "example": "c3b9e4a1-8d2b-42b7-9571-0428d9d4bf92"
+      },
+      { "field": "RequestId", "type": "UUID / String", "example": "req-98471" },
+      {
+        "field": "TraceId",
+        "type": "String",
+        "example": "0af7651916cd43dd8448eb211c80319c"
+      },
+      { "field": "UserId", "type": "String / Null", "example": "usr_94821" },
+      { "field": "Endpoint", "type": "String", "example": "/api/v1/projects" },
+      { "field": "Method", "type": "String", "example": "POST" },
+      { "field": "StatusCode", "type": "Integer", "example": 200 },
+      { "field": "DurationMs", "type": "Float", "example": 45.2 },
+      {
+        "field": "Message",
+        "type": "String",
+        "example": "Project created successfully"
+      },
+      {
+        "field": "Exception",
+        "type": "Object / Null",
+        "example": "{ type, message, stackTrace }"
+      }
+    ]
+  },
+  "securityStandard": {
+    "authentication": [
+      {
+        "name": "JWT (JSON Web Token)",
+        "description": "Stateless token authentication with signed claims, short expiration, and refresh token rotation."
+      },
+      {
+        "name": "OAuth 2.0",
+        "description": "Industry-standard authorization framework enabling third-party and federated login."
+      },
+      {
+        "name": "OpenID Connect (OIDC)",
+        "description": "Identity layer built on OAuth 2.0 for single sign-on (SSO) and user identity verification."
+      }
+    ],
+    "authorization": [
+      {
+        "name": "RBAC (Role-Based Access Control)",
+        "description": "Permissions assigned to roles (Admin, Member, Viewer); users are assigned to roles."
+      },
+      {
+        "name": "Permission-Based (Fine-Grained)",
+        "description": "Granular capability flags (e.g., project:create, user:delete) evaluated per request."
+      }
+    ],
+    "applicationSecurity": [
+      {
+        "name": "HTTPS Everywhere",
+        "description": "Enforce TLS 1.3 encryption for all data in transit; redirect HTTP to HTTPS."
+      },
+      {
+        "name": "Password Hashing",
+        "description": "Use modern adaptive hashing algorithms like Argon2id or Bcrypt with adequate work factors."
+      },
+      {
+        "name": "Input Validation & Sanitization",
+        "description": "Strict schema validation (Zod, FluentValidation, Joi) on all client and API inputs."
+      },
+      {
+        "name": "CORS Policy",
+        "description": "Explicit origin whitelisting; avoid wildcard `Access-Control-Allow-Origin: *` with credentials."
+      },
+      {
+        "name": "Rate Limiting",
+        "description": "Protect public endpoints and authentication routes against brute-force and DDoS."
+      },
+      {
+        "name": "SQL Injection Prevention",
+        "description": "Always use parameterized queries or trusted ORMs; never concatenate raw SQL strings."
+      },
+      {
+        "name": "XSS & CSRF Protection",
+        "description": "Content Security Policy (CSP), HttpOnly + SameSite cookies, and output encoding."
+      },
+      {
+        "name": "Secure HTTP Headers",
+        "description": "X-Frame-Options, X-Content-Type-Options, Strict-Transport-Security (HSTS), Referrer-Policy."
+      }
+    ],
+    "secretManagement": {
+      "rules": [
+        "Never commit secrets, passwords, or connection strings into git repositories.",
+        "Use environment variables or cloud secret managers (HashiCorp Vault, AWS Secrets Manager, Azure Key Vault).",
+        "Maintain .env.example files without real credentials.",
+        "Rotate secrets and API keys periodically."
+      ],
+      "prohibitedInSource": [
+        "Plaintext Passwords",
+        "JWT Secret Keys",
+        "API Keys & Webhook Secrets",
+        "Database Credentials & Connection Strings",
+        "Access & Refresh Tokens",
+        "TLS/SSL Private Keys"
+      ]
+    }
+  }
+}

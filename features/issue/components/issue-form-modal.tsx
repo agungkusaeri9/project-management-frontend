@@ -72,7 +72,7 @@ export function IssueFormModal({ isOpen, onClose, issueToEdit }: IssueFormModalP
           toast.success('Issue created! Redirecting to detail...');
           onClose();
           if (newIssue?.id) {
-            router.push(`/issues/${newIssue.id}`);
+            router.push(`/dashboard/issues/${newIssue.id}`);
           }
         },
         onError: () => toast.error('Failed to create issue'),

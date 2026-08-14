@@ -45,3 +45,8 @@ docker-compose.yml
 docker-compose.override.yml
 !Dockerfile
 !docker-compose.example.yml
+
+# uploads
+uploads/
+/uploads/
+

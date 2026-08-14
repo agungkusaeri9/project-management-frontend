@@ -6,7 +6,7 @@ import { useLogout } from '../../features/auth/hooks/use-logout';
 import { ThemeToggle } from '../theme-toggle';
 import {
   LogOut, User as UserIcon, LayoutDashboard, Users, Briefcase,
-  Database, ChevronDown, ChevronRight, AlertCircle, FileText, Zap, FileSpreadsheet, Settings, Kanban, TrendingUp
+  Database, ChevronDown, ChevronRight, AlertCircle, FileText, Zap, Settings, Kanban, TrendingUp, GitBranch, FolderArchive
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -108,7 +108,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         { name: 'Issues', href: '/dashboard/issues', icon: AlertCircle },
         { name: 'Additional Features', href: '/dashboard/additional-features', icon: Zap },
         { name: 'Minutes of Meeting', href: '/dashboard/moms', icon: FileText },
-        { name: 'Templates', href: '/dashboard/templates', icon: FileSpreadsheet },
+        { name: 'File Management', href: '/dashboard/files', icon: FolderArchive },
       ],
     },
     {
@@ -120,6 +120,14 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           children: [
             { name: 'Jira Projects', href: '/dashboard/jira/projects' },
             { name: 'Konfigurasi Jira', href: '/dashboard/settings/jira' },
+          ],
+        },
+        {
+          name: 'GitHub',
+          icon: GitBranch,
+          children: [
+            { name: 'Repositories', href: '/dashboard/github/repositories' },
+            { name: 'Konfigurasi GitHub', href: '/dashboard/settings/github' },
           ],
         },
       ],

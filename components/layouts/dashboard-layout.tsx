@@ -6,7 +6,7 @@ import { useLogout } from '../../features/auth/hooks/use-logout';
 import { ThemeToggle } from '../theme-toggle';
 import {
   LogOut, User as UserIcon, LayoutDashboard, Users, Briefcase,
-  Database, ChevronDown, ChevronRight, AlertCircle, FileText, Zap, Settings, Kanban, TrendingUp, GitBranch, FolderArchive
+  Database, ChevronDown, ChevronRight, AlertCircle, FileText, Zap, Settings, Kanban, TrendingUp, GitBranch, FolderArchive, Container
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -128,6 +128,14 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           children: [
             { name: 'Repositories', href: '/dashboard/github/repositories' },
             { name: 'Konfigurasi GitHub', href: '/dashboard/settings/github' },
+          ],
+        },
+        {
+          name: 'Docker',
+          icon: Container,
+          children: [
+            { name: 'Containers', href: '/dashboard/docker/containers' },
+            { name: 'Konfigurasi Docker', href: '/dashboard/settings/docker' },
           ],
         },
       ],

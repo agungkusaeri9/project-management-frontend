@@ -15,6 +15,8 @@ import { dashboardService, DashboardSummary } from '@/features/dashboard/service
 import { projectService, Project } from '@/features/project/services/project.service';
 import { issueService, Issue } from '@/features/issue/services/issue.service';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: 'Home Overview — TOHO Project Management & Schedule',
   description:

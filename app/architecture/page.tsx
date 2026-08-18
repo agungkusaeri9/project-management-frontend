@@ -3,6 +3,8 @@ import { ArrowLeft, Network, FileDown } from 'lucide-react';
 import { PortalLayout } from '@/components/layout';
 import { standardService } from '@/features/standard';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: 'Architecture Patterns — Software Engineering Standardization',
   description: 'Approved software architecture patterns, dependency rules, and project structures.',

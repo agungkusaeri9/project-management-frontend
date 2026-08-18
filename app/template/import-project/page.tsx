@@ -180,7 +180,7 @@ export default function ImportProjectTemplatePage() {
                   {[
                     { row: 2,  key: 'Code',                  value: 'PRJ-001',                                    note: 'Kode unik project',                 required: true },
                     { row: 3,  key: 'Name',                  value: 'Sistem ERP Manufacturing',                   note: 'Nama lengkap project',               required: true },
-                    { row: 4,  key: 'Status',                value: 'ongoing',                                    note: 'new | ongoing | completed',          required: true },
+                    { row: 4,  key: 'Status',                value: 'ongoing',                                    note: 'new | ongoing | internal-testing | on-hold | completed', required: true },
                     { row: 5,  key: 'PIC / Project Manager', value: 'Budi Santoso (Pilih dari daftar anggota)',   note: 'Pilihan seluruh anggota terdaftar',  required: true },
                     { row: 6,  key: 'Customer',              value: 'PT Sumi Rubber Indonesia',                   note: 'Nama customer / klien',              required: false },
                     { row: 7,  key: 'Start Date',            value: '2025-01-15',                                 note: 'Format: YYYY-MM-DD',                 required: true },
@@ -388,7 +388,7 @@ export default function ImportProjectTemplatePage() {
             <li>1 file Excel = 1 project. Sheet <strong>"Project & Tim"</strong> berisi info project dan anggota tim.</li>
             <li>Sheet <strong>"Modul & Fitur"</strong> berisi daftar modul, fitur, dan sub fitur — tambahkan sebanyak yang diperlukan.</li>
             <li>Format tanggal: <code className="bg-amber-100 px-1 rounded font-mono">YYYY-MM-DD</code></li>
-            <li>Status: <code className="bg-amber-100 px-1 rounded font-mono">new</code> | <code className="bg-amber-100 px-1 rounded font-mono">ongoing</code> | <code className="bg-amber-100 px-1 rounded font-mono">completed</code></li>
+            <li>Status: <code className="bg-amber-100 px-1 rounded font-mono">new</code> | <code className="bg-amber-100 px-1 rounded font-mono">ongoing</code> | <code className="bg-amber-100 px-1 rounded font-mono">internal-testing</code> | <code className="bg-amber-100 px-1 rounded font-mono">on-hold</code> | <code className="bg-amber-100 px-1 rounded font-mono">completed</code></li>
             <li>Minimal <strong>1 baris sales</strong> wajib ada di bagian Anggota Tim.</li>
             <li>Kolom Nama Module boleh dikosongkan (tulis kosong) jika sama dengan baris di atasnya.</li>
           </ul>

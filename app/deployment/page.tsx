@@ -3,6 +3,8 @@ import { ArrowLeft, Server, Check, AlertCircle } from 'lucide-react';
 import { PortalLayout } from '@/components/layout';
 import { standardService } from '@/features/standard';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: 'Deployment Standards — Software Engineering Standardization',
   description: 'Standards for containerization, service hosting, reverse proxies, and Kubernetes.',

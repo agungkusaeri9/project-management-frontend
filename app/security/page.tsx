@@ -3,6 +3,8 @@ import { ArrowLeft, ShieldCheck, Lock, KeyRound, AlertTriangle } from 'lucide-re
 import { PortalLayout } from '@/components/layout';
 import { standardService } from '@/features/standard';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: 'Security Standards — Software Engineering Standardization',
   description: 'Standards for authentication, authorization, app security, and secret management.',

@@ -25,6 +25,8 @@ const statusStyle = (status: string) => {
   switch (status) {
     case 'ongoing':
     case 'in_progress': return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400';
+    case 'internal-testing':
+    case 'internal_testing': return 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400';
     case 'completed':
     case 'done': return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400';
     case 'on-hold':
@@ -221,7 +223,7 @@ export default function ProjectDetailPage() {
           <div className="flex items-center gap-3 flex-wrap">
             <h1 className="text-2xl font-bold text-slate-900 dark:text-white truncate">{project.name}</h1>
             <span className={`px-2.5 py-1 rounded-full text-xs font-medium uppercase tracking-wider ${statusStyle(project.status)}`}>
-              {project.status}
+              {project.status.replace('-', ' ').replace('_', ' ')}
             </span>
           </div>
           <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm">{project.code}</p>

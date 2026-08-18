@@ -3,6 +3,8 @@ import { ArrowLeft, ArrowRight, Layers, Sparkles, FileDown } from 'lucide-react'
 import { PortalLayout } from '@/components/layout';
 import { standardService, TechnologyItem } from '@/features/standard';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: 'Technology Stack Standard — Software Engineering Standardization',
   description: 'Standardized technologies for frontend, backend, mobile, database, and supporting services.',

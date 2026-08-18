@@ -19,6 +19,8 @@ import {
 import { PortalLayout } from '@/components/layout';
 import { standardService } from '@/features/standard';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: '.NET Technology Relationship Standard — Software Engineering Standardization',
   description:

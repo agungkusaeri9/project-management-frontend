@@ -3,6 +3,8 @@ import { ArrowLeft, FileText, Terminal } from 'lucide-react';
 import { PortalLayout } from '@/components/layout';
 import { standardService } from '@/features/standard';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: 'Logging & Observability Standards — Software Engineering Standardization',
   description: 'Standards for structured logging levels, common schema fields, and log categories.',

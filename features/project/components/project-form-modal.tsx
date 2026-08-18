@@ -49,7 +49,7 @@ export function ProjectFormModal({ isOpen, onClose, projectToEdit }: ProjectForm
         code: projectToEdit.code,
         name: projectToEdit.name,
         description: projectToEdit.description || '',
-        status: (projectToEdit.status as 'new' | 'ongoing' | 'completed' | 'on-hold') || 'new',
+        status: (projectToEdit.status as 'new' | 'ongoing' | 'internal-testing' | 'completed' | 'on-hold') || 'new',
         customer_id: projectToEdit.customer_id || '',
         start_date: projectToEdit.start_date ? projectToEdit.start_date.split('T')[0] : '',
         end_date: projectToEdit.end_date ? projectToEdit.end_date.split('T')[0] : '',
@@ -157,6 +157,7 @@ export function ProjectFormModal({ isOpen, onClose, projectToEdit }: ProjectForm
             >
               <option value="new">New</option>
               <option value="ongoing">Ongoing</option>
+              <option value="internal-testing">Internal Testing</option>
               <option value="on-hold">On Hold</option>
               <option value="completed">Completed</option>
             </select>

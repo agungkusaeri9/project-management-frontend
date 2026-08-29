@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   X,
   CheckCircle2,
@@ -32,46 +32,51 @@ export function JiraIntegrationModal({
 }: JiraIntegrationModalProps) {
   const [activeTab, setActiveTab] = useState<'connect' | 'issues' | 'webhook'>('connect');
 
-  // Load initial credentials helper
-  const getSavedCreds = () => {
-    if (typeof window !== 'undefined') {
-      try {
-        const saved = localStorage.getItem('toho_jira_creds');
-        if (saved) return JSON.parse(saved);
-      } catch {
-        // ignore
-      }
-    }
-    return null;
-  };
-
-  // Credentials State (Initialized from localStorage)
-  const [host, setHost] = useState<string>(() => getSavedCreds()?.host || '');
-  const [email, setEmail] = useState<string>(() => getSavedCreds()?.email || '');
-  const [apiToken, setApiToken] = useState<string>(() => getSavedCreds()?.api_token || getSavedCreds()?.apiToken || '');
-  const [projectKey, setProjectKey] = useState<string>(() => getSavedCreds()?.projectKey || '');
-  const [jql, setJql] = useState<string>(() => getSavedCreds()?.jql || '');
+  // Credentials State
+  const [host, setHost] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [apiToken, setApiToken] = useState<string>('');
+  const [projectKey, setProjectKey] = useState<string>('');
+  const [jql, setJql] = useState<string>('');
   const [showToken, setShowToken] = useState<boolean>(false);
 
   // Status & Loading states
   const [isTesting, setIsTesting] = useState<boolean>(false);
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
   const [testResult, setTestResult] = useState<{ success: boolean; message: string; user?: string } | null>(null);
-  const [syncedIssues, setSyncedIssues] = useState<SyncedJiraIssue[]>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('toho_jira_synced_issues');
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          if (Array.isArray(parsed)) return parsed;
-        } catch {
-          // ignore
+  const [syncedIssues, setSyncedIssues] = useState<SyncedJiraIssue[]>([]);
+  const [copiedWebhook, setCopiedWebhook] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    try {
+      const savedCreds = localStorage.getItem('toho_jira_creds');
+      if (savedCreds) {
+        const parsed = JSON.parse(savedCreds);
+        if (parsed) {
+          if (parsed.host) setHost(parsed.host);
+          if (parsed.email) setEmail(parsed.email);
+          if (parsed.api_token || parsed.apiToken) setApiToken(parsed.api_token || parsed.apiToken);
+          if (parsed.projectKey) setProjectKey(parsed.projectKey);
+          if (parsed.jql) setJql(parsed.jql);
         }
       }
+    } catch {
+      // ignore
     }
-    return [];
-  });
-  const [copiedWebhook, setCopiedWebhook] = useState<boolean>(false);
+
+    try {
+      const savedIssues = localStorage.getItem('toho_jira_synced_issues');
+      if (savedIssues) {
+        const parsed = JSON.parse(savedIssues);
+        if (Array.isArray(parsed)) {
+          setSyncedIssues(parsed);
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 

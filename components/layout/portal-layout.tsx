@@ -24,14 +24,26 @@ import {
   Sparkles,
   ExternalLink,
   ChevronRight,
-  Shield
+  Shield,
+  Flame,
+  ArrowRight,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { useAuthStore } from '@/store/auth.store';
 import { useLogout } from '@/features/auth/hooks/use-logout';
+import { dotnetChallengesData, getAllDotnetChallenges, ALL_TECH_STACK_CHALLENGES } from '@/data/dotnet-challenges';
+import { nestChallengesData } from '@/data/nest-challenges';
 
 interface PortalLayoutProps {
   children: React.ReactNode;
+}
+
+interface NavItem {
+  name: string;
+  href: string;
+  description: string;
+  icon: React.ComponentType<{ className?: string }>;
+  badge?: string;
 }
 
 export function PortalLayout({ children }: PortalLayoutProps) {
@@ -39,12 +51,12 @@ export function PortalLayout({ children }: PortalLayoutProps) {
   const user = useAuthStore((state) => state.user);
   const token = useAuthStore((state) => state.token);
   const logout = useLogout();
-
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [openDropdown, setOpenDropdown] = useState<'home' | 'standards' | 'user' | null>(null);
+  const [openDropdown, setOpenDropdown] = useState<'home' | 'standards' | 'challenges' | 'user' | null>(null);
+  const [mobileChallengesOpen, setMobileChallengesOpen] = useState<boolean>(false);
+  const navRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown on click outside
-  const navRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (navRef.current && !navRef.current.contains(event.target as Node)) {
@@ -52,9 +64,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   // Close dropdown and mobile menu on pathname change
@@ -65,13 +75,15 @@ export function PortalLayout({ children }: PortalLayoutProps) {
 
   const isHomeActive = pathname === '/' || pathname.startsWith('/progress');
   const isStandardsActive =
-    pathname.startsWith('/technology') ||
+    (pathname.startsWith('/technology') && !pathname.includes('challenges')) ||
     pathname.startsWith('/architecture') ||
     pathname.startsWith('/deployment') ||
     pathname.startsWith('/logging') ||
     pathname.startsWith('/security');
 
-  const homeItems = [
+  const isChallengesActive = pathname.includes('challenges');
+
+  const homeItems: NavItem[] = [
     {
       name: 'Engineering Overview',
       href: '/',
@@ -81,13 +93,13 @@ export function PortalLayout({ children }: PortalLayoutProps) {
     {
       name: 'Sprint & Task Progress',
       href: '/progress',
-      description: 'Real-time Jira sprint status, backlog & KPI cards',
+      description: 'Active project boards, milestone trackers & metrics',
       icon: TrendingUp,
       badge: 'Live',
     },
   ];
 
-  const standardItems = [
+  const standardItems: NavItem[] = [
     {
       name: 'Technology Stack',
       href: '/technology',
@@ -126,6 +138,30 @@ export function PortalLayout({ children }: PortalLayoutProps) {
     },
   ];
 
+  const challengeItems: NavItem[] = [
+    {
+      name: '.NET Challenges',
+      href: '/technology/dotnet-challenges',
+      description: 'Enterprise backend, high-concurrency, EF Core & memory tuning',
+      icon: Code2,
+      badge: `${(dotnetChallengesData.challenges || []).length} Topics`,
+    },
+    {
+      name: 'NestJS Challenges',
+      href: '/technology/nestjs-challenges',
+      description: 'Modular architecture, microservices, idempotency & streaming',
+      icon: Server,
+      badge: `${(nestChallengesData.challenges || []).length} Topics`,
+    },
+    {
+      name: 'React.js Challenges',
+      href: '/technology/dotnet-challenges',
+      description: 'SSR hydration, RSC boundary, state closures & rendering',
+      icon: Layers,
+      badge: 'Preview',
+    },
+  ];
+
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-zinc-950 font-sans text-zinc-900 dark:text-zinc-100 antialiased selection:bg-indigo-500 selection:text-white">
       {/* Top Navbar */}
@@ -144,14 +180,14 @@ export function PortalLayout({ children }: PortalLayoutProps) {
               <div className="flex flex-col text-left leading-tight">
                 <div className="flex items-center gap-1.5">
                   <span className="text-sm font-extrabold uppercase tracking-wider text-zinc-900 dark:text-zinc-50">
-                    TOHO Portal
+                    {process.env.NEXT_PUBLIC_APP_NAME || 'Engineering Portal'}
                   </span>
                   <span className="rounded bg-indigo-50 dark:bg-indigo-950/70 border border-indigo-200/60 dark:border-indigo-800/50 px-1.5 py-0.2 text-[9px] font-mono font-bold text-indigo-600 dark:text-indigo-400">
                     v1.0
                   </span>
                 </div>
                 <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400">
-                  Engineering Standards &amp; Projects
+                  {process.env.NEXT_PUBLIC_APP_SUBTITLE || 'Engineering Standards & Projects'}
                 </span>
               </div>
             </Link>
@@ -180,43 +216,45 @@ export function PortalLayout({ children }: PortalLayoutProps) {
                   <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
                     Overview Navigation
                   </div>
-                  {homeItems.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = pathname === item.href;
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={() => setOpenDropdown(null)}
-                        className={`flex items-start gap-3 rounded-xl p-2.5 transition-colors ${
-                          isActive
-                            ? 'bg-indigo-50 text-indigo-900 dark:bg-indigo-950/60 dark:text-indigo-200'
-                            : 'hover:bg-zinc-100 dark:hover:bg-zinc-800/60 text-zinc-700 dark:text-zinc-300'
-                        }`}
-                      >
-                        <div className={`mt-0.5 p-1.5 rounded-lg ${
-                          isActive
-                            ? 'bg-indigo-600 text-white dark:bg-indigo-500'
-                            : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
-                        }`}>
-                          <Icon className="h-4 w-4" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-xs font-bold">{item.name}</span>
-                            {item.badge && (
-                              <span className="rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300 px-1.5 py-0.2 text-[9px] font-bold">
-                                {item.badge}
-                              </span>
-                            )}
+                  <div className="space-y-0.5 mt-0.5">
+                    {homeItems.map((item) => {
+                      const Icon = item.icon;
+                      const isActive = pathname === item.href;
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={() => setOpenDropdown(null)}
+                          className={`group flex items-start gap-3 rounded-lg px-2.5 py-2 transition-colors ${
+                            isActive
+                              ? 'text-zinc-950 dark:text-zinc-50 font-bold'
+                              : 'text-zinc-600 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-100'
+                          }`}
+                        >
+                          <div className={`mt-0.5 p-1.5 rounded-lg transition-colors ${
+                            isActive
+                              ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
+                              : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 group-hover:bg-zinc-200 dark:group-hover:bg-zinc-700'
+                          }`}>
+                            <Icon className="h-4 w-4" />
                           </div>
-                          <p className="text-[11px] text-zinc-500 dark:text-zinc-400 line-clamp-1 mt-0.5">
-                            {item.description}
-                          </p>
-                        </div>
-                      </Link>
-                    );
-                  })}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="text-xs font-semibold group-hover:font-bold">{item.name}</span>
+                              {item.badge && (
+                                <span className="text-[9px] font-mono text-zinc-400 dark:text-zinc-500">
+                                  {item.badge}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-[10px] text-zinc-500 dark:text-zinc-400 line-clamp-1 mt-0.5">
+                              {item.description}
+                            </p>
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
             </div>
@@ -242,7 +280,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
                     <span>Engineering Handbooks</span>
                     <span className="text-[10px] font-normal text-zinc-400">6 Modules</span>
                   </div>
-                  <div className="grid grid-cols-1 gap-1 mt-1">
+                  <div className="space-y-0.5 mt-0.5">
                     {standardItems.map((item) => {
                       const Icon = item.icon;
                       const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
@@ -251,21 +289,88 @@ export function PortalLayout({ children }: PortalLayoutProps) {
                           key={item.href}
                           href={item.href}
                           onClick={() => setOpenDropdown(null)}
-                          className={`flex items-start gap-3 rounded-xl p-2 transition-colors ${
+                          className={`group flex items-start gap-3 rounded-lg px-2.5 py-2 transition-colors ${
                             isActive
-                              ? 'bg-indigo-50 text-indigo-900 dark:bg-indigo-950/60 dark:text-indigo-200'
-                              : 'hover:bg-zinc-100 dark:hover:bg-zinc-800/60 text-zinc-700 dark:text-zinc-300'
+                              ? 'text-zinc-950 dark:text-zinc-50 font-bold'
+                              : 'text-zinc-600 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-100'
                           }`}
                         >
-                          <div className={`mt-0.5 p-1.5 rounded-lg ${
+                          <div className={`mt-0.5 p-1.5 rounded-lg transition-colors ${
                             isActive
-                              ? 'bg-indigo-600 text-white dark:bg-indigo-500'
-                              : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
+                              ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
+                              : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 group-hover:bg-zinc-200 dark:group-hover:bg-zinc-700'
                           }`}>
                             <Icon className="h-4 w-4" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <span className="text-xs font-bold block">{item.name}</span>
+                            <span className="text-xs font-semibold group-hover:font-bold block">{item.name}</span>
+                            <p className="text-[10px] text-zinc-500 dark:text-zinc-400 line-clamp-1 mt-0.5">
+                              {item.description}
+                            </p>
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* 3. Challenges Dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setOpenDropdown(openDropdown === 'challenges' ? null : 'challenges')}
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+                  isChallengesActive
+                    ? 'bg-zinc-100 dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100 shadow-2xs'
+                    : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100/70 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-900'
+                }`}
+              >
+                <Flame className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-400" />
+                <span>Challenges</span>
+                <ChevronDown className={`h-3.5 w-3.5 text-zinc-400 transition-transform duration-200 ${openDropdown === 'challenges' ? 'rotate-180' : ''}`} />
+              </button>
+
+              {openDropdown === 'challenges' && (
+                <div className="absolute left-0 mt-2 w-96 rounded-2xl border border-zinc-200/90 bg-white/95 dark:border-zinc-800 dark:bg-zinc-900/95 backdrop-blur-xl p-2.5 shadow-xl ring-1 ring-black/5 animate-in fade-in zoom-in-95 duration-150 z-50">
+                  <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 flex items-center justify-between">
+                    <span>Engineering Challenges</span>
+                    <span className="text-[10px] font-normal text-zinc-400">3 Stacks</span>
+                  </div>
+                  <div className="space-y-0.5 mt-0.5">
+                    {challengeItems.map((item) => {
+                      const Icon = item.icon;
+                      const isActive =
+                        pathname === item.href ||
+                        (item.name.includes('.NET') && pathname.includes('dotnet-challenges')) ||
+                        (item.name.includes('NestJS') && pathname.includes('nestjs-challenges'));
+                      return (
+                        <Link
+                          key={item.name}
+                          href={item.href}
+                          onClick={() => setOpenDropdown(null)}
+                          className={`group flex items-start gap-3 rounded-lg px-2.5 py-2 transition-colors ${
+                            isActive
+                              ? 'text-zinc-950 dark:text-zinc-50 font-bold'
+                              : 'text-zinc-600 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-100'
+                          }`}
+                        >
+                          <div className={`mt-0.5 p-1.5 rounded-lg transition-colors ${
+                            isActive
+                              ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
+                              : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 group-hover:bg-zinc-200 dark:group-hover:bg-zinc-700'
+                          }`}>
+                            <Icon className="h-4 w-4" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="text-xs font-semibold group-hover:font-bold block">{item.name}</span>
+                              {item.badge && (
+                                <span className="text-[9px] font-mono text-zinc-400 dark:text-zinc-500">
+                                  {item.badge}
+                                </span>
+                              )}
+                            </div>
                             <p className="text-[10px] text-zinc-500 dark:text-zinc-400 line-clamp-1 mt-0.5">
                               {item.description}
                             </p>
@@ -414,6 +519,53 @@ export function PortalLayout({ children }: PortalLayoutProps) {
               </div>
             </div>
 
+            {/* Section: Challenges */}
+            <div className="space-y-1.5 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+              <button
+                type="button"
+                onClick={() => setMobileChallengesOpen((prev) => !prev)}
+                className="flex w-full items-center justify-between px-1 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500"
+              >
+                <span className="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
+                  <Flame className="h-3.5 w-3.5 text-zinc-500 dark:text-zinc-400" />
+                  <span>Challenges</span>
+                </span>
+                <ChevronDown className={`h-3 w-3 transition-transform ${mobileChallengesOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {mobileChallengesOpen && (
+                <div className="grid grid-cols-1 gap-1 pl-1">
+                  {challengeItems.map((item) => {
+                    const Icon = item.icon;
+                    const isActive =
+                      pathname === item.href ||
+                      (item.name.includes('.NET') && pathname.includes('dotnet-challenges')) ||
+                      (item.name.includes('NestJS') && pathname.includes('nestjs-challenges'));
+                    return (
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center gap-3 rounded-xl p-2.5 text-xs font-semibold transition-colors ${
+                          isActive
+                            ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
+                            : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900'
+                        }`}
+                      >
+                        <Icon className="h-4 w-4" />
+                        <span className="flex-1">{item.name}</span>
+                        {item.badge && (
+                          <span className="rounded-full bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 px-1.5 py-0.2 text-[9px] font-bold">
+                            {item.badge}
+                          </span>
+                        )}
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
             {/* Section: Auth */}
             <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800 space-y-2">
               {token && user ? (
@@ -463,7 +615,9 @@ export function PortalLayout({ children }: PortalLayoutProps) {
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500 dark:text-zinc-400">
           <div className="flex items-center gap-2">
             <Terminal className="h-4 w-4 text-zinc-400" />
-            <span className="font-semibold text-zinc-700 dark:text-zinc-300">PT. TOHO TECHNOLOGY INDONESIA</span>
+            <span className="font-semibold text-zinc-700 dark:text-zinc-300">
+              {process.env.NEXT_PUBLIC_COMPANY_NAME || 'Engineering Platform'}
+            </span>
             <span>&bull;</span>
             <span>Software Engineering Standards &copy; {new Date().getFullYear()}</span>
           </div>

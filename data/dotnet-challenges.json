@@ -1,0 +1,843 @@
+{
+  "id": "dotnet-challenges",
+  "title": ".NET Real-World Engineering Challenges",
+  "subtitle": "Kumpulan tantangan berbasis problem nyata yang umum ditemukan pada sistem enterprise, banking, fintech, e-commerce, SaaS, dan high-scale applications menggunakan .NET.",
+  "version": "2.0",
+  "categories": [
+    {
+      "id": "financial",
+      "label": "Banking & Financial Systems",
+      "count": 6
+    },
+    {
+      "id": "ecommerce",
+      "label": "E-Commerce",
+      "count": 5
+    },
+    {
+      "id": "high-traffic",
+      "label": "High Traffic & Performance",
+      "count": 6
+    },
+    {
+      "id": "distributed",
+      "label": "Distributed Systems",
+      "count": 6
+    },
+    {
+      "id": "messaging",
+      "label": "Messaging & Event-Driven",
+      "count": 5
+    },
+    {
+      "id": "resiliency",
+      "label": "Resiliency & Fault Tolerance",
+      "count": 5
+    },
+    {
+      "id": "security",
+      "label": "Security",
+      "count": 5
+    },
+    {
+      "id": "data",
+      "label": "Data Processing",
+      "count": 5
+    },
+    {
+      "id": "integration",
+      "label": "External Integration",
+      "count": 5
+    },
+    {
+      "id": "architecture",
+      "label": "Architecture",
+      "count": 6
+    }
+  ],
+  "challenges": [
+    {
+      "id": "ch-financial-idempotent-payment",
+      "title": "Idempotent Payment API",
+      "category": "financial",
+      "categoryLabel": "Banking & Financial Systems",
+      "difficulty": "MEDIUM",
+      "severity": "CRITICAL",
+      "description": "Build a payment API that safely handles duplicate requests without charging the customer multiple times.",
+      "scenario": "A mobile client sends a payment request, but the network times out. The client retries the same request several times. The system must process the payment only once.",
+      "requirements": [
+        "Accept an idempotency key from the client.",
+        "Store the result associated with the idempotency key.",
+        "Return the original result when the same request is retried.",
+        "Prevent concurrent duplicate processing.",
+        "Handle requests arriving on multiple application instances."
+      ],
+      "technologies": [
+        ".NET",
+        "ASP.NET Core",
+        "SQL",
+        "Redis",
+        "Distributed Lock"
+      ],
+      "concepts": [
+        "Idempotency",
+        "Concurrency",
+        "Distributed Systems",
+        "Transactions"
+      ],
+      "successCriteria": [
+        "The same payment request cannot create multiple transactions.",
+        "Concurrent requests with the same idempotency key are handled safely.",
+        "The solution works across multiple API instances."
+      ],
+      "tags": ["Banking", "Payment", "Idempotency", "Concurrency"]
+    },
+    {
+      "id": "ch-financial-account-transfer",
+      "title": "Concurrent Account Transfer",
+      "category": "financial",
+      "categoryLabel": "Banking & Financial Systems",
+      "difficulty": "HARD",
+      "severity": "CRITICAL",
+      "description": "Build a money transfer system that remains consistent when many users transfer money concurrently.",
+      "scenario": "Two transfers attempt to use the same account balance at exactly the same time. The system must prevent negative or incorrect balances.",
+      "requirements": [
+        "Create debit and credit operations.",
+        "Use database transactions.",
+        "Handle concurrent requests.",
+        "Prevent lost updates.",
+        "Handle transaction failures safely."
+      ],
+      "concepts": [
+        "Database Transactions",
+        "Isolation Level",
+        "Row Locking",
+        "Concurrency",
+        "Race Condition"
+      ],
+      "successCriteria": [
+        "Money cannot be created or lost.",
+        "Concurrent transfers produce a consistent final balance.",
+        "Failed transactions are completely rolled back."
+      ],
+      "tags": ["Banking", "Concurrency", "SQL", "Transaction"]
+    },
+    {
+      "id": "ch-financial-ledger",
+      "title": "Double-Entry Ledger",
+      "category": "financial",
+      "categoryLabel": "Banking & Financial Systems",
+      "difficulty": "HARD",
+      "severity": "CRITICAL",
+      "description": "Design a financial ledger using double-entry bookkeeping principles.",
+      "requirements": [
+        "Every transaction must have balanced debit and credit entries.",
+        "Ledger records must be immutable.",
+        "Account balances must be derived from ledger entries.",
+        "Prevent modification of historical transactions.",
+        "Support transaction reversal."
+      ],
+      "concepts": [
+        "Financial Ledger",
+        "Double Entry",
+        "Immutable Data",
+        "Audit Trail",
+        "Consistency"
+      ],
+      "successCriteria": [
+        "Total debit always equals total credit.",
+        "Historical ledger entries cannot be silently modified.",
+        "Reversals create new entries instead of modifying history."
+      ],
+      "tags": ["Banking", "Ledger", "Finance", "Accounting"]
+    },
+    {
+      "id": "ch-financial-payment-webhook",
+      "title": "Reliable Payment Webhook",
+      "category": "financial",
+      "categoryLabel": "Banking & Financial Systems",
+      "difficulty": "HARD",
+      "description": "Build a webhook processor that safely handles duplicate, delayed, and out-of-order payment events.",
+      "requirements": [
+        "Verify webhook authenticity.",
+        "Handle duplicate events.",
+        "Persist webhook events.",
+        "Process events asynchronously.",
+        "Implement retry handling.",
+        "Prevent invalid state transitions."
+      ],
+      "concepts": [
+        "Webhook",
+        "Idempotency",
+        "Eventual Consistency",
+        "Retry",
+        "State Machine"
+      ],
+      "successCriteria": [
+        "Duplicate webhooks do not duplicate business operations.",
+        "Failed processing can be retried safely.",
+        "Invalid state transitions are rejected."
+      ],
+      "tags": ["Payment", "Webhook", "Integration"]
+    },
+    {
+      "id": "ch-financial-audit-log",
+      "title": "Immutable Financial Audit Trail",
+      "category": "financial",
+      "categoryLabel": "Banking & Financial Systems",
+      "difficulty": "MEDIUM",
+      "description": "Build an audit system that records who performed sensitive financial operations and what changed.",
+      "requirements": [
+        "Record actor identity.",
+        "Record timestamp.",
+        "Record operation.",
+        "Record affected resource.",
+        "Record before and after values.",
+        "Prevent normal users from modifying audit records."
+      ],
+      "concepts": ["Audit Logging", "Security", "Compliance", "Immutable Data"],
+      "tags": ["Banking", "Audit", "Security"]
+    },
+    {
+      "id": "ch-financial-transaction-reconciliation",
+      "title": "Payment Reconciliation System",
+      "category": "financial",
+      "categoryLabel": "Banking & Financial Systems",
+      "difficulty": "HARD",
+      "description": "Build a reconciliation process that compares internal transactions with an external payment provider.",
+      "requirements": [
+        "Import external transaction data.",
+        "Match internal and external transactions.",
+        "Detect missing transactions.",
+        "Detect amount mismatches.",
+        "Generate reconciliation reports.",
+        "Support reprocessing."
+      ],
+      "concepts": [
+        "Batch Processing",
+        "Data Matching",
+        "Reconciliation",
+        "Eventual Consistency"
+      ],
+      "tags": ["Banking", "Finance", "Data Processing"]
+    },
+    {
+      "id": "ch-ecommerce-flash-sale",
+      "title": "Flash Sale Inventory",
+      "category": "ecommerce",
+      "categoryLabel": "E-Commerce",
+      "difficulty": "HARD",
+      "severity": "CRITICAL",
+      "description": "Build an inventory system that prevents overselling during a high-concurrency flash sale.",
+      "scenario": "A product has only 100 units available but thousands of users attempt to purchase it simultaneously.",
+      "requirements": [
+        "Prevent overselling.",
+        "Handle thousands of concurrent requests.",
+        "Keep inventory updates atomic.",
+        "Return appropriate errors when stock is unavailable.",
+        "Support multiple application instances."
+      ],
+      "concepts": [
+        "Concurrency",
+        "Atomic Update",
+        "Database Locking",
+        "Redis",
+        "High Traffic"
+      ],
+      "tags": ["E-Commerce", "Inventory", "Concurrency", "Performance"]
+    },
+    {
+      "id": "ch-ecommerce-order-pipeline",
+      "title": "Asynchronous Order Processing",
+      "category": "ecommerce",
+      "categoryLabel": "E-Commerce",
+      "difficulty": "HARD",
+      "description": "Build an asynchronous order processing pipeline where payment, inventory, shipping, and notification are handled independently.",
+      "flow": "Order Created -> Payment -> Inventory -> Shipping -> Notification",
+      "requirements": [
+        "Use asynchronous messaging.",
+        "Support retries.",
+        "Handle partial failures.",
+        "Prevent duplicate processing.",
+        "Track order processing state."
+      ],
+      "concepts": [
+        "Message Queue",
+        "Event-Driven Architecture",
+        "Retry",
+        "Idempotency",
+        "Saga"
+      ],
+      "tags": ["E-Commerce", "Messaging", "Distributed Systems"]
+    },
+    {
+      "id": "ch-ecommerce-shopping-cart",
+      "title": "Distributed Shopping Cart",
+      "category": "ecommerce",
+      "categoryLabel": "E-Commerce",
+      "difficulty": "MEDIUM",
+      "description": "Build a shopping cart service that works across multiple API instances.",
+      "requirements": [
+        "Store cart state.",
+        "Support concurrent updates.",
+        "Handle cart expiration.",
+        "Support multiple application instances.",
+        "Prevent lost updates."
+      ],
+      "technologies": [".NET", "Redis", "SQL"],
+      "concepts": ["Distributed State", "Caching", "Concurrency"],
+      "tags": ["E-Commerce", "Redis", "Distributed System"]
+    },
+    {
+      "id": "ch-ecommerce-price-reservation",
+      "title": "Price & Inventory Reservation",
+      "category": "ecommerce",
+      "categoryLabel": "E-Commerce",
+      "difficulty": "HARD",
+      "description": "Build a reservation system that temporarily reserves product inventory while a customer completes checkout.",
+      "requirements": [
+        "Reserve stock for a limited time.",
+        "Release expired reservations.",
+        "Prevent double reservation.",
+        "Handle payment failure.",
+        "Handle concurrent checkout attempts."
+      ],
+      "concepts": [
+        "Reservation",
+        "Distributed Lock",
+        "Expiration",
+        "Concurrency"
+      ],
+      "tags": ["E-Commerce", "Inventory", "Concurrency"]
+    },
+    {
+      "id": "ch-ecommerce-product-search",
+      "title": "Scalable Product Search",
+      "category": "ecommerce",
+      "categoryLabel": "E-Commerce",
+      "difficulty": "MEDIUM",
+      "description": "Build a product search API that supports filtering, sorting, pagination, and high read traffic.",
+      "requirements": [
+        "Support keyword search.",
+        "Support multiple filters.",
+        "Support sorting.",
+        "Implement pagination.",
+        "Optimize database queries.",
+        "Add caching where appropriate."
+      ],
+      "concepts": ["Query Optimization", "Pagination", "Caching", "Indexing"],
+      "tags": ["E-Commerce", "Search", "Performance"]
+    },
+    {
+      "id": "ch-hightraffic-rate-limiter",
+      "title": "Distributed Rate Limiter",
+      "category": "high-traffic",
+      "categoryLabel": "High Traffic & Performance",
+      "difficulty": "HARD",
+      "description": "Build a rate limiter that works consistently across multiple API instances.",
+      "requirements": [
+        "Limit requests per client.",
+        "Support multiple API instances.",
+        "Prevent race conditions.",
+        "Return HTTP 429 when the limit is exceeded.",
+        "Use a distributed storage mechanism."
+      ],
+      "concepts": [
+        "Rate Limiting",
+        "Redis",
+        "Distributed Systems",
+        "Concurrency"
+      ],
+      "tags": ["High Traffic", "Redis", "API"]
+    },
+    {
+      "id": "ch-hightraffic-cache-stampede",
+      "title": "Cache Stampede Protection",
+      "category": "high-traffic",
+      "categoryLabel": "High Traffic & Performance",
+      "difficulty": "HARD",
+      "description": "Prevent a popular cache key from causing hundreds of simultaneous database queries when it expires.",
+      "requirements": [
+        "Implement cache-aside.",
+        "Prevent concurrent cache misses.",
+        "Support distributed deployments.",
+        "Handle cache failures.",
+        "Implement appropriate expiration."
+      ],
+      "concepts": [
+        "Cache Stampede",
+        "Single Flight",
+        "Redis",
+        "HybridCache",
+        "Caching"
+      ],
+      "tags": ["Performance", "Caching", "Redis"]
+    },
+    {
+      "id": "ch-hightraffic-slow-api",
+      "title": "Diagnose a Slow API",
+      "category": "high-traffic",
+      "categoryLabel": "High Traffic & Performance",
+      "difficulty": "HARD",
+      "description": "Investigate and optimize an API whose latency increases significantly under load.",
+      "symptoms": [
+        "High response latency.",
+        "Database CPU spikes.",
+        "ThreadPool usage increases.",
+        "Memory usage increases.",
+        "Connection pools become saturated."
+      ],
+      "requirements": [
+        "Identify the bottleneck.",
+        "Measure before optimizing.",
+        "Optimize the database query.",
+        "Optimize application code.",
+        "Measure the improvement."
+      ],
+      "concepts": [
+        "Profiling",
+        "Benchmarking",
+        "Database Optimization",
+        "Observability"
+      ],
+      "tags": ["Performance", "Profiling", "Optimization"]
+    },
+    {
+      "id": "ch-hightraffic-sync-over-async",
+      "title": "Sync-over-Async & ThreadPool Starvation",
+      "category": "high-traffic",
+      "categoryLabel": "High Traffic & Performance",
+      "difficulty": "HARD",
+      "severity": "CRITICAL",
+      "description": "Fix an ASP.NET Core API that becomes unresponsive under high traffic because asynchronous operations are being blocked synchronously.",
+      "symptoms": [
+        "Latency increases dramatically under load.",
+        "CPU usage remains relatively low.",
+        "Thread count increases.",
+        "Requests begin timing out."
+      ],
+      "rootCause": "Using .Result, .Wait(), or GetAwaiter().GetResult() on asynchronous operations.",
+      "requirements": [
+        "Convert the request pipeline to async end-to-end.",
+        "Remove synchronous blocking.",
+        "Propagate CancellationToken.",
+        "Execute independent I/O operations concurrently."
+      ],
+      "concepts": [
+        "Async/Await",
+        "ThreadPool",
+        "Concurrency",
+        "CancellationToken"
+      ],
+      "tags": [".NET", "Performance", "Async"]
+    },
+    {
+      "id": "ch-hightraffic-large-file",
+      "title": "Process Large Files Without Memory Explosion",
+      "category": "high-traffic",
+      "categoryLabel": "High Traffic & Performance",
+      "difficulty": "HARD",
+      "description": "Build a service that processes very large files without loading the entire file into memory.",
+      "requirements": [
+        "Support large file uploads.",
+        "Process data using streams.",
+        "Avoid unnecessary byte array allocations.",
+        "Support cancellation.",
+        "Measure memory usage."
+      ],
+      "concepts": ["Streaming", "ArrayPool", "Memory Management", "GC", "LOH"],
+      "tags": ["Performance", "Memory", "Streaming"]
+    },
+    {
+      "id": "ch-hightraffic-httpclient",
+      "title": "HttpClient Socket Exhaustion & DNS Rotation",
+      "category": "high-traffic",
+      "categoryLabel": "High Traffic & Performance",
+      "difficulty": "HARD",
+      "description": "Fix an application that creates excessive outbound connections and fails when upstream services change IP addresses.",
+      "requirements": [
+        "Use IHttpClientFactory.",
+        "Configure appropriate handler lifetime.",
+        "Configure timeout.",
+        "Implement retry and circuit breaker where appropriate.",
+        "Handle upstream failures."
+      ],
+      "concepts": [
+        "HttpClientFactory",
+        "Connection Pooling",
+        "DNS",
+        "Resiliency"
+      ],
+      "tags": ["HTTP", "Networking", "Resiliency"]
+    },
+    {
+      "id": "ch-distributed-outbox",
+      "title": "Transactional Outbox",
+      "category": "distributed",
+      "categoryLabel": "Distributed Systems",
+      "difficulty": "HARD",
+      "severity": "CRITICAL",
+      "description": "Guarantee reliable event publishing when a database transaction and message broker operation must remain consistent.",
+      "scenario": "An order is saved successfully but the message broker becomes unavailable immediately afterward.",
+      "requirements": [
+        "Persist business data and an outbox event in the same database transaction.",
+        "Create a background publisher.",
+        "Support retries.",
+        "Prevent duplicate downstream processing.",
+        "Support dead-letter handling."
+      ],
+      "concepts": [
+        "Transactional Outbox",
+        "Eventual Consistency",
+        "At-Least-Once Delivery",
+        "Idempotency"
+      ],
+      "tags": ["Distributed Systems", "Messaging", "RabbitMQ", "Kafka"]
+    },
+    {
+      "id": "ch-distributed-saga",
+      "title": "Distributed Transaction with Saga",
+      "category": "distributed",
+      "categoryLabel": "Distributed Systems",
+      "difficulty": "EXPERT",
+      "description": "Design a distributed transaction spanning multiple services without using a traditional distributed database transaction.",
+      "flow": "Order -> Payment -> Inventory -> Shipping",
+      "requirements": [
+        "Define transaction steps.",
+        "Handle partial failure.",
+        "Implement compensating actions.",
+        "Track transaction state.",
+        "Support retries and idempotency."
+      ],
+      "concepts": [
+        "Saga Pattern",
+        "Compensation",
+        "Eventual Consistency",
+        "Distributed Transactions"
+      ],
+      "tags": ["Microservices", "Saga", "Distributed Systems"]
+    },
+    {
+      "id": "ch-distributed-idempotent-consumer",
+      "title": "Idempotent Message Consumer",
+      "category": "distributed",
+      "categoryLabel": "Distributed Systems",
+      "difficulty": "HARD",
+      "description": "Build a message consumer that safely processes duplicate messages.",
+      "requirements": [
+        "Generate or receive a unique message ID.",
+        "Persist processed message IDs.",
+        "Handle concurrent duplicate delivery.",
+        "Make business operations idempotent."
+      ],
+      "concepts": [
+        "Idempotency",
+        "Message Deduplication",
+        "At-Least-Once Delivery"
+      ],
+      "tags": ["Messaging", "Microservices", "Reliability"]
+    },
+    {
+      "id": "ch-distributed-leader-election",
+      "title": "Distributed Background Job Coordination",
+      "category": "distributed",
+      "categoryLabel": "Distributed Systems",
+      "difficulty": "EXPERT",
+      "description": "Run a scheduled background job across multiple application instances while ensuring that only one instance executes the job.",
+      "requirements": [
+        "Deploy multiple application instances.",
+        "Prevent duplicate job execution.",
+        "Handle instance failure.",
+        "Allow another instance to take over."
+      ],
+      "concepts": ["Distributed Lock", "Leader Election", "Fault Tolerance"],
+      "tags": ["Distributed Systems", "Background Jobs", "Concurrency"]
+    },
+    {
+      "id": "ch-messaging-event-driven",
+      "title": "Event-Driven Order System",
+      "category": "messaging",
+      "categoryLabel": "Messaging & Event-Driven",
+      "difficulty": "HARD",
+      "description": "Build an event-driven system where business modules react to domain events instead of directly calling each other.",
+      "requirements": [
+        "Create domain events.",
+        "Publish integration events.",
+        "Implement consumers.",
+        "Handle retries.",
+        "Track event processing."
+      ],
+      "concepts": [
+        "Domain Events",
+        "Integration Events",
+        "Event-Driven Architecture"
+      ],
+      "tags": ["Events", "Messaging", "Architecture"]
+    },
+    {
+      "id": "ch-messaging-dead-letter",
+      "title": "Dead Letter Queue Processing",
+      "category": "messaging",
+      "categoryLabel": "Messaging & Event-Driven",
+      "difficulty": "MEDIUM",
+      "description": "Build a message processing system that safely isolates messages that repeatedly fail.",
+      "requirements": [
+        "Implement retry attempts.",
+        "Move poison messages to a DLQ.",
+        "Record failure reasons.",
+        "Support manual reprocessing."
+      ],
+      "concepts": ["Retry", "Dead Letter Queue", "Poison Message"],
+      "tags": ["RabbitMQ", "Kafka", "Messaging"]
+    },
+    {
+      "id": "ch-resiliency-circuit-breaker",
+      "title": "External Service Circuit Breaker",
+      "category": "resiliency",
+      "categoryLabel": "Resiliency & Fault Tolerance",
+      "difficulty": "MEDIUM",
+      "description": "Protect an API from cascading failures when an external service becomes slow or unavailable.",
+      "requirements": [
+        "Configure timeout.",
+        "Configure retry.",
+        "Implement circuit breaker.",
+        "Return graceful fallback responses.",
+        "Record failures."
+      ],
+      "concepts": ["Circuit Breaker", "Retry", "Timeout", "Fallback"],
+      "tags": ["Resiliency", "HTTP", "Microservices"]
+    },
+    {
+      "id": "ch-resiliency-graceful-degradation",
+      "title": "Graceful Degradation",
+      "category": "resiliency",
+      "categoryLabel": "Resiliency & Fault Tolerance",
+      "difficulty": "HARD",
+      "description": "Design an application that remains partially functional when one of its dependencies becomes unavailable.",
+      "requirements": [
+        "Identify critical and non-critical dependencies.",
+        "Provide fallback behavior.",
+        "Prevent cascading failures.",
+        "Expose degraded health status."
+      ],
+      "concepts": ["Resiliency", "Fault Isolation", "Fallback", "Bulkhead"],
+      "tags": ["Reliability", "Microservices"]
+    },
+    {
+      "id": "ch-security-api",
+      "title": "Secure a Public API",
+      "category": "security",
+      "categoryLabel": "Security",
+      "difficulty": "HARD",
+      "description": "Secure a public-facing API against common authentication, authorization, and input-related vulnerabilities.",
+      "requirements": [
+        "Implement authentication.",
+        "Implement authorization.",
+        "Validate input.",
+        "Protect sensitive endpoints.",
+        "Configure rate limiting.",
+        "Avoid sensitive data exposure."
+      ],
+      "concepts": ["JWT", "Authorization", "Rate Limiting", "OWASP"],
+      "tags": ["Security", "API", "OWASP"]
+    },
+    {
+      "id": "ch-security-permission",
+      "title": "Fine-Grained Permission System",
+      "category": "security",
+      "categoryLabel": "Security",
+      "difficulty": "HARD",
+      "description": "Build a permission system where users receive specific capabilities independently of their roles.",
+      "examplePermissions": [
+        "product.read",
+        "product.create",
+        "product.update",
+        "product.delete",
+        "order.refund"
+      ],
+      "requirements": [
+        "Create users.",
+        "Create roles.",
+        "Create permissions.",
+        "Assign permissions to roles.",
+        "Authorize API endpoints based on permissions."
+      ],
+      "concepts": ["RBAC", "Authorization", "Permission Model"],
+      "tags": ["Security", "Authorization", "RBAC"]
+    },
+    {
+      "id": "ch-security-dataprotection",
+      "title": "Data Protection in Multi-Instance Deployment",
+      "category": "security",
+      "categoryLabel": "Security",
+      "difficulty": "HARD",
+      "description": "Configure ASP.NET Core Data Protection correctly when the application runs across multiple containers or Kubernetes pods.",
+      "requirements": [
+        "Configure shared key storage.",
+        "Use a consistent application name.",
+        "Ensure all instances can decrypt protected data.",
+        "Protect keys at rest."
+      ],
+      "concepts": ["Data Protection", "Kubernetes", "Redis", "Key Management"],
+      "tags": ["Security", "Docker", "Kubernetes"]
+    },
+    {
+      "id": "ch-data-large-csv",
+      "title": "Process a 10 GB CSV File",
+      "category": "data",
+      "categoryLabel": "Data Processing",
+      "difficulty": "HARD",
+      "description": "Process a very large CSV file without loading the entire dataset into memory.",
+      "requirements": [
+        "Use streaming.",
+        "Process records incrementally.",
+        "Handle malformed rows.",
+        "Track progress.",
+        "Support cancellation.",
+        "Generate processing statistics."
+      ],
+      "concepts": ["Streaming", "Memory Management", "Background Processing"],
+      "tags": ["Data Processing", "Performance", "Streaming"]
+    },
+    {
+      "id": "ch-data-batch-processing",
+      "title": "Reliable Batch Processing",
+      "category": "data",
+      "categoryLabel": "Data Processing",
+      "difficulty": "HARD",
+      "description": "Build a batch processor capable of processing millions of records while handling failures and retries.",
+      "requirements": [
+        "Process records in batches.",
+        "Avoid loading all records into memory.",
+        "Support checkpointing.",
+        "Retry failed batches.",
+        "Resume after application restart."
+      ],
+      "concepts": [
+        "Batch Processing",
+        "Checkpoint",
+        "Retry",
+        "Background Worker"
+      ],
+      "tags": ["Data", "Batch", "Scalability"]
+    },
+    {
+      "id": "ch-integration-external-api",
+      "title": "Resilient External API Integration",
+      "category": "integration",
+      "categoryLabel": "External Integration",
+      "difficulty": "MEDIUM",
+      "description": "Integrate with an unreliable external API and make the integration resilient to timeout, rate limits, and temporary failures.",
+      "requirements": [
+        "Use IHttpClientFactory.",
+        "Configure timeout.",
+        "Implement retry with backoff.",
+        "Handle rate limiting.",
+        "Handle malformed responses.",
+        "Log failures."
+      ],
+      "concepts": ["HTTP", "Retry", "Backoff", "Timeout", "Resiliency"],
+      "tags": ["Integration", "HTTP", "API"]
+    },
+    {
+      "id": "ch-integration-webhook",
+      "title": "Reliable Webhook Receiver",
+      "category": "integration",
+      "categoryLabel": "External Integration",
+      "difficulty": "HARD",
+      "description": "Build a webhook receiver that safely handles duplicate delivery, signature verification, retries, and delayed events.",
+      "requirements": [
+        "Verify webhook signatures.",
+        "Persist incoming events.",
+        "Return responses quickly.",
+        "Process events asynchronously.",
+        "Implement deduplication."
+      ],
+      "concepts": ["Webhook", "Security", "Idempotency", "Async Processing"],
+      "tags": ["Webhook", "Integration", "Security"]
+    },
+    {
+      "id": "ch-architecture-clean",
+      "title": "Refactor to Clean Architecture",
+      "category": "architecture",
+      "categoryLabel": "Architecture",
+      "difficulty": "HARD",
+      "description": "Refactor a tightly coupled ASP.NET Core application into a maintainable architecture with clear dependency boundaries.",
+      "targetArchitecture": "API -> Application -> Domain <- Infrastructure",
+      "requirements": [
+        "Separate domain logic.",
+        "Separate application use cases.",
+        "Move infrastructure implementations out of business logic.",
+        "Apply dependency inversion.",
+        "Write tests for business rules."
+      ],
+      "concepts": [
+        "Clean Architecture",
+        "Dependency Inversion",
+        "Separation of Concerns"
+      ],
+      "tags": ["Architecture", "Clean Architecture", "SOLID"]
+    },
+    {
+      "id": "ch-architecture-modular-monolith",
+      "title": "Build a Modular Monolith",
+      "category": "architecture",
+      "categoryLabel": "Architecture",
+      "difficulty": "EXPERT",
+      "description": "Design a modular monolith with strong boundaries between business modules without introducing unnecessary microservices complexity.",
+      "exampleModules": [
+        "Identity",
+        "Catalog",
+        "Orders",
+        "Payments",
+        "Inventory"
+      ],
+      "requirements": [
+        "Define module boundaries.",
+        "Prevent unwanted dependencies between modules.",
+        "Define module APIs.",
+        "Handle cross-module communication.",
+        "Keep deployment as a single application."
+      ],
+      "concepts": [
+        "Modular Monolith",
+        "Bounded Context",
+        "DDD",
+        "Architecture"
+      ],
+      "tags": ["Architecture", "DDD", "Monolith"]
+    },
+    {
+      "id": "ch-architecture-production-api",
+      "title": "Production-Ready .NET API",
+      "category": "architecture",
+      "categoryLabel": "Architecture",
+      "difficulty": "EXPERT",
+      "description": "Build a production-ready API that combines reliability, security, observability, testing, and deployment practices.",
+      "requirements": [
+        "Authentication.",
+        "Authorization.",
+        "Validation.",
+        "Global error handling.",
+        "Structured logging.",
+        "Correlation ID.",
+        "Health checks.",
+        "Unit tests.",
+        "Integration tests.",
+        "Database transactions.",
+        "Caching.",
+        "Rate limiting.",
+        "Docker.",
+        "CI/CD."
+      ],
+      "concepts": [
+        "Production Engineering",
+        "Architecture",
+        "Observability",
+        "Security",
+        "DevOps"
+      ],
+      "tags": [".NET", "Production", "Architecture"]
+    }
+  ]
+}

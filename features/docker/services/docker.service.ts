@@ -43,6 +43,9 @@ export interface DockerConfigData {
   host: string;
   api_version: string;
   is_enabled: boolean;
+  frontend_base_port?: number;
+  backend_base_port?: number;
+  fullstack_base_port?: number;
 }
 
 export interface DockerTestConnectionResponse {

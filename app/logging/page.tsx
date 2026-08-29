@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowLeft, FileText, Terminal } from 'lucide-react';
+import { ArrowLeft, FileText, Terminal, Code2, CheckCircle2, Layers } from 'lucide-react';
 import { PortalLayout } from '@/components/layout';
 import { standardService } from '@/features/standard';
 
@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 
 export const metadata = {
   title: 'Logging & Observability Standards — Software Engineering Standardization',
-  description: 'Standards for structured logging levels, common schema fields, and log categories.',
+  description: 'Standards for structured logging levels, common schema fields, log categories, and framework implementations for .NET, Laravel, NestJS, and Express.js.',
 };
 
 export default async function LoggingPage() {
@@ -32,7 +32,7 @@ export default async function LoggingPage() {
 
   return (
     <PortalLayout>
-      <div className="w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-10">
         {/* Back button */}
         <div>
           <Link
@@ -60,6 +60,66 @@ export default async function LoggingPage() {
             </div>
           </div>
         </div>
+
+        {/* Framework Implementations Section (.NET, Laravel, NestJS, Express.js) */}
+        {loggingStandard.frameworkImplementations && loggingStandard.frameworkImplementations.length > 0 && (
+          <section className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Code2 className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+              <h2 className="text-lg sm:text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+                Framework Implementation Standards
+              </h2>
+            </div>
+            <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400">
+              Standardized logging setups, libraries, and code patterns for .NET, Laravel / PHP, NestJS, and Express.js.
+            </p>
+
+            <div className="grid gap-6 md:grid-cols-2">
+              {loggingStandard.frameworkImplementations.map((fw) => (
+                <div
+                  key={fw.slug}
+                  className="flex flex-col justify-between rounded-2xl border border-zinc-200/90 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900/40 shadow-2xs space-y-4"
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Layers className="h-4 w-4 text-zinc-500" />
+                        <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-100">
+                          {fw.framework}
+                        </h3>
+                      </div>
+                      <span className="rounded-md bg-amber-500/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-amber-600 dark:text-amber-400">
+                        {fw.library}
+                      </span>
+                    </div>
+
+                    <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                      {fw.description}
+                    </p>
+
+                    <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-3 font-mono text-[11px] text-zinc-300 overflow-x-auto shadow-inner">
+                      <pre>{fw.codeSnippet}</pre>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+                    <span className="text-[11px] font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider">
+                      Key Capabilities:
+                    </span>
+                    <ul className="space-y-1">
+                      {fw.features.map((feat, idx) => (
+                        <li key={idx} className="flex items-start gap-1.5 text-xs text-zinc-600 dark:text-zinc-400">
+                          <CheckCircle2 className="h-3.5 w-3.5 mt-0.5 text-emerald-600 shrink-0" />
+                          <span>{feat}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Left Column: Levels & Categories (7 cols) */}

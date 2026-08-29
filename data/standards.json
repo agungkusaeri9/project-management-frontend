@@ -9,12 +9,13 @@
     {
       "id": "technology",
       "title": "Technology Stack",
-      "description": "Define the technologies used by the application, including frontend, backend, mobile, database, and supporting services.",
+      "description": "Define the technologies used by the application, including frontend, backend, fullstack, mobile, database, and supporting services.",
       "href": "/technology",
       "iconKey": "layers",
       "tags": [
         "Frontend",
         "Backend",
+        "Fullstack",
         "Mobile",
         "Database",
         "Cache",
@@ -36,32 +37,92 @@
       ]
     },
     {
+      "id": "versioning",
+      "title": "Versioning & Git Strategy",
+      "description": "Define versioning schemes, Semantic Versioning (SemVer), API versioning, Git branching models, and Conventional Commits.",
+      "href": "/versioning",
+      "iconKey": "git-branch",
+      "tags": [
+        "SemVer",
+        "API Versioning",
+        "Git Flow",
+        "Conventional Commits",
+        "Release Tagging"
+      ]
+    },
+    {
+      "id": "error-handling",
+      "title": "Error Handling",
+      "description": "Define standard JSON error envelope, RFC 7807 Problem Details, HTTP status code guidelines, and global exception handling.",
+      "href": "/error-handling",
+      "iconKey": "alert-circle",
+      "tags": [
+        "Problem Details",
+        "HTTP Status Codes",
+        "Validation Errors",
+        "Global Handler",
+        "Error Envelope"
+      ]
+    },
+    {
+      "id": "testing",
+      "title": "Testing & QA",
+      "description": "Define testing standards, test pyramid distribution, code coverage targets, automated test suites, and test best practices.",
+      "href": "/testing",
+      "iconKey": "check-circle",
+      "tags": [
+        "Unit Testing",
+        "Integration Testing",
+        "E2E Testing",
+        "Test Pyramid",
+        "Coverage (80%+)",
+        "Mocking"
+      ]
+    },
+    {
       "id": "deployment",
-      "title": "Deployment",
-      "description": "Define how applications are packaged, deployed, and operated across development, staging, and production environments.",
+      "title": "Deployment & CI/CD",
+      "description": "Define how applications are packaged, deployed, and operated across Local, Docker, Docker Compose, VPS / Bare-Metal, and CI/CD pipelines.",
       "href": "/deployment",
       "iconKey": "server",
       "tags": [
+        "Local Dev",
         "Docker",
         "Docker Compose",
-        "Windows Service",
-        "Linux Service",
-        "Nginx",
-        "Kubernetes"
+        "VPS / Bare-Metal",
+        "CI/CD Pipeline",
+        "Nginx Reverse Proxy"
       ]
     },
     {
       "id": "logging",
       "title": "Logging",
-      "description": "Define application logging levels, structured logging, log fields, storage, and observability standards.",
+      "description": "Define application logging levels, structured JSON logging, log fields, correlation tracking, storage, and observability standards.",
       "href": "/logging",
       "iconKey": "file-text",
       "tags": [
         "Structured Logging",
-        "Serilog",
-        "OpenTelemetry",
-        "Elasticsearch",
-        "Kibana"
+        "Serilog (.NET)",
+        "Monolog (Laravel)",
+        "Winston / Pino (Node.js)",
+        "Log Levels",
+        "Correlation ID",
+        "OpenTelemetry"
+      ]
+    },
+    {
+      "id": "monitoring",
+      "title": "Monitoring & Observability",
+      "description": "Define application health checks, metric collection, visualization dashboards, APM tracing, uptime monitoring, and alerting thresholds.",
+      "href": "/monitoring",
+      "iconKey": "activity",
+      "tags": [
+        "Health Checks (/healthz)",
+        "Prometheus",
+        "Grafana",
+        "APM",
+        "Alerting",
+        "Uptime Monitoring"
       ]
     },
     {
@@ -84,21 +145,25 @@
     "frontend": [
       {
         "name": "Next.js",
+        "slug": "nextjs",
         "type": "Framework",
         "description": "React framework for server-rendered and static web applications."
       },
       {
         "name": "React.js",
+        "slug": "react",
         "type": "Library",
         "description": "Declarative UI component library."
       },
       {
         "name": "Vue.js",
+        "slug": "vue",
         "type": "Framework",
         "description": "Progressive JavaScript framework for building user interfaces."
       },
       {
         "name": "Nuxt.js",
+        "slug": "nuxtjs",
         "type": "Framework",
         "description": "Intuitive Vue framework for modern web applications."
       }
@@ -106,30 +171,48 @@
     "backend": [
       {
         "name": "ASP.NET Core",
+        "slug": "dotnet",
         "type": "Framework",
         "description": "High-performance, cross-platform .NET framework.",
         "href": "/technology/dotnet"
       },
       {
         "name": "Laravel",
+        "slug": "laravel",
         "type": "Framework",
-        "description": "Expressive, robust PHP web application framework."
+        "description": "Expressive, robust PHP web application framework for building REST APIs and backend services."
       },
       {
         "name": "Express.js",
+        "slug": "express",
         "type": "Framework",
         "description": "Fast, unopinionated, minimalist web framework for Node.js."
+      },
+      {
+        "name": "NestJS",
+        "slug": "nestjs",
+        "type": "Framework",
+        "description": "A progressive Node.js framework for building efficient, scalable, and maintainable server-side applications with TypeScript."
+      }
+    ],
+    "fullstack": [
+      {
+        "name": "Laravel",
+        "slug": "laravel-fullstack",
+        "type": "Fullstack Framework",
+        "description": "Full-stack PHP framework featuring robust MVC architecture, Blade templating, Eloquent ORM, integrated auth, and rich ecosystem for rapid monolithic development."
       }
     ],
     "mobile": [
       {
         "name": "React Native",
+        "slug": "react-native",
         "type": "Cross-Platform",
         "description": "Build native mobile apps using React and JavaScript."
       },
       {
-        ".NET MAUI": ".NET MAUI",
         "name": ".NET MAUI",
+        "slug": "dotnet-maui",
         "type": "Cross-Platform",
         "description": "Cross-platform framework for native mobile and desktop apps with C#."
       }
@@ -137,22 +220,25 @@
     "database": [
       {
         "name": "SQL Server",
+        "slug": "sql-server",
         "type": "Relational",
         "description": "Enterprise relational database management system by Microsoft."
       },
       {
         "name": "MySQL",
+        "slug": "mysql",
         "type": "Relational",
         "description": "Widely adopted open-source relational database."
       },
       {
         "name": "PostgreSQL",
+        "slug": "postgresql",
         "type": "Relational",
         "description": "Advanced open-source object-relational database with ACID compliance."
       },
-
       {
         "name": "Redis",
+        "slug": "redis",
         "type": "In-Memory Key-Value",
         "description": "In-memory data structure store used as database, cache, and message broker."
       }
@@ -160,23 +246,219 @@
     "supporting": [
       {
         "name": "RabbitMQ",
+        "slug": "rabbitmq",
         "type": "Message Broker",
         "description": "Reliable AMQP message broker for distributed asynchronous processing."
       },
       {
         "name": "MQTT",
+        "slug": "mqtt",
         "type": "IoT Protocol",
         "description": "Lightweight publish/subscribe messaging protocol for IoT/telemetry."
       },
       {
         "name": "Redis",
+        "slug": "redis-pubsub",
         "type": "Cache / PubSub",
         "description": "High-speed caching layer and lightweight pub/sub."
       },
       {
         "name": "Elasticsearch",
+        "slug": "elasticsearch",
         "type": "Search & Analytics",
         "description": "Distributed, JSON-based search and analytics engine."
+      }
+    ],
+    "logging": [
+      {
+        "name": "Serilog (.NET)",
+        "slug": "serilog-dotnet",
+        "type": "Structured Logging (.NET)",
+        "description": "High-performance structured JSON logging framework for ASP.NET Core with LogContext enrichment and sinks for Console, File, Seq, and Elasticsearch."
+      },
+      {
+        "name": "Monolog (Laravel / PHP)",
+        "slug": "monolog-laravel",
+        "type": "Logging Framework (PHP)",
+        "description": "PSR-3 compliant logging framework integrated in Laravel with daily file rotation, custom JSON formatter, and Slack/Sentry alert channels."
+      },
+      {
+        "name": "Winston / Pino (NestJS)",
+        "slug": "winston-nestjs",
+        "type": "Structured Logging (NestJS)",
+        "description": "Enterprise structured JSON logger for NestJS with custom LoggerService, contextual class tagging, and request interceptors."
+      },
+      {
+        "name": "Pino / Morgan (Express.js)",
+        "slug": "pino-express",
+        "type": "HTTP & App Logger (Express)",
+        "description": "Ultra-fast JSON logger with automatic HTTP request/response serialization, correlation ID generation, and sensitive field redaction."
+      }
+    ],
+    "versioning": [
+      {
+        "name": "Semantic Versioning (SemVer)",
+        "slug": "semver",
+        "type": "Specification",
+        "description": "Standardized MAJOR.MINOR.PATCH-prerelease (Alpha, Beta, RC, Stable) release lifecycle, git tagging, and version rules.",
+        "href": "/technology/semantic"
+      },
+      {
+        "name": "Conventional Commits",
+        "slug": "conventional-commits",
+        "type": "Commit Standard",
+        "description": "Structured git commit convention (feat, fix, refactor, docs) enabling automated changelog generation."
+      }
+    ],
+    "errorHandling": [
+      {
+        "name": "RFC 7807 Problem Details",
+        "slug": "problem-details",
+        "type": "Standard Specification",
+        "description": "Standardized machine-readable HTTP error response payload format with type, title, status, and detail."
+      },
+      {
+        "name": "Global Exception Middleware",
+        "slug": "global-exception-middleware",
+        "type": "Middleware Pattern",
+        "description": "Centralized error interception capturing unhandled exceptions, sanitizing output, and attaching Trace IDs."
+      },
+      {
+        "name": "Standard Error Envelope",
+        "slug": "error-envelope",
+        "type": "Response Structure",
+        "description": "Unified JSON response format: { success: false, code, message, errors: [...], traceId, timestamp }."
+      },
+      {
+        "name": "HTTP Status Code Mapping",
+        "slug": "http-status-codes",
+        "type": "Standard Protocol",
+        "description": "Strict standard status codes: 200, 201, 204, 400, 401, 403, 404, 409, 422, 429, 500, 503."
+      }
+    ],
+    "testing": [
+      {
+        "name": "xUnit & FluentAssertions",
+        "slug": "xunit",
+        "type": "Unit & Integration Testing (.NET)",
+        "description": "Industry-standard modern test framework for .NET with expressive assertion syntax."
+      },
+      {
+        "name": "PHPUnit & Pest PHP",
+        "slug": "phpunit-pest",
+        "type": "Testing Framework (Laravel)",
+        "description": "Elegant PHP testing frameworks with expressive syntax and seamless Laravel HTTP test integration."
+      },
+      {
+        "name": "Jest & Vitest",
+        "slug": "jest-vitest",
+        "type": "Unit & Integration Testing (JS/TS)",
+        "description": "Fast unit and component testing framework for JavaScript/TypeScript, React, Next.js, and NestJS."
+      },
+      {
+        "name": "Supertest & Pact",
+        "slug": "supertest-pact",
+        "type": "API & Contract Testing (Node.js)",
+        "description": "HTTP assertion library for testing Node.js (Express & NestJS) API endpoints and consumer contracts."
+      },
+      {
+        "name": "Playwright & Cypress",
+        "slug": "playwright-cypress",
+        "type": "E2E Testing (Cross-Stack)",
+        "description": "Reliable end-to-end browser automation for validating critical user journeys and UI flows."
+      }
+    ],
+    "deployment": [
+      {
+        "name": "Local Development",
+        "slug": "local-dev",
+        "type": "Environment",
+        "description": "Standardized local workstation environment using SDKs, hot reloading, Docker backing services, and .env configs."
+      },
+      {
+        "name": "Docker",
+        "slug": "docker",
+        "type": "Container Platform",
+        "description": "Standard container image packaging ensuring identical behavior across development, staging, and production."
+      },
+      {
+        "name": "VPS / Bare-Metal Linux",
+        "slug": "vps-bare-metal",
+        "type": "Hosting Infrastructure",
+        "description": "Cost-effective virtual private server deployment using systemd process supervision and Nginx/Caddy reverse proxy."
+      },
+      {
+        "name": "Windows Service",
+        "slug": "windows-service",
+        "type": "Process Daemon",
+        "description": "Enterprise Windows background service supervision via Service Control Manager (SC) or NSSM."
+      }
+    ],
+    "cicd": [
+      {
+        "name": "GitHub Actions (VPS)",
+        "slug": "github-actions",
+        "type": "CI/CD Platform",
+        "description": "Cloud-native workflow automation for automated linting, unit testing, docker building, and deployment."
+      }
+    ],
+    "monitoring": [
+      {
+        "name": "Prometheus",
+        "slug": "prometheus",
+        "type": "Metrics Store",
+        "description": "Time-series database for scraping application telemetry, request counts, response latency, and memory usage."
+      },
+      {
+        "name": "Grafana",
+        "slug": "grafana",
+        "type": "Dashboard Visualization",
+        "description": "Rich visualization dashboards for monitoring application KPIs, server resources, and alert statuses."
+      },
+      {
+        "name": "Uptime Kuma",
+        "slug": "uptime-kuma",
+        "type": "Uptime Monitoring",
+        "description": "Self-hosted monitoring tool for HTTP ping, port checks, and multi-channel alerting (Slack, Telegram, Email)."
+      },
+      {
+        "name": "Health Checks (/healthz, /readyz)",
+        "slug": "health-checks",
+        "type": "Standard Endpoint",
+        "description": "Standardized liveness and readiness endpoints checking database connectivity and service dependencies."
+      },
+      {
+        "name": "OpenTelemetry (OTel)",
+        "slug": "opentelemetry-apm",
+        "type": "APM & Tracing",
+        "description": "Unified open standard for distributed tracing across services and latency bottleneck identification."
+      }
+    ],
+    "security": [
+      {
+        "name": "JWT (JSON Web Token)",
+        "slug": "jwt",
+        "type": "Authentication",
+        "description": "Stateless token authentication with signed claims, short expiration time, and refresh token rotation."
+      },
+
+      {
+        "name": "RBAC & Permissions",
+        "slug": "rbac",
+        "type": "Authorization",
+        "description": "Role-Based Access Control and fine-grained capability checks enforced at middleware and handler levels."
+      },
+      {
+        "name": "Argon2id & Bcrypt",
+        "slug": "password-hashing",
+        "type": "Password Hashing",
+        "description": "Cryptographically secure, adaptive salted password hashing resistant to GPU brute-force attacks."
+      },
+      {
+        "name": "Rate Limiting & OWASP Defense",
+        "slug": "rate-limiting-owasp",
+        "type": "Application Defense",
+        "description": "Endpoint rate limiting, parameterized queries against SQLi, CSP headers against XSS, and CSRF protection."
       }
     ]
   },
@@ -201,10 +483,9 @@
       "projectStructure": "Controllers -> Services -> Repositories -> Database",
       "dependencyRules": "Upper layers depend on lower layer interfaces; data access is decoupled from controllers.",
       "recommendedTech": [
-        "Go",
-        "NestJS",
         "ASP.NET Core",
-        "Spring Boot",
+        "NestJS",
+        "Express.js",
         "Laravel"
       ]
     },
@@ -214,7 +495,7 @@
       "useCase": "Complex domain logic, long-lifecycle systems needing framework independence and testability.",
       "projectStructure": "Domain -> Use Cases -> Interface Adapters -> Frameworks & Drivers",
       "dependencyRules": "Source code dependencies point inwards only. Domain entities know nothing of external systems.",
-      "recommendedTech": ["Go", "TypeScript", "C# / .NET", "Java / Kotlin"]
+      "recommendedTech": ["C# / .NET", "TypeScript / Node.js", "PHP / Laravel"]
     },
     {
       "name": "Modular Monolith",
@@ -222,20 +503,384 @@
       "useCase": "Scaling development across multiple teams while avoiding premature microservices complexity.",
       "projectStructure": "Modules / [ModuleA, ModuleB, ModuleC] / Shared Kernel",
       "dependencyRules": "Modules only interact via public contracts/interfaces or asynchronous events.",
-      "recommendedTech": ["Next.js", "NestJS", "Go", ".NET", "Spring Boot"]
+      "recommendedTech": ["Next.js", "NestJS", ".NET", "Laravel"]
     }
   ],
+  "versioningStandard": {
+    "semanticVersioning": {
+      "standard": "Semantic Versioning 2.0.0 (SemVer)",
+      "format": "MAJOR.MINOR.PATCH[-PRERELEASE][+BUILD] (misal: v0.1.0-alpha.1, v1.0.0)",
+      "rules": {
+        "major": "Dinaikkan jika membuat perubahan API yang tidak kompatibel ke belakang (breaking changes).",
+        "minor": "Dinaikkan jika menambahkan fitur baru yang tetap kompatibel ke belakang.",
+        "patch": "Dinaikkan jika membuat perbaikan bug atau patch keamanan yang kompatibel ke belakang."
+      },
+      "zeroMajorRule": {
+        "title": "Tahap Awal Pengembangan Proyek (v0.y.z)",
+        "description": "Sesuai SemVer 2.0.0 (Klausul 4), versi Mayor nol (0.y.z) diperuntukkan bagi tahap awal pengembangan software. Versi dimulai dari v0.1.0-alpha.1. API publik belum dianggap stabil dan dapat berubah sewaktu-waktu sebelum rilis v1.0.0.",
+        "progression": "v0.1.0-alpha.1 ➔ v0.1.0-beta.1 ➔ v0.1.0-rc.1 ➔ v0.1.0 ➔ v0.2.0-alpha.1 ➔ ... ➔ v1.0.0-rc.1 ➔ v1.0.0 (Stabil GA)"
+      },
+      "lifecycleStages": [
+        {
+          "stage": "Alpha",
+          "tag": "-alpha.N",
+          "example": "v0.1.0-alpha.1",
+          "badge": "Fase Alpha",
+          "color": "amber",
+          "audience": "Developer Internal & Tim QA Inti",
+          "stability": "Eksperimental / Awal Pengembangan",
+          "environment": "Development / Lokal / Sandbox",
+          "description": "Tahap aktif pembuatan fitur awal sejak awal pembangunan struktur proyek (v0.1.0-alpha.1). Fitur mungkin belum lengkap, API bersifat eksperimental dan dapat berubah tanpa pemberitahuan sebelumnya, serta logging debug aktif.",
+          "bestPractices": [
+            "Proyek baru dimulai dari v0.1.0-alpha.1 untuk modul atau prototipe pertama.",
+            "Dibuat secara otomatis oleh pipeline CI dari branch fitur aktif atau build harian.",
+            "Dibatasi ketat hanya untuk pengujian internal developer & QA; tidak boleh diekspos ke klien.",
+            "Perubahan breaking changes sepenuhnya diizinkan dalam revisi alpha."
+          ]
+        },
+        {
+          "stage": "Beta",
+          "tag": "-beta.N",
+          "example": "v0.1.0-beta.1",
+          "badge": "Fase Beta",
+          "color": "blue",
+          "audience": "QA Engineer, Tester UAT, Pengguna Awal",
+          "stability": "Fitur Lengkap (Freeze) / Validasi",
+          "environment": "Lingkungan Staging / UAT",
+          "description": "Seluruh ruang lingkup fitur yang direncanakan telah selesai dibuat dan digabungkan (Feature Freeze). Fokus beralih ke pencarian bug, profiling performa, pengujian integrasi, dan umpan balik pengguna.",
+          "bestPractices": [
+            "Feature Freeze diterapkan ketat: tidak ada penambahan fitur baru atau refactor besar.",
+            "Dideploy ke Staging / UAT untuk proses persetujuan dan verifikasi stakeholder.",
+            "Bug yang ditemukan diperbaiki dan dirilis dengan nomor tag beta berikutnya (misal v0.1.0-beta.2)."
+          ]
+        },
+        {
+          "stage": "Release Candidate (RC)",
+          "tag": "-rc.N",
+          "example": "v0.1.0-rc.1",
+          "badge": "Kandidat Rilis (RC)",
+          "color": "purple",
+          "audience": "Lead QA, DevOps, Auditor Keamanan, Product Owner",
+          "stability": "Mendekati 100% Siap Produksi",
+          "environment": "Pre-Production / Mirror Staging",
+          "description": "Build kandidat final yang diyakini telah siap masuk ke lingkungan produksi. Diuji menggunakan data riil tiruan produksi, pemindaian keamanan, dan simulasi beban kerja puncak sebelum dipromosikan.",
+          "bestPractices": [
+            "Hanya perbaikan bug regresi kritis atau patch keamanan tingkat tinggi yang diizinkan.",
+            "Jika ada perubahan kode, nomor RC baru wajib di-tag (misal v0.1.0-rc.2).",
+            "Wajib mendapatkan persetujuan akhir (sign-off) dari Lead QA dan Product Owner sebelum rilis stabil."
+          ]
+        },
+        {
+          "stage": "Stabil (Ketersediaan Umum / GA)",
+          "tag": "vX.Y.Z",
+          "example": "v1.0.0",
+          "badge": "Rilis Stabil Resmi (GA)",
+          "color": "emerald",
+          "audience": "Seluruh Klien Produksi & Pengguna Publik",
+          "stability": "SLA Produksi / Terverifikasi Penuh",
+          "environment": "Lingkungan Produksi (Live)",
+          "description": "Rilis resmi produksi yang telah lolos seluruh pengujian pada siklus RC. Menandai peralihan dari tahap pengembangan awal (v0.y.z) menuju garansi kompatibilitas ke belakang dan SLA produksi resmi (v1.0.0+).",
+          "bestPractices": [
+            "v0.1.0 mendefinisikan baseline stabil internal untuk modul pertama yang selesai.",
+            "v1.0.0 mendefinisikan standar baseline API publik resmi untuk lingkungan produksi.",
+            "Di-tag langsung pada branch main / release setelah versi RC lolos seluruh kriteria.",
+            "Disertai dengan Catatan Rilis (Release Notes), Panduan Migrasi, dan Changelog otomatis.",
+            "Tag Git bersifat immutable (tidak boleh diubah atau ditimpa setelah di-push)."
+          ]
+        }
+      ],
+      "versionPrecedence": [
+        "0.1.0-alpha.1 < 0.1.0-beta.1 < 0.1.0-rc.1 < 0.1.0 < 1.0.0-rc.1 < 1.0.0 < 1.0.1"
+      ]
+    },
+    "apiVersioning": {
+      "strategy": "URI Path Versioning (Recommended)",
+      "uriPattern": "/api/v1/{resource}, /api/v2/{resource}",
+      "headerAlternative": "X-API-Version or Accept: application/vnd.company.v1+json",
+      "deprecationPolicy": "Provide a minimum 6-month deprecation notice before sunsetting old versions with 'Sunset' and 'Deprecation' HTTP headers.",
+      "guidelines": [
+        "Never introduce breaking changes to existing versioned endpoints without bumping the major version.",
+        "Adding new optional fields to existing response payloads is backward-compatible and does not require version bump.",
+        "Maintain backward compatibility for at least 1 previous major version during migration windows."
+      ]
+    },
+    "gitBranching": {
+      "model": "Git Flow / Feature Branch Workflow",
+      "branches": [
+        {
+          "name": "main / master",
+          "purpose": "Production-ready, thoroughly verified code. Direct pushes are strictly prohibited.",
+          "protection": "Branch protection enabled, code review required, automated CI checks must pass."
+        },
+        {
+          "name": "staging / develop",
+          "purpose": "Integration branch for QA testing, staging verification, and pre-release acceptance.",
+          "protection": "Automated build & test CI checks must pass."
+        },
+        {
+          "name": "feature/*",
+          "purpose": "Branch for developing specific features, branched from develop/main.",
+          "naming": "feature/issue-123-user-auth"
+        },
+        {
+          "name": "fix/* / hotfix/*",
+          "purpose": "Branch for urgent bug fixes on production or staging environments.",
+          "naming": "hotfix/v1.0.1-login-patch"
+        },
+        {
+          "name": "release/*",
+          "purpose": "Release preparation branch for final stabilization, version bumping, and changelog generation.",
+          "naming": "release/v1.1.0"
+        }
+      ]
+    },
+    "commitConvention": {
+      "standard": "Conventional Commits 1.0.0",
+      "format": "<type>(<scope>): <subject>",
+      "types": [
+        { "type": "feat", "description": "A new feature or capability" },
+        { "type": "fix", "description": "A bug fix" },
+        { "type": "docs", "description": "Documentation only changes" },
+        {
+          "type": "style",
+          "description": "Changes that do not affect code meaning (formatting, whitespace)"
+        },
+        {
+          "type": "refactor",
+          "description": "Code change that neither fixes a bug nor adds a feature"
+        },
+        {
+          "type": "perf",
+          "description": "Code change that improves performance"
+        },
+        {
+          "type": "test",
+          "description": "Adding missing tests or correcting existing tests"
+        },
+        {
+          "type": "build",
+          "description": "Changes that affect the build system or external dependencies"
+        },
+        {
+          "type": "ci",
+          "description": "Changes to CI/CD configuration files and scripts"
+        },
+        {
+          "type": "chore",
+          "description": "Routine repository maintenance or auxiliary tooling changes"
+        }
+      ],
+      "examples": [
+        "feat(auth): implement refresh token rotation",
+        "fix(payment): resolve precision rounding in invoice calculation",
+        "docs(api): update swagger documentation for project endpoints"
+      ]
+    }
+  },
+  "errorHandlingStandard": {
+    "standardEnvelope": {
+      "successFormat": {
+        "success": true,
+        "code": 200,
+        "message": "Operation completed successfully",
+        "data": {},
+        "meta": {
+          "page": 1,
+          "pageSize": 10,
+          "total": 100
+        }
+      },
+      "errorFormat": {
+        "success": false,
+        "code": 400,
+        "message": "Validation failed on submitted payload",
+        "errors": [
+          {
+            "field": "email",
+            "message": "Email is already registered"
+          }
+        ],
+        "errorCode": "ERR_VALIDATION_FAILED",
+        "traceId": "0af7651916cd43dd8448eb211c80319c",
+        "timestamp": "2026-08-26T09:10:00.000Z"
+      }
+    },
+    "problemDetailsRFC7807": {
+      "description": "RFC 7807 Problem Details specification for standardizing machine-readable HTTP error payloads.",
+      "format": {
+        "type": "https://api.example.com/errors/not-found",
+        "title": "Resource Not Found",
+        "status": 404,
+        "detail": "Project with ID 42 could not be found.",
+        "instance": "/api/v1/projects/42",
+        "traceId": "0af7651916cd43dd8448eb211c80319c"
+      }
+    },
+    "httpStatusCodes": [
+      {
+        "code": 200,
+        "name": "OK",
+        "usage": "Standard successful GET, PUT, PATCH request."
+      },
+      {
+        "code": 201,
+        "name": "Created",
+        "usage": "Resource successfully created via POST."
+      },
+      {
+        "code": 204,
+        "name": "No Content",
+        "usage": "Successful request with no response body (DELETE)."
+      },
+      {
+        "code": 400,
+        "name": "Bad Request",
+        "usage": "Malformed JSON syntax, invalid query parameters, or business rule violation."
+      },
+      {
+        "code": 401,
+        "name": "Unauthorized",
+        "usage": "Authentication missing, invalid JWT, or expired token."
+      },
+      {
+        "code": 403,
+        "name": "Forbidden",
+        "usage": "Authenticated user lacks permissions / role to access the resource."
+      },
+      {
+        "code": 404,
+        "name": "Not Found",
+        "usage": "The requested entity or endpoint does not exist."
+      },
+      {
+        "code": 409,
+        "name": "Conflict",
+        "usage": "State conflict (duplicate unique key, concurrent edit conflict)."
+      },
+      {
+        "code": 422,
+        "name": "Unprocessable Entity",
+        "usage": "Payload validation failed (invalid field formats, missing required fields)."
+      },
+      {
+        "code": 429,
+        "name": "Too Many Requests",
+        "usage": "Rate limit quota exceeded."
+      },
+      {
+        "code": 500,
+        "name": "Internal Server Error",
+        "usage": "Unhandled exception on server (never expose stack traces in production)."
+      },
+      {
+        "code": 502,
+        "name": "Bad Gateway",
+        "usage": "Upstream server or reverse proxy error."
+      },
+      {
+        "code": 503,
+        "name": "Service Unavailable",
+        "usage": "Server overloaded or undergoing maintenance."
+      },
+      {
+        "code": 504,
+        "name": "Gateway Timeout",
+        "usage": "Upstream service response timed out."
+      }
+    ],
+    "rules": [
+      "Catch all unhandled exceptions with a centralized global exception handler / middleware.",
+      "Always return consistent JSON envelope for both success and error responses.",
+      "Include traceId / correlationId in all error responses for instant log tracing.",
+      "Never leak stack traces, database credentials, or internal query text in production responses.",
+      "Validate all request inputs at the edge/controller layer before invoking business services."
+    ]
+  },
+  "testingStandard": {
+    "testPyramid": [
+      {
+        "layer": "Unit Tests",
+        "percentage": "60% - 70%",
+        "scope": "Fast, isolated tests validating individual functions, methods, domain logic, and validation rules using mocks for external dependencies."
+      },
+      {
+        "layer": "Integration Tests",
+        "percentage": "20% - 30%",
+        "scope": "Validating interactions between components (Controllers, Services, Repositories, Database, Caching, and Message Queues) using ephemeral databases / Testcontainers."
+      },
+      {
+        "layer": "End-to-End (E2E) Tests",
+        "percentage": "10%",
+        "scope": "Validating end-to-end user workflows, critical UI journeys, and complete API transaction flows in a staging-like environment."
+      }
+    ],
+    "coverageTarget": {
+      "domainAndService": ">= 80% code coverage",
+      "overallApplication": ">= 70% code coverage",
+      "criticalModules": ">= 90% (Financial, Authentication, Access Control)"
+    },
+    "stackTooling": [
+      {
+        "stack": ".NET (C#)",
+        "unit": "xUnit / NUnit, FluentAssertions",
+        "mocking": "Moq / NSubstitute",
+        "integration": "WebApplicationFactory, Testcontainers.MsSql / Testcontainers.PostgreSql",
+        "e2e": "Playwright .NET"
+      },
+      {
+        "stack": "PHP (Laravel)",
+        "unit": "PHPUnit, Pest PHP",
+        "mocking": "Mockery, Laravel built-in fakes",
+        "integration": "Laravel HTTP Tests, RefreshDatabase",
+        "e2e": "Laravel Dusk, Cypress"
+      },
+      {
+        "stack": "Node.js / TypeScript (NestJS / Express)",
+        "unit": "Jest, Vitest",
+        "mocking": "Jest mocks, sinon",
+        "integration": "Supertest, Testcontainers-node",
+        "e2e": "Playwright, Cypress"
+      }
+    ],
+    "bestPractices": [
+      "Follow Arrange-Act-Assert (AAA) or Given-When-Then test structure.",
+      "Keep tests deterministic, independent, and runnable in any order.",
+      "Avoid testing third-party library internals; test application domain contracts.",
+      "Execute unit and integration tests automatically on every Pull Request in CI.",
+      "Use test factories / builders (e.g. Bogus, FactoryBot) for realistic fixture data."
+    ]
+  },
   "deploymentCatalog": [
+    {
+      "name": "Local Development",
+      "description": "Standardized local workstation environment setups for developers ensuring fast feedback loop and minimal setup friction.",
+      "useCase": "Day-to-day coding, unit testing, debugging, and feature development.",
+      "requirements": [
+        "SDK / Runtime (.NET 8+, Node 20+, PHP 8.2+)",
+        "Docker Desktop / Colima for backing services (Postgres, MySQL, Redis)",
+        "Git",
+        "VS Code / Cursor / Visual Studio"
+      ],
+      "deploymentFlow": "git clone ➔ copy .env.example to .env ➔ docker compose up -d (db, redis) ➔ run database migrations ➔ run local dev server",
+      "advantages": [
+        "Instant hot reload and live debugging",
+        "Zero cloud cost for development",
+        "Fast test execution"
+      ],
+      "disadvantages": [
+        "Potential developer OS inconsistencies if dependencies are installed directly on host"
+      ]
+    },
     {
       "name": "Docker",
       "description": "Container platform providing lightweight virtualization to package applications and dependencies into standardized containers.",
       "useCase": "Local development, reproducible testing environments, and standard deployment artifacts.",
-      "requirements": ["Docker Engine", "Dockerfile"],
-      "deploymentFlow": "Code -> Build Image -> Tag -> Push to Registry -> Run Container",
+      "requirements": ["Docker Engine", "Dockerfile", ".dockerignore"],
+      "deploymentFlow": "Code ➔ Build Image ➔ Tag ➔ Push to Registry ➔ Run Container",
       "advantages": [
         "Consistency across environments",
-        "Isolation",
-        "Fast startup"
+        "Process isolation",
+        "Fast startup and rollback"
       ],
       "disadvantages": [
         "Overhead vs bare metal",
@@ -246,8 +891,12 @@
       "name": "Docker Compose",
       "description": "Multi-container orchestration tool for defining and running multi-container Docker applications via YAML specification.",
       "useCase": "Small to medium self-hosted deployments, staging environments, developer local setups.",
-      "requirements": ["Docker Compose CLI", "docker-compose.yml"],
-      "deploymentFlow": "Git Pull -> docker compose up -d --build",
+      "requirements": [
+        "Docker Compose CLI",
+        "docker-compose.yml",
+        "Environment configuration (.env)"
+      ],
+      "deploymentFlow": "Git Pull ➔ Configure .env ➔ docker compose up -d --build",
       "advantages": [
         "Simple single-file configuration",
         "Built-in networking and volumes",
@@ -255,6 +904,47 @@
       ],
       "disadvantages": [
         "Limited automated scaling and zero-downtime rolling updates compared to K8s"
+      ]
+    },
+    {
+      "name": "VPS / Bare-Metal Deployment",
+      "description": "Deploying directly on Virtual Private Servers (VPS - e.g. Ubuntu / Debian / Windows Server) using systemd or Windows Service with Nginx / Caddy reverse proxy and Let's Encrypt SSL.",
+      "useCase": "Cost-effective production hosting for small-to-medium systems, enterprise on-premise servers, or dedicated infrastructure.",
+      "requirements": [
+        "Linux VPS (Ubuntu/Debian) / Windows Server",
+        "systemd unit file / Windows Service (sc / nssm)",
+        "Nginx / Caddy Reverse Proxy",
+        "Certbot SSL (Let's Encrypt)"
+      ],
+      "deploymentFlow": "Provision VPS ➔ Setup User & Firewall (UFW) ➔ Deploy Binary/Code ➔ Configure systemd daemon ➔ Setup Nginx Reverse Proxy with SSL ➔ Enable auto-start on boot",
+      "advantages": [
+        "Maximum raw hardware performance without virtualization overhead",
+        "Full root control over server resources and networking",
+        "Very low operational cost for standard workloads"
+      ],
+      "disadvantages": [
+        "Manual server patching and maintenance required",
+        "Host environment configuration drift if not automated with Ansible"
+      ]
+    },
+    {
+      "name": "CI/CD Automation Pipeline",
+      "description": "Automated Continuous Integration and Continuous Deployment workflows using GitHub Actions, GitLab CI, or Jenkins. Optional for standalone VPS setups, highly recommended for team collaboration.",
+      "useCase": "Automating test suites, linting, build checks, and auto-deploying code on merge to main/staging branches.",
+      "requirements": [
+        "CI/CD Provider (GitHub Actions / GitLab CI)",
+        "CI Workflow YAML (.github/workflows)",
+        "Deployment Secrets (SSH Key / API Token / Webhook)",
+        "Server Runner or SSH Deploy Agent"
+      ],
+      "deploymentFlow": "Git Push / PR ➔ Lint & Test Automation ➔ Build Artifact/Image ➔ (Optional on VPS) SSH Deploy / Webhook Trigger ➔ Health Check Verification",
+      "advantages": [
+        "Guaranteed automated testing before merging",
+        "Zero-click automated deployment",
+        "Eliminates human deployment mistakes"
+      ],
+      "disadvantages": [
+        "Optional complexity for single-server VPS setups where manual deploy or simple script suffices"
       ]
     },
     {
@@ -280,7 +970,7 @@
     {
       "name": "Linux Service (systemd)",
       "description": "System and service manager for Linux operating systems providing process supervision and logging.",
-      "useCase": "Bare-metal or VPS Linux deployments for compiled binaries (Go, Rust, .NET Core) or Node daemons.",
+      "useCase": "Bare-metal or VPS Linux deployments for compiled binaries (.NET Core) or PHP-FPM / Node daemons.",
       "requirements": ["Linux OS with systemd", "systemd unit file (.service)"],
       "deploymentFlow": "Copy binary -> Write /etc/systemd/system/app.service -> systemctl daemon-reload -> systemctl enable --now app",
       "advantages": [
@@ -380,6 +1070,159 @@
         "field": "Exception",
         "type": "Object / Null",
         "example": "{ type, message, stackTrace }"
+      }
+    ],
+    "frameworkImplementations": [
+      {
+        "framework": ".NET (ASP.NET Core)",
+        "slug": "dotnet",
+        "library": "Serilog.AspNetCore, Serilog.Sinks.File, Serilog.Sinks.Seq",
+        "description": "Structured JSON logging using Serilog with Enrichers, correlation tracking, and request logging middleware.",
+        "configuration": "Program.cs / appsettings.json",
+        "codeSnippet": "Log.Logger = new LoggerConfiguration()\n    .ReadFrom.Configuration(builder.Configuration)\n    .Enrich.FromLogContext()\n    .Enrich.WithProperty(\"Service\", \"project-management-api\")\n    .WriteTo.Console(new JsonFormatter())\n    .WriteTo.File(new JsonFormatter(), \"logs/app-.json\", rollingInterval: RollingInterval.Day)\n    .CreateLogger();\n\nbuilder.Host.UseSerilog();\napp.UseSerilogRequestLogging();",
+        "features": [
+          "Structured log parameters (e.g., Log.Information(\"Project {ProjectId} created by {UserId}\", id, userId))",
+          "Automated HTTP request lifecycle & duration logging via UseSerilogRequestLogging()",
+          "Correlation ID enrichment using Serilog.Context.LogContext",
+          "Sensitive data masking / PII sanitization in output sinks"
+        ]
+      },
+      {
+        "framework": "Laravel / PHP",
+        "slug": "laravel",
+        "library": "Monolog (Native Laravel Logging)",
+        "description": "PSR-3 structured JSON logging integrated in Laravel with daily file rotation and context middleware.",
+        "configuration": "config/logging.php",
+        "codeSnippet": "// config/logging.php\n'channels' => [\n    'daily' => [\n        'driver' => 'daily',\n        'path' => storage_path('logs/laravel.json'),\n        'level' => env('LOG_LEVEL', 'debug'),\n        'days' => 14,\n        'formatter' => Monolog\\Formatter\\JsonFormatter::class,\n    ],\n];\n\n// Usage in Controller / Service\nLog::withContext([\n    'correlation_id' => $request->header('X-Correlation-ID', (string) Str::uuid()),\n    'user_id' => auth()->id(),\n]);\nLog::info('Project created successfully', ['project_id' => $project->id]);",
+        "features": [
+          "Native PSR-3 logger with Monolog\\Formatter\\JsonFormatter",
+          "Daily rotating log files with configurable retention window",
+          "Global Middleware context injection via Log::withContext()",
+          "Centralized exception reporting in bootstrap/app.php"
+        ]
+      },
+      {
+        "framework": "NestJS",
+        "slug": "nestjs",
+        "library": "nest-winston, winston, winston-daily-rotate-file",
+        "description": "Enterprise structured JSON logger replacing NestJS default logger with contextual class tagging and interceptors.",
+        "configuration": "main.ts / app.module.ts",
+        "codeSnippet": "// main.ts\nimport { WinstonModule } from 'nest-winston';\nimport * as winston from 'winston';\nimport 'winston-daily-rotate-file';\n\nconst app = await NestFactory.create(AppModule, {\n  logger: WinstonModule.createLogger({\n    transports: [\n      new winston.transports.Console({\n        format: winston.format.combine(\n          winston.format.timestamp(),\n          winston.format.json()\n        ),\n      }),\n      new winston.transports.DailyRotateFile({\n        filename: 'logs/nest-%DATE%.json',\n        datePattern: 'YYYY-MM-DD',\n        maxFiles: '14d',\n        format: winston.format.json(),\n      }),\n    ],\n  }),\n});",
+        "features": [
+          "Custom LoggerService replacement across dependency injection tree",
+          "Contextual class/method tagging with Logger.name",
+          "Global LoggingInterceptor for request/response latency measurement",
+          "AsyncLocalStorage for request-scoped correlation ID propagation"
+        ]
+      },
+      {
+        "framework": "Express.js",
+        "slug": "express",
+        "library": "pino, pino-http, uuid",
+        "description": "Ultra-fast JSON structured logger for Express.js with automatic HTTP request/response serialization.",
+        "configuration": "server.js / app.js",
+        "codeSnippet": "// server.js\nconst pino = require('pino');\nconst pinoHttp = require('pino-http');\nconst { v4: uuidv4 } = require('uuid');\n\nconst logger = pino({\n  level: process.env.LOG_LEVEL || 'info',\n  timestamp: pino.stdTimeFunctions.isoTime,\n});\n\napp.use(pinoHttp({\n  logger,\n  genReqId: (req) => req.headers['x-request-id'] || uuidv4(),\n  serializers: {\n    req: (req) => ({ id: req.id, method: req.method, url: req.url }),\n    res: (res) => ({ statusCode: res.statusCode }),\n  },\n}));\n\n// In Route Handler\napp.post('/api/v1/projects', (req, res) => {\n  req.log.info({ projectId: project.id }, 'Project created successfully');\n  res.status(201).json(project);\n});",
+        "features": [
+          "Zero-overhead high-speed JSON serialization using Pino",
+          "Automatic HTTP request & response payload logger middleware",
+          "Built-in Correlation / Request ID generator per connection",
+          "Automatic header and parameter redaction (Authorization, Passwords)"
+        ]
+      }
+    ]
+  },
+  "monitoringStandard": {
+    "pillars": [
+      {
+        "pillar": "Health Checks",
+        "description": "Standardized /healthz (liveness) and /readyz (readiness) endpoints verifying application runtime, database connection, and dependent services."
+      },
+      {
+        "pillar": "Application Metrics",
+        "description": "Continuous telemetry measuring request throughput (RPS), error rates (5xx), latency percentiles (p50, p95, p99), and host CPU/memory consumption."
+      },
+      {
+        "pillar": "Distributed Tracing",
+        "description": "End-to-end request tracing across distributed services using OpenTelemetry and W3C TraceContext headers."
+      },
+      {
+        "pillar": "Centralized Log Aggregation",
+        "description": "Real-time streaming and indexing of structured JSON logs into centralized log stores (Elasticsearch / Seq / Grafana Loki)."
+      },
+      {
+        "pillar": "Uptime & Synthetic Monitoring",
+        "description": "External heartbeat probes (Uptime Kuma, Better Uptime) continuously checking service uptime and TLS certificate expiration."
+      }
+    ],
+    "standardEndpoints": [
+      {
+        "endpoint": "/healthz",
+        "method": "GET",
+        "purpose": "Liveness probe: verifies that the server process is alive and responsive."
+      },
+      {
+        "endpoint": "/readyz",
+        "method": "GET",
+        "purpose": "Readiness probe: verifies database, cache, and queue connections before routing traffic."
+      },
+      {
+        "endpoint": "/metrics",
+        "method": "GET",
+        "purpose": "Prometheus metric scraping endpoint exposing performance counters, gauges, and histograms."
+      }
+    ],
+    "tools": [
+      {
+        "name": "Prometheus",
+        "type": "Metrics Store",
+        "description": "Time-series database for scraping application and host metrics."
+      },
+      {
+        "name": "Grafana",
+        "type": "Visualization",
+        "description": "Comprehensive dashboards for visualizing metrics, traces, and system health."
+      },
+      {
+        "name": "OpenTelemetry (OTel)",
+        "type": "Observability Standard",
+        "description": "Vendor-neutral open standard for collecting and exporting traces and metrics."
+      },
+      {
+        "name": "Uptime Kuma",
+        "type": "Uptime Monitoring",
+        "description": "Self-hosted monitoring tool for HTTP, ping, and port uptime verification with alerts."
+      },
+      {
+        "name": "Seq / ELK Stack",
+        "type": "Log Analytics",
+        "description": "Centralized search, filtering, and analysis for structured JSON logs."
+      }
+    ],
+    "alertingRules": [
+      {
+        "severity": "Critical",
+        "condition": "HTTP 5xx error rate > 5% for 3 consecutive minutes",
+        "action": "Instant Slack/Telegram notification and on-call paging."
+      },
+      {
+        "severity": "High",
+        "condition": "Server CPU or Memory usage > 85% sustained for 10 minutes",
+        "action": "Alert channel notification for resource scaling review."
+      },
+      {
+        "severity": "High",
+        "condition": "Database connection pool exhaustion (> 90% in-use)",
+        "action": "Alert channel notification."
+      },
+      {
+        "severity": "Medium",
+        "condition": "p95 API response latency > 1500ms for 5 minutes",
+        "action": "Warning notification for performance review."
+      },
+      {
+        "severity": "Warning",
+        "condition": "SSL Certificate expiring in less than 14 days",
+        "action": "Automated renewal check and warning notification."
       }
     ]
   },

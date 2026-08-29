@@ -1,4 +1,5 @@
 import api from '@/lib/axios';
+import standardsDataJson from '@/data/standards.json';
 import {
   StandardsData,
   StandardCategory,
@@ -7,6 +8,10 @@ import {
   DeploymentItem,
   LoggingStandard,
   SecurityStandard,
+  VersioningStandard,
+  ErrorHandlingStandard,
+  TestingStandard,
+  MonitoringStandard,
   DotnetTechnologyRelationship,
 } from '../types/standard.types';
 
@@ -22,14 +27,7 @@ export const standardService = {
       const response = await api.get<ApiResponse<StandardsData>>('/standards');
       return response.data.data;
     } catch {
-      return {
-        categories: [],
-        technology: { frontend: [], backend: [], mobile: [], database: [], supporting: [] },
-        architecture: [],
-        deployment: [],
-        logging: { principles: [], levels: [], standard_fields: [], guidelines: [] },
-        security: { principles: [], practices: [], sensitive_data: [] },
-      };
+      return standardsDataJson as unknown as StandardsData;
     }
   },
 
@@ -74,7 +72,7 @@ export const standardService = {
       const response = await api.get<ApiResponse<LoggingStandard>>('/standards/logging');
       return response.data.data;
     } catch {
-      return { principles: [], levels: [], standard_fields: [], guidelines: [] };
+      return { format: '', levels: [], categories: [], standardFields: [] };
     }
   },
 
@@ -83,7 +81,43 @@ export const standardService = {
       const response = await api.get<ApiResponse<SecurityStandard>>('/standards/security');
       return response.data.data;
     } catch {
-      return { principles: [], practices: [], sensitive_data: [] };
+      return { authentication: [], authorization: [], applicationSecurity: [], secretManagement: { rules: [], prohibitedInSource: [] } };
+    }
+  },
+
+  getVersioningStandard: async (): Promise<VersioningStandard> => {
+    try {
+      const response = await api.get<ApiResponse<VersioningStandard>>('/standards/versioning');
+      return response.data.data;
+    } catch {
+      return (standardsDataJson as unknown as StandardsData).versioningStandard;
+    }
+  },
+
+  getErrorHandlingStandard: async (): Promise<ErrorHandlingStandard> => {
+    try {
+      const response = await api.get<ApiResponse<ErrorHandlingStandard>>('/standards/error-handling');
+      return response.data.data;
+    } catch {
+      return (standardsDataJson as unknown as StandardsData).errorHandlingStandard;
+    }
+  },
+
+  getTestingStandard: async (): Promise<TestingStandard> => {
+    try {
+      const response = await api.get<ApiResponse<TestingStandard>>('/standards/testing');
+      return response.data.data;
+    } catch {
+      return (standardsDataJson as unknown as StandardsData).testingStandard;
+    }
+  },
+
+  getMonitoringStandard: async (): Promise<MonitoringStandard> => {
+    try {
+      const response = await api.get<ApiResponse<MonitoringStandard>>('/standards/monitoring');
+      return response.data.data;
+    } catch {
+      return (standardsDataJson as unknown as StandardsData).monitoringStandard;
     }
   },
 
@@ -92,19 +126,7 @@ export const standardService = {
       const response = await api.get<ApiResponse<DotnetTechnologyRelationship>>(`/standards/technology/${slug}`);
       return response.data.data;
     } catch {
-      return {
-        title: '',
-        subtitle: '',
-        stack: [],
-        architecture: [],
-        key_capabilities: [],
-        testing: [],
-        database: [],
-        telemetry: [],
-        security: [],
-        best_practices: [],
-        summary: [],
-      };
+      return {} as DotnetTechnologyRelationship;
     }
   },
 

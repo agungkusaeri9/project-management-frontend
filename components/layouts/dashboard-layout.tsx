@@ -149,6 +149,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           children: [
             { name: 'Customers', href: '/dashboard/customers' },
             { name: 'Users', href: '/dashboard/users' },
+            { name: 'Master Template UAT', href: '/dashboard/uat-templates' },
           ],
         },
       ],

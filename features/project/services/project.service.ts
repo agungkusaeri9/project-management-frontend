@@ -39,5 +39,24 @@ export const projectService = {
   delete: async (id: string) => {
     const response = await api.delete(`/projects/${id}`);
     return response.data;
+  },
+
+  exportExcel: async (id: string, projectName?: string) => {
+    const response = await api.get(`/projects/${id}/export-excel`, {
+      responseType: 'blob',
+    });
+
+    const blob = new Blob([response.data], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    const cleanName = (projectName || 'Project').replace(/[^a-zA-Z0-9_\-]/g, '_');
+    link.setAttribute('download', `Project_${cleanName}.xlsx`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
   }
 };

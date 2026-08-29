@@ -1,4 +1,13 @@
-export type IconKey = 'layers' | 'network' | 'server' | 'file-text' | 'shield';
+export type IconKey =
+  | 'layers'
+  | 'network'
+  | 'server'
+  | 'file-text'
+  | 'shield'
+  | 'git-branch'
+  | 'alert-circle'
+  | 'check-circle'
+  | 'activity';
 
 export interface StandardCategory {
   id: string;
@@ -11,6 +20,7 @@ export interface StandardCategory {
 
 export interface TechnologyItem {
   name: string;
+  slug?: string;
   type: string;
   description: string;
   href?: string;
@@ -19,9 +29,18 @@ export interface TechnologyItem {
 export interface TechnologyCatalog {
   frontend: TechnologyItem[];
   backend: TechnologyItem[];
+  fullstack?: TechnologyItem[];
   mobile: TechnologyItem[];
   database: TechnologyItem[];
   supporting: TechnologyItem[];
+  logging?: TechnologyItem[];
+  versioning?: TechnologyItem[];
+  errorHandling?: TechnologyItem[];
+  testing?: TechnologyItem[];
+  deployment?: TechnologyItem[];
+  cicd?: TechnologyItem[];
+  monitoring?: TechnologyItem[];
+  security?: TechnologyItem[];
 }
 
 export interface ArchitectureItem {
@@ -54,11 +73,131 @@ export interface LogFieldItem {
   example: string;
 }
 
+export interface FrameworkLoggingItem {
+  framework: string;
+  slug: string;
+  library: string;
+  description: string;
+  configuration: string;
+  codeSnippet: string;
+  features: string[];
+}
+
 export interface LoggingStandard {
   format: string;
   levels: LogLevelItem[];
   categories: string[];
   standardFields: LogFieldItem[];
+  frameworkImplementations?: FrameworkLoggingItem[];
+}
+
+export interface SemVerLifecycleStage {
+  stage: string;
+  tag: string;
+  example: string;
+  badge: string;
+  color: string;
+  audience: string;
+  stability: string;
+  environment: string;
+  description: string;
+  bestPractices: string[];
+}
+
+export interface VersioningStandard {
+  semanticVersioning: {
+    standard: string;
+    format: string;
+    rules: {
+      major: string;
+      minor: string;
+      patch: string;
+    };
+    lifecycleStages?: SemVerLifecycleStage[];
+    versionPrecedence?: string[];
+  };
+  apiVersioning: {
+    strategy: string;
+    uriPattern: string;
+    headerAlternative: string;
+    deprecationPolicy: string;
+    guidelines: string[];
+  };
+  gitBranching: {
+    model: string;
+    branches: {
+      name: string;
+      purpose: string;
+      protection?: string;
+      naming?: string;
+    }[];
+  };
+  commitConvention: {
+    standard: string;
+    format: string;
+    types: { type: string; description: string }[];
+    examples: string[];
+  };
+}
+
+export interface ErrorHandlingStandard {
+  standardEnvelope: {
+    successFormat: Record<string, unknown>;
+    errorFormat: Record<string, unknown>;
+  };
+  problemDetailsRFC7807: {
+    description: string;
+    format: Record<string, unknown>;
+  };
+  httpStatusCodes: {
+    code: number;
+    name: string;
+    usage: string;
+  }[];
+  rules: string[];
+}
+
+export interface TestingStandard {
+  testPyramid: {
+    layer: string;
+    percentage: string;
+    scope: string;
+  }[];
+  coverageTarget: {
+    domainAndService: string;
+    overallApplication: string;
+    criticalModules: string;
+  };
+  stackTooling: {
+    stack: string;
+    unit: string;
+    mocking: string;
+    integration: string;
+    e2e: string;
+  }[];
+  bestPractices: string[];
+}
+
+export interface MonitoringStandard {
+  pillars: {
+    pillar: string;
+    description: string;
+  }[];
+  standardEndpoints: {
+    endpoint: string;
+    method: string;
+    purpose: string;
+  }[];
+  tools: {
+    name: string;
+    type: string;
+    description: string;
+  }[];
+  alertingRules: {
+    severity: string;
+    condition: string;
+    action: string;
+  }[];
 }
 
 export interface SecurityStandard {
@@ -86,6 +225,10 @@ export interface StandardsData {
   deploymentCatalog: DeploymentItem[];
   loggingStandard: LoggingStandard;
   securityStandard: SecurityStandard;
+  versioningStandard: VersioningStandard;
+  errorHandlingStandard: ErrorHandlingStandard;
+  testingStandard: TestingStandard;
+  monitoringStandard: MonitoringStandard;
 }
 
 export interface DotnetTechnologyRelationship {

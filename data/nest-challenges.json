@@ -1,0 +1,752 @@
+{
+  "id": "nestjs-challenges",
+  "title": "NestJS Real-World Engineering Challenges",
+  "subtitle": "Kumpulan tantangan berbasis problem nyata untuk membangun backend production-grade menggunakan NestJS dan TypeScript.",
+  "version": "1.0",
+  "categories": [
+    {
+      "id": "financial",
+      "label": "Banking & Financial Systems",
+      "count": 5
+    },
+    {
+      "id": "ecommerce",
+      "label": "E-Commerce",
+      "count": 4
+    },
+    {
+      "id": "high-traffic",
+      "label": "High Traffic & Performance",
+      "count": 5
+    },
+    {
+      "id": "distributed",
+      "label": "Distributed Systems",
+      "count": 5
+    },
+    {
+      "id": "messaging",
+      "label": "Messaging & Event-Driven",
+      "count": 4
+    },
+    {
+      "id": "resiliency",
+      "label": "Resiliency & Fault Tolerance",
+      "count": 4
+    },
+    {
+      "id": "security",
+      "label": "Security",
+      "count": 5
+    },
+    {
+      "id": "integration",
+      "label": "External Integration",
+      "count": 4
+    },
+    {
+      "id": "data",
+      "label": "Data Processing",
+      "count": 4
+    },
+    {
+      "id": "architecture",
+      "label": "Architecture",
+      "count": 5
+    }
+  ],
+  "challenges": [
+    {
+      "id": "ch-nestjs-idempotent-payment",
+      "title": "Idempotent Payment API",
+      "category": "financial",
+      "categoryLabel": "Banking & Financial Systems",
+      "difficulty": "HARD",
+      "severity": "CRITICAL",
+      "description": "Build a payment API using NestJS that safely handles duplicate requests without creating duplicate financial transactions.",
+      "scenario": "A client sends a payment request but does not receive the response because of a network timeout. The client retries the request multiple times.",
+      "requirements": [
+        "Accept an Idempotency-Key header.",
+        "Persist the idempotency key and transaction result.",
+        "Return the original result for duplicate requests.",
+        "Prevent concurrent requests with the same idempotency key.",
+        "Support multiple NestJS application instances."
+      ],
+      "technologies": ["NestJS", "TypeScript", "PostgreSQL", "Redis"],
+      "concepts": [
+        "Idempotency",
+        "Concurrency",
+        "Database Transactions",
+        "Distributed Lock"
+      ],
+      "successCriteria": [
+        "One payment request produces exactly one financial transaction.",
+        "Concurrent duplicate requests are handled safely.",
+        "The solution works across multiple API instances."
+      ],
+      "tags": ["Banking", "Payment", "Idempotency", "Concurrency"]
+    },
+    {
+      "id": "ch-nestjs-account-transfer",
+      "title": "Concurrent Account Transfer",
+      "category": "financial",
+      "categoryLabel": "Banking & Financial Systems",
+      "difficulty": "HARD",
+      "severity": "CRITICAL",
+      "description": "Build an account transfer service that maintains balance consistency when multiple transfers happen concurrently.",
+      "requirements": [
+        "Create debit and credit operations.",
+        "Use database transactions.",
+        "Prevent lost updates.",
+        "Handle concurrent requests.",
+        "Rollback the entire operation when one step fails."
+      ],
+      "concepts": [
+        "Concurrency",
+        "Transactions",
+        "Isolation Level",
+        "Row Locking",
+        "Race Condition"
+      ],
+      "successCriteria": [
+        "Account balances remain consistent.",
+        "Money cannot be duplicated or lost.",
+        "Failed transfers are completely rolled back."
+      ],
+      "tags": ["Banking", "Finance", "Concurrency", "PostgreSQL"]
+    },
+    {
+      "id": "ch-nestjs-financial-ledger",
+      "title": "Double-Entry Financial Ledger",
+      "category": "financial",
+      "categoryLabel": "Banking & Financial Systems",
+      "difficulty": "HARD",
+      "description": "Build a financial ledger using double-entry bookkeeping principles.",
+      "requirements": [
+        "Every transaction must contain balanced debit and credit entries.",
+        "Ledger records must be immutable.",
+        "Support transaction reversal.",
+        "Prevent modification of historical transactions.",
+        "Provide account balance calculation."
+      ],
+      "concepts": [
+        "Double Entry",
+        "Immutable Data",
+        "Financial Ledger",
+        "Audit Trail",
+        "Consistency"
+      ],
+      "successCriteria": [
+        "Total debit equals total credit.",
+        "Historical entries cannot be modified directly.",
+        "Reversals create compensating entries."
+      ],
+      "tags": ["Banking", "Ledger", "Finance"]
+    },
+    {
+      "id": "ch-nestjs-payment-webhook",
+      "title": "Reliable Payment Webhook",
+      "category": "financial",
+      "categoryLabel": "Banking & Financial Systems",
+      "difficulty": "HARD",
+      "description": "Build a webhook processor that handles duplicate, delayed, and out-of-order payment events.",
+      "requirements": [
+        "Verify webhook signatures.",
+        "Persist incoming events.",
+        "Implement event deduplication.",
+        "Process events asynchronously.",
+        "Support retry.",
+        "Reject invalid state transitions."
+      ],
+      "concepts": [
+        "Webhook",
+        "Idempotency",
+        "Eventual Consistency",
+        "State Machine",
+        "Retry"
+      ],
+      "tags": ["Payment", "Webhook", "Integration"]
+    },
+    {
+      "id": "ch-nestjs-reconciliation",
+      "title": "Payment Reconciliation Engine",
+      "category": "financial",
+      "categoryLabel": "Banking & Financial Systems",
+      "difficulty": "HARD",
+      "description": "Build a reconciliation service that compares internal transactions against transaction data from an external payment provider.",
+      "requirements": [
+        "Import external transaction records.",
+        "Match transactions using transaction identifiers.",
+        "Detect missing transactions.",
+        "Detect amount mismatches.",
+        "Generate reconciliation results.",
+        "Support reprocessing."
+      ],
+      "concepts": [
+        "Batch Processing",
+        "Data Matching",
+        "Reconciliation",
+        "Eventual Consistency"
+      ],
+      "tags": ["Banking", "Payment", "Data Processing"]
+    },
+    {
+      "id": "ch-nestjs-flash-sale",
+      "title": "Flash Sale Inventory",
+      "category": "ecommerce",
+      "categoryLabel": "E-Commerce",
+      "difficulty": "HARD",
+      "severity": "CRITICAL",
+      "description": "Build an inventory API capable of handling thousands of concurrent purchase requests without overselling products.",
+      "scenario": "A product has 100 units available while thousands of users attempt to purchase the product simultaneously.",
+      "requirements": [
+        "Prevent overselling.",
+        "Handle concurrent purchase requests.",
+        "Make inventory updates atomic.",
+        "Support multiple application instances.",
+        "Return an appropriate response when inventory is exhausted."
+      ],
+      "technologies": ["NestJS", "PostgreSQL", "Redis"],
+      "concepts": [
+        "Concurrency",
+        "Atomic Update",
+        "Database Locking",
+        "High Traffic"
+      ],
+      "tags": ["E-Commerce", "Inventory", "Concurrency"]
+    },
+    {
+      "id": "ch-nestjs-order-processing",
+      "title": "Asynchronous Order Processing",
+      "category": "ecommerce",
+      "categoryLabel": "E-Commerce",
+      "difficulty": "HARD",
+      "description": "Build an asynchronous order processing system where payment, inventory, shipping, and notification are processed independently.",
+      "flow": "Order Created -> Payment -> Inventory -> Shipping -> Notification",
+      "requirements": [
+        "Use asynchronous messaging.",
+        "Handle partial failures.",
+        "Implement retry.",
+        "Prevent duplicate processing.",
+        "Track order processing state."
+      ],
+      "concepts": [
+        "Message Queue",
+        "Event-Driven Architecture",
+        "Retry",
+        "Idempotency",
+        "Saga"
+      ],
+      "tags": ["E-Commerce", "Messaging", "Distributed Systems"]
+    },
+    {
+      "id": "ch-nestjs-cart",
+      "title": "Distributed Shopping Cart",
+      "category": "ecommerce",
+      "categoryLabel": "E-Commerce",
+      "difficulty": "MEDIUM",
+      "description": "Build a shopping cart service that maintains user state across multiple NestJS instances.",
+      "requirements": [
+        "Store cart state.",
+        "Support cart expiration.",
+        "Handle concurrent updates.",
+        "Prevent lost updates.",
+        "Support horizontal scaling."
+      ],
+      "technologies": ["NestJS", "Redis", "PostgreSQL"],
+      "concepts": ["Distributed State", "Caching", "Concurrency"],
+      "tags": ["E-Commerce", "Redis", "Scaling"]
+    },
+    {
+      "id": "ch-nestjs-product-search",
+      "title": "Scalable Product Search",
+      "category": "ecommerce",
+      "categoryLabel": "E-Commerce",
+      "difficulty": "MEDIUM",
+      "description": "Build a product search API supporting filtering, sorting, pagination, and high read traffic.",
+      "requirements": [
+        "Support keyword search.",
+        "Support multiple filters.",
+        "Support sorting.",
+        "Implement pagination.",
+        "Optimize database queries.",
+        "Implement caching where appropriate."
+      ],
+      "concepts": ["Query Optimization", "Indexing", "Pagination", "Caching"],
+      "tags": ["E-Commerce", "Search", "Performance"]
+    },
+    {
+      "id": "ch-nestjs-rate-limiter",
+      "title": "Distributed Rate Limiter",
+      "category": "high-traffic",
+      "categoryLabel": "High Traffic & Performance",
+      "difficulty": "HARD",
+      "description": "Build a distributed rate limiter that consistently enforces request limits across multiple NestJS instances.",
+      "requirements": [
+        "Limit requests per client.",
+        "Support multiple API instances.",
+        "Prevent race conditions.",
+        "Return HTTP 429 when limits are exceeded.",
+        "Use distributed storage."
+      ],
+      "concepts": [
+        "Rate Limiting",
+        "Redis",
+        "Distributed Systems",
+        "Concurrency"
+      ],
+      "tags": ["High Traffic", "Redis", "API"]
+    },
+    {
+      "id": "ch-nestjs-cache-stampede",
+      "title": "Cache Stampede Protection",
+      "category": "high-traffic",
+      "categoryLabel": "High Traffic & Performance",
+      "difficulty": "HARD",
+      "description": "Prevent a popular cache key from causing a database spike when the cached value expires.",
+      "scenario": "Thousands of requests arrive simultaneously after a popular cache entry expires.",
+      "requirements": [
+        "Implement cache-aside.",
+        "Prevent concurrent cache misses.",
+        "Use Redis.",
+        "Handle cache failures.",
+        "Support multiple application instances."
+      ],
+      "concepts": [
+        "Cache Stampede",
+        "Single Flight",
+        "Redis",
+        "Distributed Lock"
+      ],
+      "tags": ["Performance", "Caching", "Redis"]
+    },
+    {
+      "id": "ch-nestjs-slow-api",
+      "title": "Diagnose a Slow NestJS API",
+      "category": "high-traffic",
+      "categoryLabel": "High Traffic & Performance",
+      "difficulty": "HARD",
+      "description": "Investigate an API whose latency increases significantly as traffic and database size grow.",
+      "symptoms": [
+        "High response latency.",
+        "Database CPU spikes.",
+        "Connection pool saturation.",
+        "High memory consumption.",
+        "Request queue increases."
+      ],
+      "requirements": [
+        "Measure the application before optimizing.",
+        "Identify the bottleneck.",
+        "Optimize database access.",
+        "Optimize application code.",
+        "Measure the improvement."
+      ],
+      "concepts": [
+        "Profiling",
+        "Benchmarking",
+        "Database Optimization",
+        "Observability"
+      ],
+      "tags": ["Performance", "Profiling", "Optimization"]
+    },
+    {
+      "id": "ch-nestjs-large-file",
+      "title": "Process Large Files Without Memory Explosion",
+      "category": "high-traffic",
+      "categoryLabel": "High Traffic & Performance",
+      "difficulty": "HARD",
+      "description": "Build a file processing API capable of processing large files without loading the entire file into application memory.",
+      "requirements": [
+        "Support large file uploads.",
+        "Use streaming.",
+        "Avoid unnecessary memory allocation.",
+        "Support cancellation.",
+        "Track processing progress."
+      ],
+      "concepts": [
+        "Streaming",
+        "Memory Management",
+        "Node.js Streams",
+        "Backpressure"
+      ],
+      "tags": ["Node.js", "Performance", "Streaming"]
+    },
+    {
+      "id": "ch-nestjs-event-driven",
+      "title": "Event-Driven Order System",
+      "category": "messaging",
+      "categoryLabel": "Messaging & Event-Driven",
+      "difficulty": "HARD",
+      "description": "Build an event-driven order system where services communicate through events instead of synchronous service-to-service calls.",
+      "requirements": [
+        "Define domain events.",
+        "Publish integration events.",
+        "Implement event consumers.",
+        "Handle retries.",
+        "Track event processing.",
+        "Prevent duplicate processing."
+      ],
+      "technologies": ["NestJS", "RabbitMQ"],
+      "concepts": [
+        "Event-Driven Architecture",
+        "Domain Events",
+        "Message Broker",
+        "Eventual Consistency"
+      ],
+      "tags": ["Messaging", "RabbitMQ", "Events"]
+    },
+    {
+      "id": "ch-nestjs-outbox",
+      "title": "Transactional Outbox",
+      "category": "messaging",
+      "categoryLabel": "Messaging & Event-Driven",
+      "difficulty": "HARD",
+      "description": "Prevent message loss when a database transaction succeeds but the message broker becomes unavailable.",
+      "requirements": [
+        "Store business data and an outbox event in the same database transaction.",
+        "Create an outbox publisher.",
+        "Retry failed publishing.",
+        "Handle duplicate delivery.",
+        "Support dead-letter processing."
+      ],
+      "concepts": [
+        "Transactional Outbox",
+        "At-Least-Once Delivery",
+        "Eventual Consistency",
+        "Idempotency"
+      ],
+      "tags": ["Outbox", "RabbitMQ", "Kafka", "Distributed Systems"]
+    },
+    {
+      "id": "ch-nestjs-dead-letter",
+      "title": "Dead Letter Queue",
+      "category": "messaging",
+      "categoryLabel": "Messaging & Event-Driven",
+      "difficulty": "MEDIUM",
+      "description": "Build a message processing pipeline that isolates messages that repeatedly fail.",
+      "requirements": [
+        "Implement retry attempts.",
+        "Move poison messages to a dead-letter queue.",
+        "Record failure information.",
+        "Support manual reprocessing."
+      ],
+      "concepts": ["Retry", "Dead Letter Queue", "Poison Message"],
+      "tags": ["RabbitMQ", "Kafka", "Messaging"]
+    },
+    {
+      "id": "ch-nestjs-circuit-breaker",
+      "title": "External Service Circuit Breaker",
+      "category": "resiliency",
+      "categoryLabel": "Resiliency & Fault Tolerance",
+      "difficulty": "MEDIUM",
+      "description": "Protect a NestJS application from cascading failures when an external service becomes slow or unavailable.",
+      "requirements": [
+        "Configure timeout.",
+        "Implement retry with backoff.",
+        "Implement circuit breaker.",
+        "Provide fallback behavior.",
+        "Record dependency failures."
+      ],
+      "concepts": ["Circuit Breaker", "Retry", "Timeout", "Fallback"],
+      "tags": ["Resiliency", "Microservices", "HTTP"]
+    },
+    {
+      "id": "ch-nestjs-graceful-degradation",
+      "title": "Graceful Degradation",
+      "category": "resiliency",
+      "categoryLabel": "Resiliency & Fault Tolerance",
+      "difficulty": "HARD",
+      "description": "Design an application that remains partially functional when a non-critical dependency becomes unavailable.",
+      "scenario": "The recommendation service is down, but users should still be able to browse and purchase products.",
+      "requirements": [
+        "Identify critical and non-critical dependencies.",
+        "Implement fallback behavior.",
+        "Prevent cascading failures.",
+        "Expose degraded system status."
+      ],
+      "concepts": ["Fault Isolation", "Fallback", "Bulkhead", "Resiliency"],
+      "tags": ["Reliability", "Microservices"]
+    },
+    {
+      "id": "ch-nestjs-api-security",
+      "title": "Secure a Public API",
+      "category": "security",
+      "categoryLabel": "Security",
+      "difficulty": "HARD",
+      "description": "Secure a public-facing NestJS API against common authentication, authorization, and input validation vulnerabilities.",
+      "requirements": [
+        "Implement authentication.",
+        "Implement authorization.",
+        "Validate incoming requests.",
+        "Protect sensitive endpoints.",
+        "Configure rate limiting.",
+        "Prevent sensitive data exposure."
+      ],
+      "concepts": ["JWT", "Guards", "RBAC", "Rate Limiting", "OWASP"],
+      "tags": ["Security", "API", "OWASP"]
+    },
+    {
+      "id": "ch-nestjs-permission-system",
+      "title": "Fine-Grained Permission System",
+      "category": "security",
+      "categoryLabel": "Security",
+      "difficulty": "HARD",
+      "description": "Build a permission system where access is determined by specific capabilities rather than only user roles.",
+      "examplePermissions": [
+        "product.read",
+        "product.create",
+        "product.update",
+        "product.delete",
+        "order.refund"
+      ],
+      "requirements": [
+        "Create users.",
+        "Create roles.",
+        "Create permissions.",
+        "Assign permissions to roles.",
+        "Protect routes using permissions.",
+        "Support multiple roles per user."
+      ],
+      "concepts": [
+        "RBAC",
+        "Permission-Based Authorization",
+        "Guards",
+        "Policy"
+      ],
+      "tags": ["Security", "Authorization", "RBAC"]
+    },
+    {
+      "id": "ch-nestjs-auth-refresh-token",
+      "title": "Secure Refresh Token System",
+      "category": "security",
+      "categoryLabel": "Security",
+      "difficulty": "HARD",
+      "description": "Implement an authentication system using short-lived access tokens and rotating refresh tokens.",
+      "requirements": [
+        "Issue access tokens.",
+        "Issue refresh tokens.",
+        "Rotate refresh tokens.",
+        "Detect token reuse.",
+        "Support logout and revocation.",
+        "Store tokens securely."
+      ],
+      "concepts": ["JWT", "Refresh Token", "Token Rotation", "Authentication"],
+      "tags": ["Security", "Authentication", "JWT"]
+    },
+    {
+      "id": "ch-nestjs-webhook-security",
+      "title": "Secure Webhook Receiver",
+      "category": "security",
+      "categoryLabel": "Security",
+      "difficulty": "MEDIUM",
+      "description": "Build a webhook endpoint that verifies the authenticity and integrity of incoming requests.",
+      "requirements": [
+        "Implement HMAC signature verification.",
+        "Prevent replay attacks.",
+        "Validate timestamps.",
+        "Persist event IDs.",
+        "Reject invalid signatures."
+      ],
+      "concepts": ["HMAC", "Webhook Security", "Replay Attack", "Idempotency"],
+      "tags": ["Security", "Webhook", "Cryptography"]
+    },
+    {
+      "id": "ch-nestjs-external-api",
+      "title": "Resilient External API Integration",
+      "category": "integration",
+      "categoryLabel": "External Integration",
+      "difficulty": "MEDIUM",
+      "description": "Integrate with an unreliable external API while handling timeout, rate limits, retries, and malformed responses.",
+      "requirements": [
+        "Configure timeout.",
+        "Implement retry with exponential backoff.",
+        "Respect rate limits.",
+        "Handle malformed responses.",
+        "Implement circuit breaking.",
+        "Log dependency failures."
+      ],
+      "concepts": ["HTTP", "Retry", "Backoff", "Timeout", "Circuit Breaker"],
+      "tags": ["Integration", "HTTP", "Resiliency"]
+    },
+    {
+      "id": "ch-nestjs-webhook-processing",
+      "title": "Asynchronous Webhook Processing",
+      "category": "integration",
+      "categoryLabel": "External Integration",
+      "difficulty": "HARD",
+      "description": "Build a webhook receiver that acknowledges external requests quickly while processing the actual business operation asynchronously.",
+      "requirements": [
+        "Receive the webhook.",
+        "Validate the request.",
+        "Persist the event.",
+        "Return an immediate response.",
+        "Queue the processing job.",
+        "Retry failed processing."
+      ],
+      "concepts": ["Webhook", "Queue", "Background Processing", "Idempotency"],
+      "tags": ["Integration", "Webhook", "Async"]
+    },
+    {
+      "id": "ch-nestjs-large-data-processing",
+      "title": "Process Millions of Records",
+      "category": "data",
+      "categoryLabel": "Data Processing",
+      "difficulty": "HARD",
+      "description": "Build a background processing system capable of processing millions of database records without exhausting application memory.",
+      "requirements": [
+        "Process records in batches.",
+        "Avoid loading all records into memory.",
+        "Support checkpointing.",
+        "Support retry.",
+        "Resume after application restart.",
+        "Track processing progress."
+      ],
+      "concepts": [
+        "Batch Processing",
+        "Streaming",
+        "Checkpoint",
+        "Background Jobs"
+      ],
+      "tags": ["Data Processing", "Scalability", "Node.js"]
+    },
+    {
+      "id": "ch-nestjs-csv-import",
+      "title": "Large CSV Import Pipeline",
+      "category": "data",
+      "categoryLabel": "Data Processing",
+      "difficulty": "MEDIUM",
+      "description": "Build a CSV import pipeline that can process a large file while reporting progress and handling invalid records.",
+      "requirements": [
+        "Stream the CSV file.",
+        "Validate each record.",
+        "Process records in batches.",
+        "Store invalid records.",
+        "Report progress.",
+        "Allow the import to resume after failure."
+      ],
+      "concepts": [
+        "Node.js Streams",
+        "Batch Processing",
+        "Validation",
+        "Error Handling"
+      ],
+      "tags": ["CSV", "Data Processing", "Streaming"]
+    },
+    {
+      "id": "ch-nestjs-clean-architecture",
+      "title": "Refactor to Clean Architecture",
+      "category": "architecture",
+      "categoryLabel": "Architecture",
+      "difficulty": "HARD",
+      "description": "Refactor a tightly coupled NestJS application into a maintainable architecture with clear dependency boundaries.",
+      "targetArchitecture": "Presentation -> Application -> Domain <- Infrastructure",
+      "requirements": [
+        "Separate domain logic.",
+        "Separate application use cases.",
+        "Separate infrastructure implementations.",
+        "Apply dependency inversion.",
+        "Keep framework-specific code isolated."
+      ],
+      "concepts": [
+        "Clean Architecture",
+        "Dependency Inversion",
+        "Separation of Concerns"
+      ],
+      "tags": ["Architecture", "Clean Architecture", "SOLID"]
+    },
+    {
+      "id": "ch-nestjs-modular-monolith",
+      "title": "Build a Modular Monolith",
+      "category": "architecture",
+      "categoryLabel": "Architecture",
+      "difficulty": "EXPERT",
+      "description": "Build a large NestJS application as a modular monolith with strong boundaries between business modules.",
+      "exampleModules": [
+        "Identity",
+        "Catalog",
+        "Orders",
+        "Payments",
+        "Inventory"
+      ],
+      "requirements": [
+        "Define module boundaries.",
+        "Prevent unwanted dependencies.",
+        "Define module interfaces.",
+        "Handle cross-module communication.",
+        "Keep deployment as a single application."
+      ],
+      "concepts": [
+        "Modular Monolith",
+        "Bounded Context",
+        "DDD",
+        "Architecture"
+      ],
+      "tags": ["Architecture", "DDD", "NestJS"]
+    },
+    {
+      "id": "ch-nestjs-microservices",
+      "title": "Decompose a Monolith into Microservices",
+      "category": "architecture",
+      "categoryLabel": "Architecture",
+      "difficulty": "EXPERT",
+      "description": "Identify appropriate service boundaries and decompose a modular monolith into independently deployable services.",
+      "exampleServices": [
+        "Identity Service",
+        "Order Service",
+        "Payment Service",
+        "Inventory Service",
+        "Notification Service"
+      ],
+      "requirements": [
+        "Identify bounded contexts.",
+        "Define service ownership.",
+        "Define communication contracts.",
+        "Handle distributed failures.",
+        "Implement service observability."
+      ],
+      "concepts": [
+        "Microservices",
+        "Bounded Context",
+        "Service Boundary",
+        "Distributed Systems"
+      ],
+      "tags": ["Microservices", "Architecture", "Distributed Systems"]
+    },
+    {
+      "id": "ch-nestjs-production-system",
+      "title": "Build a Production-Ready NestJS Platform",
+      "category": "architecture",
+      "categoryLabel": "Architecture",
+      "difficulty": "EXPERT",
+      "description": "Build a production-grade NestJS backend that combines security, reliability, observability, messaging, performance, and deployment practices.",
+      "requirements": [
+        "Authentication.",
+        "Authorization.",
+        "Input validation.",
+        "Global exception handling.",
+        "Structured logging.",
+        "Request correlation ID.",
+        "Health checks.",
+        "Rate limiting.",
+        "Caching.",
+        "Database transactions.",
+        "Unit tests.",
+        "Integration tests.",
+        "Message queue.",
+        "Docker.",
+        "CI/CD.",
+        "Graceful shutdown.",
+        "Configuration management."
+      ],
+      "architecture": "Client -> Load Balancer -> NestJS Instances -> Redis / PostgreSQL / Message Broker",
+      "concepts": [
+        "Production Engineering",
+        "Observability",
+        "Security",
+        "Scalability",
+        "Distributed Systems"
+      ],
+      "tags": ["NestJS", "Production", "Architecture"]
+    }
+  ]
+}

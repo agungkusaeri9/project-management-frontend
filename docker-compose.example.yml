@@ -7,13 +7,19 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        NEXT_PUBLIC_API_URL: http://localhost:8081
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8081}
+        NEXT_PUBLIC_APP_NAME: ${NEXT_PUBLIC_APP_NAME:-Engineering Portal}
+        NEXT_PUBLIC_COMPANY_NAME: ${NEXT_PUBLIC_COMPANY_NAME:-Engineering Platform}
+        NEXT_PUBLIC_APP_SUBTITLE: ${NEXT_PUBLIC_APP_SUBTITLE:-Engineering Standards & Projects}
     container_name: project-management-frontend
     restart: unless-stopped
     environment:
       NODE_ENV: production
       PORT: 3000
-      NEXT_PUBLIC_API_URL: http://localhost:8081
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8081}
+      NEXT_PUBLIC_APP_NAME: ${NEXT_PUBLIC_APP_NAME:-Engineering Portal}
+      NEXT_PUBLIC_COMPANY_NAME: ${NEXT_PUBLIC_COMPANY_NAME:-Engineering Platform}
+      NEXT_PUBLIC_APP_SUBTITLE: ${NEXT_PUBLIC_APP_SUBTITLE:-Engineering Standards & Projects}
     ports:
       - "3001:3000"
     networks:

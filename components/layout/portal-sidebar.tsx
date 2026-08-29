@@ -21,9 +21,11 @@ import {
   LayoutDashboard,
   LogOut,
   TrendingUp,
+  Flame,
 } from 'lucide-react';
 import { useAuthStore } from '@/store/auth.store';
 import { useLogout } from '@/features/auth/hooks/use-logout';
+import { getAllDotnetChallenges, ALL_TECH_STACK_CHALLENGES } from '@/data/dotnet-challenges';
 
 interface NavChild {
   name: string;
@@ -41,15 +43,16 @@ export function PortalSidebar({ onCloseMobile }: PortalSidebarProps) {
   const token = useAuthStore((state) => state.token);
   const logout = useLogout();
 
+  const isChallengesActive = pathname.includes('challenges');
   const isStandardsActive =
-    pathname.startsWith('/technology') ||
+    (pathname.startsWith('/technology') && !isChallengesActive) ||
     pathname.startsWith('/architecture') ||
     pathname.startsWith('/deployment') ||
     pathname.startsWith('/logging') ||
     pathname.startsWith('/security');
 
   const isHomeActive = pathname === '/' || pathname.startsWith('/progress');
-  const [homeOpen, setHomeOpen] = useState<boolean>(true);
+  const [homeOpen, setHomeOpen] = useState<boolean>(false);
 
   const homeChildren: NavChild[] = [
     { name: 'Engineering Overview', href: '/', icon: Home },
@@ -57,6 +60,7 @@ export function PortalSidebar({ onCloseMobile }: PortalSidebarProps) {
   ];
 
   const [standardsOpen, setStandardsOpen] = useState<boolean>(false);
+  const [challengesOpen, setChallengesOpen] = useState<boolean>(false);
 
   const standardsChildren: NavChild[] = [
     { name: 'Technology Stack', href: '/technology', icon: Layers },
@@ -65,6 +69,12 @@ export function PortalSidebar({ onCloseMobile }: PortalSidebarProps) {
     { name: 'Deployment & Infra', href: '/deployment', icon: Server },
     { name: 'Logging Standard', href: '/logging', icon: FileText },
     { name: 'Security Standard', href: '/security', icon: ShieldCheck },
+  ];
+
+  const challengesChildren: NavChild[] = [
+    { name: '.NET Challenges', href: '/technology/dotnet-challenges', icon: Code2 },
+    { name: 'NestJS Challenges', href: '/technology/nestjs-challenges', icon: Server },
+    { name: 'React.js Challenges', href: '/technology/dotnet-challenges', icon: Layers },
   ];
 
   return (
@@ -81,10 +91,10 @@ export function PortalSidebar({ onCloseMobile }: PortalSidebarProps) {
           </div>
           <div className="flex flex-col">
             <span className="text-xs font-extrabold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 leading-tight">
-              TOHO Portal
+              {process.env.NEXT_PUBLIC_APP_NAME || 'Engineering Portal'}
             </span>
             <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400">
-              Engineering &amp; Projects
+              {process.env.NEXT_PUBLIC_APP_SUBTITLE || 'Engineering & Projects'}
             </span>
           </div>
         </Link>
@@ -195,7 +205,57 @@ export function PortalSidebar({ onCloseMobile }: PortalSidebarProps) {
           )}
         </div>
 
-        {/* 3. Projects Menu */}
+        {/* 3. Challenges Group */}
+        <div>
+          <button
+            onClick={() => setChallengesOpen((prev) => !prev)}
+            className={`flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-xs font-semibold transition-colors ${
+              isChallengesActive
+                ? 'bg-zinc-200/70 text-zinc-900 dark:bg-zinc-900 dark:text-zinc-100'
+                : 'text-zinc-700 hover:bg-zinc-200/50 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-900/60 dark:hover:text-zinc-100'
+            }`}
+          >
+            <div className="flex items-center gap-2.5">
+              <Flame className="h-4 w-4 text-zinc-600 dark:text-zinc-400" />
+              <span>Challenges</span>
+            </div>
+            {challengesOpen ? (
+              <ChevronDown className="h-3.5 w-3.5 opacity-60" />
+            ) : (
+              <ChevronRight className="h-3.5 w-3.5 opacity-60" />
+            )}
+          </button>
+
+          {challengesOpen && (
+            <div className="mt-1 ml-3.5 space-y-0.5 border-l border-zinc-200 pl-2.5 dark:border-zinc-800">
+              {challengesChildren.map((child) => {
+                const isActive =
+                  pathname === child.href ||
+                  (child.name.includes('.NET') && pathname.includes('dotnet-challenges')) ||
+                  (child.name.includes('NestJS') && pathname.includes('nestjs-challenges'));
+                const ChildIcon = child.icon;
+
+                return (
+                  <Link
+                    key={child.name}
+                    href={child.href}
+                    onClick={onCloseMobile}
+                    className={`flex items-center gap-2 rounded-md px-2 py-1.5 text-xs transition-colors ${
+                      isActive
+                        ? 'bg-zinc-900 font-semibold text-white dark:bg-zinc-100 dark:text-zinc-900'
+                        : 'text-zinc-600 hover:bg-zinc-200/50 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900/50 dark:hover:text-zinc-200'
+                    }`}
+                  >
+                    <ChildIcon className={`h-3.5 w-3.5 ${isActive ? 'text-inherit' : 'opacity-70'}`} />
+                    <span className="truncate">{child.name}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* 4. Projects Menu */}
         <Link
           href="/projects"
           onClick={onCloseMobile}

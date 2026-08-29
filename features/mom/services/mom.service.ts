@@ -12,13 +12,17 @@ export interface MoMFile {
 
 export interface MoM {
   id: string;
-  project_id: string;
+  project_id?: string | null;
   project_name?: string;
   project_code?: string;
+  customer_id?: string | null;
+  customer_name?: string | null;
   title: string;
-  meeting_date: string;
+  meeting_date?: string;
   location?: string | null;
   attendees?: string | null;
+  internal_attendees?: string | null;
+  external_attendees?: string | null;
   description?: string | null;
   long_description?: string | null;
   created_by?: string | null;
@@ -35,11 +39,13 @@ export interface MoMFilter {
 }
 
 export interface CreateMoMPayload {
-  project_id: string;
+  project_id?: string | null;
   title: string;
-  meeting_date: string;
+  meeting_date?: string;
   location?: string | null;
   attendees?: string | null;
+  internal_attendees?: string | null;
+  external_attendees?: string | null;
   description?: string | null;
   long_description?: string | null;
   created_by?: string | null;

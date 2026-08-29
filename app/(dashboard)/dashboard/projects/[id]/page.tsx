@@ -7,9 +7,10 @@ import { format } from 'date-fns';
 import {
   ArrowLeft, Layers, ChevronDown, ChevronRight as ChevronRightIcon,
   Loader2, Building2, Calendar, Hash, Info, FolderOpen, Box, GitBranch,
-  Users, Star, Code2, Zap, Edit2, Plus, Printer, FileText
+  Users, Star, Code2, Zap, Edit2, Plus, Printer, FileText, FileSpreadsheet, CheckSquare
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { projectService } from '@/features/project/services/project.service';
 import { useProject } from '@/features/project/hooks/use-projects';
 import { useProjectMembers } from '@/features/project/hooks/use-project-members';
 import { useModules } from '@/features/module/hooks/use-modules';
@@ -18,7 +19,9 @@ import { useSubFeatures } from '@/features/subfeature/hooks/use-sub-features';
 import { Module } from '@/features/module/services/module.service';
 import { Feature } from '@/features/feature/services/feature.service';
 import { ProjectFilesSection } from '@/features/project/components/project-files-section';
+import { ProjectGithubSection } from '@/features/project/components/project-github-section';
 import { useAdditionalFeatures } from '@/features/additional-feature/hooks/use-additional-features';
+import { useUATStatistics } from '@/features/uat/hooks/use-uats';
 
 // ── Status badge helper ─────────────────────────────────────────
 const statusStyle = (status: string) => {
@@ -139,12 +142,14 @@ export default function ProjectDetailPage() {
   const { data: members, isLoading: isLoadingMembers } = useProjectMembers(projectId);
   const { data: modules, isLoading: isLoadingModules } = useModules(projectId);
   const { data: additionalFeatures, isLoading: isLoadingAdditional } = useAdditionalFeatures(projectId);
+  const { data: uatStats } = useUATStatistics({ project_id: projectId });
 
   const safeModules = modules?.filter(m => !m.is_additional) ?? [];
   const safeMembers = members ?? [];
   const safeAdditional = additionalFeatures ?? [];
 
   const [isExportingPDF, setIsExportingPDF] = useState(false);
+  const [isExportingExcel, setIsExportingExcel] = useState(false);
 
   const handleExportPDF = async () => {
     setIsExportingPDF(true);
@@ -164,6 +169,19 @@ export default function ProjectDetailPage() {
       toast.error('Gagal export PDF project');
     } finally {
       setIsExportingPDF(false);
+    }
+  };
+
+  const handleExportExcel = async () => {
+    if (!project) return;
+    setIsExportingExcel(true);
+    try {
+      await projectService.exportExcel(projectId, project.code || project.name);
+      toast.success('Project berhasil diexport ke Excel!');
+    } catch (err: any) {
+      toast.error('Gagal mengexport project ke Excel');
+    } finally {
+      setIsExportingExcel(false);
     }
   };
 
@@ -228,22 +246,44 @@ export default function ProjectDetailPage() {
           </div>
           <p className="text-slate-500 dark:text-slate-400 mt-1 text-sm">{project.code}</p>
         </div>
-        <div className="flex items-center gap-2 flex-shrink-0 print:hidden">
+        <div className="flex items-center gap-1.5 flex-shrink-0 print:hidden">
+          <Link
+            href={`/dashboard/projects/${projectId}/edit`}
+            className="p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/40 border border-slate-200 dark:border-slate-800 transition-colors shadow-2xs"
+            title="Edit Project"
+          >
+            <Edit2 className="w-4 h-4" />
+          </Link>
+          <Link
+            href={`/dashboard/projects/${projectId}/modules`}
+            className="p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:text-violet-600 hover:bg-violet-50 dark:hover:bg-violet-950/40 border border-slate-200 dark:border-slate-800 transition-colors shadow-2xs"
+            title="Manage Modules"
+          >
+            <Layers className="w-4 h-4" />
+          </Link>
+          <Link
+            href={`/dashboard/projects/${projectId}/uat`}
+            className="p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 border border-slate-200 dark:border-slate-800 transition-colors shadow-2xs"
+            title="UAT & Testing Matrix"
+          >
+            <CheckSquare className="w-4 h-4" />
+          </Link>
           <button
             onClick={handleExportPDF}
             disabled={isExportingPDF}
-            className="flex items-center gap-2 px-4 py-2 bg-rose-600 hover:bg-rose-700 disabled:opacity-50 text-white rounded-lg text-sm font-medium transition-colors"
+            className="p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-slate-200 dark:border-slate-800 disabled:opacity-50 transition-colors shadow-2xs"
+            title="Export PDF"
           >
             {isExportingPDF ? <Loader2 className="w-4 h-4 animate-spin" /> : <Printer className="w-4 h-4" />}
-            Export PDF
           </button>
-          <Link
-            href={`/dashboard/projects/${projectId}/modules`}
-            className="flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-lg text-sm font-medium transition-colors"
+          <button
+            onClick={handleExportExcel}
+            disabled={isExportingExcel}
+            className="p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 border border-slate-200 dark:border-slate-800 disabled:opacity-50 transition-colors shadow-2xs"
+            title="Export Excel (.xlsx)"
           >
-            <Layers className="w-4 h-4" />
-            Manage Modules
-          </Link>
+            {isExportingExcel ? <Loader2 className="w-4 h-4 animate-spin text-emerald-600" /> : <FileSpreadsheet className="w-4 h-4" />}
+          </button>
         </div>
       </div>
 
@@ -460,6 +500,52 @@ export default function ProjectDetailPage() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* UAT & Quality Testing Section */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden mt-6 print:border-slate-300 print:shadow-none">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800">
+          <div className="flex items-center gap-2">
+            <CheckSquare className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+            <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">UAT & Testing Matrix</h2>
+          </div>
+          <Link
+            href={`/dashboard/projects/${projectId}/uat`}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-600 dark:text-indigo-400 transition-colors shadow-2xs"
+          >
+            <span>Buka UAT Testing Matrix</span>
+            <ChevronRightIcon className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
+        <div className="p-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-200/80 dark:border-slate-800">
+              <div className="text-xs text-slate-500 dark:text-slate-400">Total Skenario</div>
+              <div className="text-xl font-bold text-slate-900 dark:text-white mt-1">{uatStats?.total || 0} Test Cases</div>
+            </div>
+            <div className="p-4 bg-emerald-50/60 dark:bg-emerald-950/30 rounded-xl border border-emerald-200/60 dark:border-emerald-900/40">
+              <div className="text-xs text-emerald-700 dark:text-emerald-400 font-medium">Passed</div>
+              <div className="text-xl font-bold text-emerald-700 dark:text-emerald-400 mt-1">{uatStats?.passed || 0} ({uatStats?.pass_rate?.toFixed(1) || 0}%)</div>
+            </div>
+            <div className="p-4 bg-rose-50/60 dark:bg-rose-950/30 rounded-xl border border-rose-200/60 dark:border-rose-900/40">
+              <div className="text-xs text-rose-700 dark:text-rose-400 font-medium">Failed</div>
+              <div className="text-xl font-bold text-rose-700 dark:text-rose-400 mt-1">{uatStats?.failed || 0}</div>
+            </div>
+            <div className="p-4 bg-slate-100/60 dark:bg-slate-800/60 rounded-xl border border-slate-200/80 dark:border-slate-700/60">
+              <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">Untested</div>
+              <div className="text-xl font-bold text-slate-700 dark:text-slate-300 mt-1">{uatStats?.untested || 0}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* GitHub Repositories Section */}
+      <ProjectGithubSection projectId={projectId} projectName={project.name} />
+
+      {/* Project Files & Documents */}
+      <div className="mt-6">
+        <ProjectFilesSection projectId={projectId} />
       </div>
     </div>
   );

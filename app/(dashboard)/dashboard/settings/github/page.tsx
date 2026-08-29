@@ -42,6 +42,9 @@ export default function GithubSettingsPage() {
     target_owner?: Record<string, any>;
   } | null>(null);
 
+  const [autoSync, setAutoSync] = useState<boolean>(false);
+  const [syncIntervalMinutes, setSyncIntervalMinutes] = useState<number>(60);
+
   // Load config on mount
   useEffect(() => {
     let ignore = false;
@@ -53,6 +56,8 @@ export default function GithubSettingsPage() {
           setApiURL(data.api_url || 'https://api.github.com');
           setHasToken(data.has_token);
           setMaskedToken(data.token || '');
+          setAutoSync(data.auto_sync === 'true' || data.auto_sync === '1');
+          setSyncIntervalMinutes(Number(data.sync_interval_minutes) || 60);
         }
       } catch (err: unknown) {
         console.error('Failed to load GitHub config:', err);
@@ -77,6 +82,8 @@ export default function GithubSettingsPage() {
         token: token.trim() || undefined,
         owner: owner.trim(),
         api_url: apiURL.trim() || 'https://api.github.com',
+        auto_sync: autoSync ? 'true' : 'false',
+        sync_interval_minutes: String(syncIntervalMinutes),
       });
 
       setSaveSuccess(true);
@@ -265,6 +272,84 @@ export default function GithubSettingsPage() {
                 <p className="text-[11px] text-slate-400">
                   Gunakan <code className="bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded font-mono text-[10px]">https://api.github.com</code> untuk GitHub publik atau URL GitHub Enterprise Server Anda.
                 </p>
+              </div>
+
+              {/* Background Auto-Sync Settings */}
+              <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-slate-900/40 space-y-4">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="space-y-0.5">
+                    <div className="flex items-center gap-2">
+                      <RefreshCw className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                      <label className="text-xs font-bold text-slate-900 dark:text-slate-100">
+                        Sinkronisasi Otomatis Background (Worker)
+                      </label>
+                    </div>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                      Otomatis menyinkronkan seluruh repository, branch, commit, dan PR ke database PostgreSQL secara berkala di background.
+                    </p>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={autoSync}
+                    onChange={(e) => setAutoSync(e.target.checked)}
+                    className="h-4 w-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                  />
+                </div>
+
+                {autoSync && (
+                  <div className="rounded-2xl border border-indigo-100 bg-indigo-50/50 dark:border-indigo-950/80 dark:bg-indigo-950/20 p-4 space-y-3 animate-in fade-in slide-in-from-top-1">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                      <div>
+                        <label className="text-xs font-bold text-slate-800 dark:text-slate-200 block">
+                          Interval Sinkronisasi Background (Menit):
+                        </label>
+                        <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                          Durasi jeda antar sinkronisasi otomatis
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="number"
+                          min={1}
+                          max={1440}
+                          value={syncIntervalMinutes}
+                          onChange={(e) => setSyncIntervalMinutes(Math.max(1, parseInt(e.target.value, 10) || 1))}
+                          className="w-24 rounded-xl border border-slate-300 bg-white px-3 py-1.5 text-xs font-mono font-bold text-slate-900 text-center focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 shadow-2xs"
+                        />
+                        <span className="text-xs font-bold text-slate-600 dark:text-slate-400">Menit</span>
+                      </div>
+                    </div>
+
+                    {/* Quick Presets */}
+                    <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
+                      <span className="text-[10px] text-slate-400 font-bold mr-1">Preset:</span>
+                      {[
+                        { label: '15 Menit', val: 15 },
+                        { label: '30 Menit', val: 30 },
+                        { label: '1 Jam (60 mnt)', val: 60 },
+                        { label: '2 Jam (120 mnt)', val: 120 },
+                        { label: '6 Jam (360 mnt)', val: 360 },
+                      ].map((preset) => (
+                        <button
+                          key={preset.val}
+                          type="button"
+                          onClick={() => setSyncIntervalMinutes(preset.val)}
+                          className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all ${
+                            syncIntervalMinutes === preset.val
+                              ? 'bg-indigo-600 text-white shadow-xs'
+                              : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100'
+                          }`}
+                        >
+                          {preset.label}
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="text-[11px] text-indigo-900/80 dark:text-indigo-300/80 leading-relaxed pt-1 border-t border-indigo-100/60 dark:border-indigo-900/40">
+                      💡 Background worker akan otomatis memperbarui database setiap <strong>{syncIntervalMinutes} menit</strong> tanpa membebani browser atau request user.
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Action Buttons */}

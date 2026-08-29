@@ -23,7 +23,8 @@ import {
   Terminal,
   RefreshCw,
   Info,
-  CheckCircle2
+  CheckCircle2,
+  FolderKanban
 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { id as idLocale } from 'date-fns/locale';
@@ -157,6 +158,12 @@ export function GithubRepoDetailModal({ isOpen, onClose, repo }: GithubRepoDetai
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-violet-50 text-violet-700 dark:bg-violet-950/60 dark:text-violet-300 border border-violet-200/80">
                     <GitFork className="h-3 w-3" />
                     Fork
+                  </span>
+                )}
+                {repo.internal_project_name && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                    <FolderKanban className="h-3 w-3" />
+                    Project: {repo.internal_project_name}
                   </span>
                 )}
               </div>

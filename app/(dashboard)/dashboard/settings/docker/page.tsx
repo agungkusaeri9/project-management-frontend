@@ -16,7 +16,8 @@ import {
   Terminal,
   Activity,
   Check,
-  AlertTriangle
+  AlertTriangle,
+  Network
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { dockerService, DockerConfigData, DockerTestConnectionResponse } from '@/features/docker/services/docker.service';
@@ -24,6 +25,9 @@ import { dockerService, DockerConfigData, DockerTestConnectionResponse } from '@
 export default function DockerSettingsPage() {
   const [host, setHost] = useState<string>('');
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
+  const [frontendBasePort, setFrontendBasePort] = useState<number>(3000);
+  const [backendBasePort, setBackendBasePort] = useState<number>(5000);
+  const [fullstackBasePort, setFullstackBasePort] = useState<number>(8000);
   
   // Loading & Test states
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -41,6 +45,9 @@ export default function DockerSettingsPage() {
       const data = await dockerService.getConfig();
       setHost(data.host || '');
       setIsEnabled(data.is_enabled);
+      setFrontendBasePort(data.frontend_base_port || 3000);
+      setBackendBasePort(data.backend_base_port || 5000);
+      setFullstackBasePort(data.fullstack_base_port || 8000);
     } catch (err: any) {
       console.error('Failed to load Docker config:', err);
     } finally {
@@ -84,8 +91,11 @@ export default function DockerSettingsPage() {
         host: host.trim(),
         api_version: 'v1.43',
         is_enabled: isEnabled,
+        frontend_base_port: Number(frontendBasePort) || 3000,
+        backend_base_port: Number(backendBasePort) || 5000,
+        fullstack_base_port: Number(fullstackBasePort) || 8000,
       });
-      toast.success('Konfigurasi Docker berhasil disimpan!');
+      toast.success('Konfigurasi Docker & Alokasi Port berhasil disimpan!');
     } catch (err: any) {
       toast.error(err.response?.data?.error || err.message || 'Gagal menyimpan konfigurasi');
     } finally {
@@ -253,6 +263,106 @@ export default function DockerSettingsPage() {
               </div>
             </div>
           )}
+
+          {/* Port Range Allocation Card */}
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-800/80 bg-slate-50/40 dark:bg-slate-950/30 p-5 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-200/80 dark:border-slate-800/80 pb-3">
+              <div>
+                <div className="flex items-center gap-2">
+                  <Network className="h-4 w-4 text-sky-500" />
+                  <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100">
+                    Alokasi Port & Induk Port Docker
+                  </h4>
+                </div>
+                <p className="text-[11px] text-slate-500 mt-0.5">
+                  Konfigurasikan port awal (base port) untuk klasifikasi otomatis dan filter container (Frontend, Backend, Fullstack).
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Frontend Base Port */}
+              <div className="p-4 rounded-xl border border-blue-200/80 dark:border-blue-900/50 bg-white dark:bg-slate-900 shadow-2xs space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-blue-700 dark:text-blue-300 uppercase tracking-wider">
+                    Frontend Base Port
+                  </span>
+                  <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-300 font-mono">
+                    {frontendBasePort}s
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-500">
+                  Range port untuk frontend container (contoh: Next.js, React, Vite).
+                </p>
+                <input
+                  type="number"
+                  min={1000}
+                  max={65000}
+                  value={frontendBasePort}
+                  onChange={(e) => setFrontendBasePort(Number(e.target.value))}
+                  placeholder="3000"
+                  className="w-full rounded-xl border border-blue-200 dark:border-blue-800/80 bg-slate-50/50 dark:bg-slate-950 px-3 py-2 text-xs font-mono font-bold text-blue-950 dark:text-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                />
+                <span className="text-[10px] text-blue-600 dark:text-blue-400 font-mono block">
+                  Filter: Port {frontendBasePort} - {frontendBasePort + 999}
+                </span>
+              </div>
+
+              {/* Backend Base Port */}
+              <div className="p-4 rounded-xl border border-emerald-200/80 dark:border-emerald-900/50 bg-white dark:bg-slate-900 shadow-2xs space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300 uppercase tracking-wider">
+                    Backend Base Port
+                  </span>
+                  <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300 font-mono">
+                    {backendBasePort}s
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-500">
+                  Range port untuk backend API container (contoh: Golang, Node.js, Python).
+                </p>
+                <input
+                  type="number"
+                  min={1000}
+                  max={65000}
+                  value={backendBasePort}
+                  onChange={(e) => setBackendBasePort(Number(e.target.value))}
+                  placeholder="5000"
+                  className="w-full rounded-xl border border-emerald-200 dark:border-emerald-800/80 bg-slate-50/50 dark:bg-slate-950 px-3 py-2 text-xs font-mono font-bold text-emerald-950 dark:text-emerald-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                />
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono block">
+                  Filter: Port {backendBasePort} - {backendBasePort + 999}
+                </span>
+              </div>
+
+              {/* Fullstack Base Port */}
+              <div className="p-4 rounded-xl border border-violet-200/80 dark:border-violet-900/50 bg-white dark:bg-slate-900 shadow-2xs space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-violet-700 dark:text-violet-300 uppercase tracking-wider">
+                    Fullstack Base Port
+                  </span>
+                  <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-violet-100 text-violet-800 dark:bg-violet-900/60 dark:text-violet-300 font-mono">
+                    {fullstackBasePort}s
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-500">
+                  Range port untuk fullstack / monolith (contoh: Laravel, Django).
+                </p>
+                <input
+                  type="number"
+                  min={1000}
+                  max={65000}
+                  value={fullstackBasePort}
+                  onChange={(e) => setFullstackBasePort(Number(e.target.value))}
+                  placeholder="8000"
+                  className="w-full rounded-xl border border-violet-200 dark:border-violet-800/80 bg-slate-50/50 dark:bg-slate-950 px-3 py-2 text-xs font-mono font-bold text-violet-950 dark:text-violet-100 focus:outline-none focus:ring-2 focus:ring-violet-500/20"
+                />
+                <span className="text-[10px] text-violet-600 dark:text-violet-400 font-mono block">
+                  Filter: Port {fullstackBasePort} - {fullstackBasePort + 999}
+                </span>
+              </div>
+            </div>
+          </div>
 
           {/* Action Buttons */}
           <div className="pt-2 flex items-center justify-between flex-wrap gap-3">

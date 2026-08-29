@@ -23,13 +23,17 @@ import {
   Filter,
   Tag,
   Hash,
-  Eye
+  Eye,
+  FolderKanban,
+  Link2,
+  Plus
 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { id as idLocale } from 'date-fns/locale';
 import { toast } from 'sonner';
 import { githubService, GithubRepository } from '@/features/github/services/github.service';
 import { GithubRepoDetailModal } from '@/features/github/components/github-repo-detail-modal';
+import { AssignProjectModal } from '@/features/github/components/assign-project-modal';
 
 const languageColorMap: Record<string, string> = {
   TypeScript: 'bg-blue-500',
@@ -58,6 +62,7 @@ export default function GithubRepositoriesPage() {
   const [hasRepoScope, setHasRepoScope] = useState<boolean | null>(null);
   const [tokenScopes, setTokenScopes] = useState<string>('');
   const [selectedRepoForModal, setSelectedRepoForModal] = useState<GithubRepository | null>(null);
+  const [selectedRepoForAssign, setSelectedRepoForAssign] = useState<GithubRepository | null>(null);
 
   // Search, Filters & Sorting
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -69,6 +74,8 @@ export default function GithubRepositoriesPage() {
   // Pagination
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
+
+  const [isSyncing, setIsSyncing] = useState<boolean>(false);
 
   const fetchRepositories = async (showToast: boolean = false) => {
     try {
@@ -88,7 +95,7 @@ export default function GithubRepositoriesPage() {
       setHasRepoScope(res.has_repo_scope ?? null);
       setTokenScopes(res.token_scopes || '');
       if (showToast) {
-        toast.success(`Berhasil memuat ${res.data?.length || 0} repository live dari GitHub!`);
+        toast.success(`Berhasil memuat ${res.data?.length || 0} repository dari database!`);
       }
     } catch (err: any) {
       const msg = err.response?.data?.error || err.message || 'Gagal memuat repositori GitHub';
@@ -97,6 +104,20 @@ export default function GithubRepositoriesPage() {
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
+    }
+  };
+
+  const handleSync = async () => {
+    try {
+      setIsSyncing(true);
+      const res = await githubService.sync();
+      toast.success(res.message || 'Sinkronisasi GitHub ke Database berhasil!');
+      fetchRepositories();
+    } catch (err: any) {
+      const msg = err.response?.data?.error || err.message || 'Gagal sinkronisasi GitHub ke database';
+      toast.error(msg);
+    } finally {
+      setIsSyncing(false);
     }
   };
 
@@ -213,7 +234,7 @@ export default function GithubRepositoriesPage() {
               <span>GitHub Repositories</span>
             </span>
             <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
-              Live REST API
+              Database Sync
             </span>
             {ownerInfo && (
               <span className="text-xs font-mono text-slate-500">
@@ -225,19 +246,29 @@ export default function GithubRepositoriesPage() {
             Daftar Repositori GitHub
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Daftar seluruh repository yang terhubung langsung secara live dari akun / organisasi GitHub Anda.
+            Daftar seluruh repository yang tersinkronisasi di database lokal dan terintegrasi dengan akun GitHub Anda.
           </p>
         </div>
 
         <div className="flex items-center gap-2.5 sm:gap-3">
           <button
             type="button"
+            onClick={handleSync}
+            disabled={isSyncing || isLoading}
+            className="inline-flex items-center gap-1.5 rounded-xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-950/40 px-3.5 py-2 text-xs font-bold text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition-colors shadow-2xs disabled:opacity-50"
+          >
+            <RefreshCw className={`h-3.5 w-3.5 ${isSyncing ? 'animate-spin text-indigo-600' : ''}`} />
+            <span>{isSyncing ? 'Menyinkronkan...' : 'Sync dari GitHub'}</span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => fetchRepositories(true)}
             disabled={isRefreshing || isLoading}
             className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3.5 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/60 transition-colors shadow-2xs disabled:opacity-50"
           >
-            <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? 'animate-spin text-indigo-600' : ''}`} />
-            <span>{isRefreshing ? 'Merefresh...' : 'Refresh Live'}</span>
+            <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? 'animate-spin text-slate-600' : ''}`} />
+            <span>{isRefreshing ? 'Memuat...' : 'Muat Ulang'}</span>
           </button>
 
           <Link
@@ -486,6 +517,7 @@ export default function GithubRepositoriesPage() {
               <tr className="bg-slate-50/60 dark:bg-slate-800/40 border-b border-slate-200 dark:border-slate-800 text-slate-500 uppercase tracking-wider font-semibold">
                 <th className="px-5 py-3.5 w-12 text-center">No</th>
                 <th className="px-5 py-3.5">Repository</th>
+                <th className="px-5 py-3.5">Internal Project</th>
                 <th className="px-5 py-3.5">Bahasa</th>
                 <th className="px-5 py-3.5">Tags / Topics</th>
                 <th className="px-5 py-3.5">Deskripsi</th>
@@ -498,14 +530,14 @@ export default function GithubRepositoriesPage() {
             <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
               {isLoading ? (
                 <tr>
-                  <td colSpan={9} className="px-6 py-16 text-center">
+                  <td colSpan={10} className="px-6 py-16 text-center">
                     <RefreshCw className="h-7 w-7 animate-spin text-indigo-600 mx-auto mb-2" />
-                    <p className="text-xs text-slate-500 font-medium">Mengambil repositori live dari GitHub REST API...</p>
+                    <p className="text-xs text-slate-500 font-medium">Mengambil repositori dari database & GitHub API...</p>
                   </td>
                 </tr>
               ) : currentRepositories.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="px-6 py-16 text-center">
+                  <td colSpan={10} className="px-6 py-16 text-center">
                     <GitBranch className="h-10 w-10 text-slate-300 dark:text-slate-600 mx-auto mb-2" />
                     <p className="text-sm font-bold text-slate-700 dark:text-slate-300">Tidak ada repository ditemukan</p>
                     <p className="text-xs text-slate-400 mt-1">
@@ -565,6 +597,39 @@ export default function GithubRepositoriesPage() {
                             </span>
                           </div>
                         </div>
+                      </td>
+
+                      {/* Internal Project */}
+                      <td className="px-5 py-4 max-w-[180px]">
+                        {repo.internal_project_name ? (
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <Link
+                              href={`/dashboard/projects/${repo.project_id}`}
+                              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-semibold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 hover:underline truncate max-w-full"
+                              title={`Project: ${repo.internal_project_name} (${repo.internal_project_code || '-'})`}
+                            >
+                              <FolderKanban className="w-3 h-3 shrink-0" />
+                              <span className="truncate">{repo.internal_project_name}</span>
+                            </Link>
+                            <button
+                              type="button"
+                              onClick={() => setSelectedRepoForAssign(repo)}
+                              className="p-1 text-slate-400 hover:text-indigo-600 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                              title="Ubah Assignment Project"
+                            >
+                              <Link2 className="w-3 h-3" />
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => setSelectedRepoForAssign(repo)}
+                            className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-medium text-slate-500 dark:text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 border border-dashed border-slate-300 dark:border-slate-700 hover:border-indigo-300 transition-colors"
+                          >
+                            <Plus className="w-3 h-3" />
+                            <span>Assign Project</span>
+                          </button>
+                        )}
                       </td>
 
                       {/* Language */}
@@ -752,6 +817,17 @@ export default function GithubRepositoriesPage() {
         onClose={() => setSelectedRepoForModal(null)}
         repo={selectedRepoForModal}
       />
+
+      {/* Assign Project Modal */}
+      {selectedRepoForAssign && (
+        <AssignProjectModal
+          repo={selectedRepoForAssign}
+          onClose={() => {
+            setSelectedRepoForAssign(null);
+            fetchRepositories();
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -48,10 +48,88 @@ function formatBytes(bytes: number): string {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
+export type PortCategory = 'all' | 'frontend' | 'backend' | 'fullstack' | 'other' | 'none';
+
+export function getContainerPortCategory(
+  container: DockerContainerItem,
+  frontendBase: number = 3000,
+  backendBase: number = 5000,
+  fullstackBase: number = 8000
+): { category: 'frontend' | 'backend' | 'fullstack' | 'other' | 'none'; label: string; badgeClass: string; ports: number[] } {
+  if (!container.ports || container.ports.length === 0) {
+    return {
+      category: 'none',
+      label: 'Tanpa Port',
+      badgeClass: 'bg-slate-100 dark:bg-slate-800 text-slate-500 border-slate-200 dark:border-slate-700',
+      ports: [],
+    };
+  }
+
+  const ports = container.ports.map((p) => p.public_port || p.private_port).filter((p): p is number => typeof p === 'number' && p > 0);
+
+  if (ports.length === 0) {
+    return {
+      category: 'none',
+      label: 'Tanpa Port',
+      badgeClass: 'bg-slate-100 dark:bg-slate-800 text-slate-500 border-slate-200 dark:border-slate-700',
+      ports: [],
+    };
+  }
+
+  // Frontend: within frontendBase..(frontendBase+999) or starts with first digit of frontendBase
+  const isFrontend = ports.some(
+    (p) => (p >= frontendBase && p < frontendBase + 1000) || Math.floor(p / 1000) === Math.floor(frontendBase / 1000)
+  );
+  if (isFrontend) {
+    return {
+      category: 'frontend',
+      label: 'Frontend',
+      badgeClass: 'bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+      ports,
+    };
+  }
+
+  // Backend: within backendBase..(backendBase+999) or starts with first digit of backendBase
+  const isBackend = ports.some(
+    (p) => (p >= backendBase && p < backendBase + 1000) || Math.floor(p / 1000) === Math.floor(backendBase / 1000)
+  );
+  if (isBackend) {
+    return {
+      category: 'backend',
+      label: 'Backend',
+      badgeClass: 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
+      ports,
+    };
+  }
+
+  // Fullstack: within fullstackBase..(fullstackBase+999) or starts with first digit of fullstackBase
+  const isFullstack = ports.some(
+    (p) => (p >= fullstackBase && p < fullstackBase + 1000) || Math.floor(p / 1000) === Math.floor(fullstackBase / 1000)
+  );
+  if (isFullstack) {
+    return {
+      category: 'fullstack',
+      label: 'Fullstack',
+      badgeClass: 'bg-violet-50 dark:bg-violet-950/60 text-violet-700 dark:text-violet-300 border-violet-200 dark:border-violet-800',
+      ports,
+    };
+  }
+
+  return {
+    category: 'other',
+    label: `Port ${ports[0]}`,
+    badgeClass: 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700',
+    ports,
+  };
+}
+
 export default function DockerContainersPage() {
   // Data state
   const [containers, setContainers] = useState<DockerContainerItem[]>([]);
   const [dockerHost, setDockerHost] = useState<string>('');
+  const [frontendBasePort, setFrontendBasePort] = useState<number>(3000);
+  const [backendBasePort, setBackendBasePort] = useState<number>(5000);
+  const [fullstackBasePort, setFullstackBasePort] = useState<number>(8000);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -62,7 +140,8 @@ export default function DockerContainersPage() {
 
   // Filters & Search
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [selectedState, setSelectedState] = useState<string>('all');
+  const [selectedState, setSelectedState] = useState<string>('running');
+  const [selectedPortFilter, setSelectedPortFilter] = useState<PortCategory>('all');
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
 
   // Logs Modal State
@@ -95,6 +174,13 @@ export default function DockerContainersPage() {
       setContainers(res.data || []);
       setDockerHost(res.host || '');
       hasLoadedOnce.current = true;
+
+      // Load port settings
+      dockerService.getConfig().then((cfg) => {
+        if (cfg?.frontend_base_port) setFrontendBasePort(cfg.frontend_base_port);
+        if (cfg?.backend_base_port) setBackendBasePort(cfg.backend_base_port);
+        if (cfg?.fullstack_base_port) setFullstackBasePort(cfg.fullstack_base_port);
+      }).catch(() => {});
 
       if (showToast) {
         toast.success('Daftar Docker Container berhasil diperbarui!');
@@ -138,7 +224,8 @@ export default function DockerContainersPage() {
         c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         c.image.toLowerCase().includes(searchQuery.toLowerCase()) ||
         c.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        c.status.toLowerCase().includes(searchQuery.toLowerCase());
+        c.status.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (c.ports && c.ports.some((p) => String(p.public_port || p.private_port).includes(searchQuery)));
 
       const matchState =
         selectedState === 'all' ||
@@ -146,15 +233,33 @@ export default function DockerContainersPage() {
         (selectedState === 'exited' && (c.state === 'exited' || c.state === 'dead')) ||
         (selectedState === 'other' && !['running', 'exited', 'dead'].includes(c.state));
 
-      return matchSearch && matchState;
+      const portInfo = getContainerPortCategory(c, frontendBasePort, backendBasePort, fullstackBasePort);
+      const matchPort =
+        selectedPortFilter === 'all' ||
+        portInfo.category === selectedPortFilter;
+
+      return matchSearch && matchState && matchPort;
     });
-  }, [containers, searchQuery, selectedState]);
+  }, [containers, searchQuery, selectedState, selectedPortFilter, frontendBasePort, backendBasePort, fullstackBasePort]);
 
   // Overall KPI Metrics
   const kpiStats = useMemo(() => {
     const running = containers.filter((c) => c.state === 'running').length;
     const exited = containers.filter((c) => c.state === 'exited' || c.state === 'dead').length;
     const other = containers.length - running - exited;
+
+    const frontendCount = containers.filter(
+      (c) => getContainerPortCategory(c, frontendBasePort, backendBasePort, fullstackBasePort).category === 'frontend'
+    ).length;
+    const backendCount = containers.filter(
+      (c) => getContainerPortCategory(c, frontendBasePort, backendBasePort, fullstackBasePort).category === 'backend'
+    ).length;
+    const fullstackCount = containers.filter(
+      (c) => getContainerPortCategory(c, frontendBasePort, backendBasePort, fullstackBasePort).category === 'fullstack'
+    ).length;
+    const noneCount = containers.filter(
+      (c) => getContainerPortCategory(c, frontendBasePort, backendBasePort, fullstackBasePort).category === 'none'
+    ).length;
 
     let totalCpu = 0;
     let totalMem = 0;
@@ -171,10 +276,14 @@ export default function DockerContainersPage() {
       running,
       exited,
       other,
+      frontendCount,
+      backendCount,
+      fullstackCount,
+      noneCount,
       totalCpu: parseFloat(totalCpu.toFixed(1)),
       totalMemFormatted: formatBytes(totalMem),
     };
-  }, [containers]);
+  }, [containers, frontendBasePort, backendBasePort, fullstackBasePort]);
 
   // Handle Container Actions (Start / Stop / Restart)
   const handleContainerAction = async (id: string, name: string, action: 'start' | 'stop' | 'restart') => {
@@ -421,17 +530,33 @@ export default function DockerContainersPage() {
 
           {/* Filters & View Toggle */}
           <div className="flex items-center gap-2.5 flex-wrap text-xs">
+            {/* Port Classification Filter (Select Dropdown) */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-slate-400 font-medium">Port:</span>
+              <select
+                value={selectedPortFilter}
+                onChange={(e) => setSelectedPortFilter(e.target.value as PortCategory)}
+                className="px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg font-medium text-slate-700 dark:text-slate-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-sky-500/20"
+              >
+                <option value="all">Semua Port ({containers.length})</option>
+                <option value="frontend">Frontend ({frontendBasePort}s) ({kpiStats.frontendCount})</option>
+                <option value="backend">Backend ({backendBasePort}s) ({kpiStats.backendCount})</option>
+                <option value="fullstack">Fullstack ({fullstackBasePort}s) ({kpiStats.fullstackCount})</option>
+                <option value="none">Tanpa Port ({kpiStats.noneCount})</option>
+              </select>
+            </div>
+
             {/* Status Filter */}
             <div className="flex items-center gap-1.5">
               <span className="text-slate-400 font-medium">Status:</span>
               <select
                 value={selectedState}
                 onChange={(e) => setSelectedState(e.target.value)}
-                className="px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg font-medium text-slate-700 dark:text-slate-300"
+                className="px-2.5 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg font-medium text-slate-700 dark:text-slate-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-sky-500/20"
               >
-                <option value="all">Semua ({containers.length})</option>
                 <option value="running">Berjalan ({kpiStats.running})</option>
                 <option value="exited">Berhenti ({kpiStats.exited})</option>
+                <option value="all">Semua ({containers.length})</option>
                 <option value="other">Lainnya ({kpiStats.other})</option>
               </select>
             </div>
@@ -545,23 +670,40 @@ export default function DockerContainersPage() {
                         </div>
                       </td>
 
-                      {/* Ports */}
-                      <td className="px-5 py-4 max-w-[200px]">
+                      {/* Ports & Classification */}
+                      <td className="px-5 py-4 max-w-[240px]">
                         {c.ports && c.ports.length > 0 ? (
-                          <div className="flex flex-wrap gap-1">
-                            {c.ports.slice(0, 2).map((p, pIdx) => (
-                              <span
-                                key={pIdx}
-                                className="font-mono text-[10px] px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700"
-                              >
-                                {p.public_port ? `${p.public_port}:` : ''}{p.private_port}/{p.type}
-                              </span>
-                            ))}
-                            {c.ports.length > 2 && (
-                              <span className="text-[9px] text-slate-400 font-bold px-1">
-                                +{c.ports.length - 2}
-                              </span>
-                            )}
+                          <div className="space-y-1.5">
+                            {/* Smart Port Category Badge */}
+                            {(() => {
+                              const portInfo = getContainerPortCategory(c, frontendBasePort, backendBasePort, fullstackBasePort);
+                              if (portInfo.category !== 'none' && portInfo.category !== 'other') {
+                                return (
+                                  <span
+                                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold border ${portInfo.badgeClass}`}
+                                  >
+                                    <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                                    {portInfo.label}
+                                  </span>
+                                );
+                              }
+                              return null;
+                            })()}
+                            <div className="flex flex-wrap gap-1">
+                              {c.ports.slice(0, 2).map((p, pIdx) => (
+                                <span
+                                  key={pIdx}
+                                  className="font-mono text-[10px] px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700"
+                                >
+                                  {p.public_port ? `${p.public_port}->` : ''}{p.private_port}/{p.type}
+                                </span>
+                              ))}
+                              {c.ports.length > 2 && (
+                                <span className="text-[9px] text-slate-400 font-bold px-1">
+                                  +{c.ports.length - 2}
+                                </span>
+                              )}
+                            </div>
                           </div>
                         ) : (
                           <span className="text-slate-400 text-[11px]">-</span>
@@ -720,6 +862,26 @@ export default function DockerContainersPage() {
                     <p className="text-[11px] text-slate-400 font-mono line-clamp-1" title={c.image}>
                       Image: {c.image}
                     </p>
+
+                    {/* Port Category in Grid */}
+                    <div className="flex items-center justify-between gap-1 flex-wrap pt-1">
+                      {(() => {
+                        const portInfo = getContainerPortCategory(c, frontendBasePort, backendBasePort, fullstackBasePort);
+                        return (
+                          <span
+                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold border ${portInfo.badgeClass}`}
+                          >
+                            <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                            {portInfo.label}
+                          </span>
+                        );
+                      })()}
+                      {c.ports && c.ports.length > 0 && (
+                        <span className="font-mono text-[10px] text-slate-500 dark:text-slate-400">
+                          {c.ports.slice(0, 2).map((p) => (p.public_port ? `${p.public_port}->${p.private_port}` : `${p.private_port}`)).join(', ')}
+                        </span>
+                      )}
+                    </div>
 
                     {isRunning && (
                       <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 dark:border-slate-800 text-xs">

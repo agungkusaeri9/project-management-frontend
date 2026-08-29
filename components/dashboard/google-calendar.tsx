@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   format,
   addMonths,
@@ -114,40 +114,41 @@ export function GoogleCalendar({ projects = [], issues = [] }: GoogleCalendarPro
   const [activeTab, setActiveTab] = useState<'interactive' | 'live'>('interactive');
 
   // Multi-Calendar Sources state (persisted in localStorage)
-  const [calendarSources, setCalendarSources] = useState<GoogleCalendarSource[]>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('toho_google_calendar_sources');
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-        } catch {
-          // fallback
-        }
-      }
-    }
-    return DEFAULT_CALENDAR_SOURCES;
-  });
+  const [calendarSources, setCalendarSources] = useState<GoogleCalendarSource[]>(DEFAULT_CALENDAR_SOURCES);
 
   const [showSettings, setShowSettings] = useState<boolean>(false);
   const [savedSuccess, setSavedSuccess] = useState<boolean>(false);
 
   // Jira Integration State
   const [showJiraModal, setShowJiraModal] = useState<boolean>(false);
-  const [jiraIssues, setJiraIssues] = useState<SyncedJiraIssue[]>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('toho_jira_synced_issues');
+  const [jiraIssues, setJiraIssues] = useState<SyncedJiraIssue[]>([]);
+
+  // Sync from localStorage after mount to prevent SSR hydration mismatch
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('toho_google_calendar_sources');
       if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          if (Array.isArray(parsed)) return parsed;
-        } catch {
-          // ignore
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setCalendarSources(parsed);
         }
       }
+    } catch {
+      // fallback
     }
-    return [];
-  });
+
+    try {
+      const savedJira = localStorage.getItem('toho_jira_synced_issues');
+      if (savedJira) {
+        const parsed = JSON.parse(savedJira);
+        if (Array.isArray(parsed)) {
+          setJiraIssues(parsed);
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
 
   // New Calendar Form State
   const [newCalName, setNewCalName] = useState<string>('');

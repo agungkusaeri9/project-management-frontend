@@ -5,6 +5,8 @@ export interface GithubConfigData {
   has_token: boolean;
   owner: string;
   api_url: string;
+  auto_sync?: string;
+  sync_interval_minutes?: string;
 }
 
 export interface GithubRepoOwner {
@@ -40,6 +42,11 @@ export interface GithubRepository {
   topics?: string[];
   tags?: string[];
   latest_tag?: string;
+  project_id?: string | null;
+  internal_project_name?: string | null;
+  internal_project_code?: string | null;
+  internal_customer_name?: string | null;
+  last_synced_at?: string | null;
 }
 
 export interface GithubUser {
@@ -148,7 +155,13 @@ export const githubService = {
     return res.data;
   },
 
-  async saveConfig(data: { token?: string; owner: string; api_url: string }): Promise<{ message: string }> {
+  async saveConfig(data: {
+    token?: string;
+    owner: string;
+    api_url: string;
+    auto_sync?: string;
+    sync_interval_minutes?: string;
+  }): Promise<{ message: string }> {
     const res = await api.post<{ message: string }>('/github/config', data);
     return res.data;
   },
@@ -195,6 +208,35 @@ export const githubService = {
     const res = await api.get<{ data?: GithubTag[] } | GithubTag[]>(`/github/repositories/${owner}/${repo}/tags`);
     const data = (res.data as any)?.data || res.data;
     return Array.isArray(data) ? data : [];
+  },
+
+  async sync(): Promise<{ status: boolean; message: string; data?: any }> {
+    const res = await api.post<{ status: boolean; message: string; data?: any }>('/github/sync');
+    return res.data;
+  },
+
+  async getSummary(): Promise<{ status: boolean; data: any }> {
+    const res = await api.get<{ status: boolean; data: any }>('/github/summary');
+    return res.data;
+  },
+
+  async linkProject(repoId: number, projectId: string | null): Promise<{ status: boolean; message: string }> {
+    const res = await api.put<{ status: boolean; message: string }>(`/github/repositories/${repoId}/link`, {
+      project_id: projectId,
+    });
+    return res.data;
+  },
+
+  async getProjectRepositories(projectId: string): Promise<GithubRepository[]> {
+    const res = await api.get<{ status: boolean; data: GithubRepository[]; total: number }>(`/github/projects/${projectId}/repositories`);
+    return res.data.data || [];
+  },
+
+  async linkProjectRepositories(projectId: string, repositoryIds: number[]): Promise<{ status: boolean; message: string }> {
+    const res = await api.put<{ status: boolean; message: string }>(`/github/projects/${projectId}/repositories`, {
+      repository_ids: repositoryIds,
+    });
+    return res.data;
   },
 
   async getPullRequests(owner: string, repo: string, state: string = 'all'): Promise<GithubPullRequest[]> {

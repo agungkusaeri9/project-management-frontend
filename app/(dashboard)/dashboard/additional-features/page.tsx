@@ -39,8 +39,9 @@ export default function AdditionalFeaturesPage() {
       const projectName = getProjectName(feature.project_id).toLowerCase();
       const customerName = getCustomerName(feature.project_id).toLowerCase();
       const codeStr = (feature.code || '').toLowerCase();
+      const poStr = (feature.po_number || '').toLowerCase();
       
-      return projectName.includes(lower) || customerName.includes(lower) || codeStr.includes(lower);
+      return projectName.includes(lower) || customerName.includes(lower) || codeStr.includes(lower) || poStr.includes(lower);
     });
   }, [allFeatures, search, projects]);
 
@@ -125,7 +126,7 @@ export default function AdditionalFeaturesPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               type="text"
-              placeholder="Search Code, Project..."
+              placeholder="Search Code, PO, Project..."
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
@@ -159,9 +160,11 @@ export default function AdditionalFeaturesPage() {
             <thead>
               <tr className="bg-slate-50/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800">
                 <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Code</th>
+                <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">No. PO</th>
                 <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Project</th>
                 <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Customer</th>
                 <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Start Date</th>
                 <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Est. Completion</th>
                 <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Created</th>
                 <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right">Actions</th>
@@ -170,13 +173,13 @@ export default function AdditionalFeaturesPage() {
             <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
               {isLoading ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center">
+                  <td colSpan={9} className="px-6 py-12 text-center">
                     <Loader2 className="w-8 h-8 animate-spin text-indigo-500 mx-auto" />
                   </td>
                 </tr>
               ) : currentFeatures.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center">
+                  <td colSpan={9} className="px-6 py-12 text-center">
                     <FileText className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
                     <p className="text-slate-500 font-medium">No additional features found</p>
                   </td>
@@ -187,14 +190,37 @@ export default function AdditionalFeaturesPage() {
                     <td className="px-6 py-4">
                       <Link 
                         href={`/dashboard/additional-features/${feature.id}`}
-                        className="font-mono text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:underline inline-flex items-center gap-1.5"
+                        className="font-mono text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:underline inline-block"
                       >
-                        <Zap className="w-3.5 h-3.5" />
-                        <span>{feature.code || 'N/A'}</span>
+                        {feature.code || 'N/A'}
                       </Link>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="font-semibold text-slate-900 dark:text-white line-clamp-1">
+                      {feature.po_number || feature.po_file_url ? (
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          {feature.po_number && (
+                            <span className="font-semibold text-xs px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200/80 dark:border-slate-700">
+                              {feature.po_number}
+                            </span>
+                          )}
+                          {feature.po_file_url && (
+                            <a
+                              href={feature.po_file_url.startsWith('http') ? feature.po_file_url : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8081'}${feature.po_file_url}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-1 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors inline-flex items-center"
+                              title={feature.po_file_name || 'Lihat PO PDF'}
+                            >
+                              <FileText className="w-3.5 h-3.5" />
+                            </a>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-sm text-slate-400">-</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-sm text-slate-600 dark:text-slate-400 break-words whitespace-normal max-w-xs">
                         {getProjectName(feature.project_id)}
                       </div>
                     </td>
@@ -207,10 +233,15 @@ export default function AdditionalFeaturesPage() {
                       {renderStatus(feature.status)}
                     </td>
                     <td className="px-6 py-4">
+                      <div className="text-sm text-slate-600 dark:text-slate-400 font-medium">
+                        {feature.start_date ? format(new Date(feature.start_date), 'dd/MM/yyyy') : '-'}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
                       {feature.estimated_completion_date ? (
                         <div className="flex items-center gap-2 text-sm text-amber-600 dark:text-amber-400 font-medium">
                           <Calendar className="w-4 h-4" />
-                          {format(new Date(feature.estimated_completion_date), 'dd MMM yyyy')}
+                          {format(new Date(feature.estimated_completion_date), 'dd/MM/yyyy')}
                         </div>
                       ) : (
                         <span className="text-sm text-slate-400">-</span>
@@ -218,18 +249,17 @@ export default function AdditionalFeaturesPage() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="text-sm text-slate-500 dark:text-slate-400">
-                        {feature.created_at ? format(new Date(feature.created_at), 'dd MMM yyyy') : '-'}
+                        {feature.created_at ? format(new Date(feature.created_at), 'dd/MM/yyyy') : '-'}
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-end gap-1.5">
                         <Link
                           href={`/dashboard/additional-features/${feature.id}`}
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 rounded-xl transition-colors shadow-2xs border border-indigo-200/80 dark:border-indigo-900/50"
+                          className="p-1.5 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl transition-colors border border-slate-200 dark:border-slate-800"
                           title="Lihat Detail Feature"
                         >
                           <Eye className="w-3.5 h-3.5" />
-                          <span>Detail</span>
                         </Link>
                         <Link
                           href={`/dashboard/additional-features/${feature.id}/edit`}

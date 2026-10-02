@@ -456,6 +456,13 @@ export default function ProjectDetailPage() {
             <Zap className="w-5 h-5 text-amber-500" />
             <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Additional Features</h2>
           </div>
+          <Link
+            href={`/dashboard/projects/${projectId}/additional-features/create`}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/60 dark:hover:bg-amber-900/60 text-amber-700 dark:text-amber-400 transition-colors shadow-2xs border border-amber-200/60 dark:border-amber-900/40"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Tambah Additional</span>
+          </Link>
         </div>
 
         <div className="p-6">
@@ -476,25 +483,57 @@ export default function ProjectDetailPage() {
                   href={`/dashboard/additional-features/${af.id}`}
                   className="group flex flex-col p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20 hover:border-amber-300 dark:hover:border-amber-700 hover:shadow-sm transition-all"
                 >
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-semibold text-slate-900 dark:text-slate-100 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
-                      {af.name}
-                    </h3>
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">
-                      Additional
+                  <div className="flex justify-between items-start mb-2 gap-2 flex-wrap">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-800/50">
+                        {af.code || 'N/A'}
+                      </span>
+                      {af.po_number && (
+                        <span className="text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 inline-flex items-center gap-1">
+                          <FileText className="w-3 h-3 text-slate-400" />
+                          PO: {af.po_number}
+                          {af.po_file_url && <span className="text-[10px] text-red-500 font-bold ml-0.5">PDF</span>}
+                        </span>
+                      )}
+                    </div>
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${statusStyle(af.status || 'ongoing')}`}>
+                      {af.status || 'Ongoing'}
                     </span>
                   </div>
-                  {af.description && (
-                    <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 mb-3 flex-1">
-                      {af.description}
-                    </p>
-                  )}
-                  {af.estimated_completion_date && (
-                    <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mt-auto">
-                      <Calendar className="w-3.5 h-3.5" />
-                      Est. Completion: {format(new Date(af.estimated_completion_date), 'dd MMM yyyy')}
+
+                  {af.items && af.items.length > 0 && (
+                    <div className="my-2 space-y-1.5 flex-1">
+                      <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                        Feature Items ({af.items.length})
+                      </span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {af.items.slice(0, 3).map((item) => (
+                          <span
+                            key={item.id}
+                            className="text-xs font-medium px-2 py-0.5 rounded-md bg-white dark:bg-slate-800 border border-slate-200/70 dark:border-slate-700 text-slate-700 dark:text-slate-300 line-clamp-1 max-w-[220px]"
+                          >
+                            {item.name}
+                          </span>
+                        ))}
+                        {af.items.length > 3 && (
+                          <span className="text-xs font-medium px-1.5 py-0.5 text-slate-400">
+                            +{af.items.length - 3} more
+                          </span>
+                        )}
+                      </div>
                     </div>
                   )}
+
+                  <div className="pt-3 mt-auto border-t border-slate-200/60 dark:border-slate-800 grid grid-cols-2 gap-2 text-xs text-slate-500 dark:text-slate-400">
+                    <div className="flex items-center gap-1.5">
+                      <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <span>Start: {af.start_date ? format(new Date(af.start_date), 'dd/MM/yyyy') : '-'}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 justify-end">
+                      <Calendar className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                      <span>Est: {af.estimated_completion_date ? format(new Date(af.estimated_completion_date), 'dd/MM/yyyy') : '-'}</span>
+                    </div>
+                  </div>
                 </Link>
               ))}
             </div>

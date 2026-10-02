@@ -1,6 +1,4 @@
-import axios from 'axios';
-
-const API_URL = 'http://localhost:8081/api';
+import api from '@/lib/axios';
 
 export interface SubFeature {
   id: string;
@@ -57,6 +55,10 @@ export interface AdditionalFeature {
   id: string;
   project_id: string;
   code?: string;
+  po_number?: string;
+  po_file_id?: string;
+  po_file_url?: string;
+  po_file_name?: string;
   name?: string;
   title?: string;
   description?: string;
@@ -70,30 +72,42 @@ export interface AdditionalFeature {
 
 export const additionalFeatureService = {
   getAll: async (): Promise<AdditionalFeature[]> => {
-    const response = await axios.get(`${API_URL}/additional-features`);
+    const response = await api.get<{ data: AdditionalFeature[] }>('/additional-features');
     return response.data.data;
   },
 
   getAllByProjectId: async (projectId: string): Promise<AdditionalFeature[]> => {
-    const response = await axios.get(`${API_URL}/projects/${projectId}/additional-features`);
+    const response = await api.get<{ data: AdditionalFeature[] }>(`/projects/${projectId}/additional-features`);
     return response.data.data;
   },
 
   getById: async (id: string): Promise<AdditionalFeature> => {
-    const response = await axios.get(`${API_URL}/additional-features/${id}`);
+    const response = await api.get<{ data: AdditionalFeature }>(`/additional-features/${id}`);
     return response.data.data;
   },
 
   create: async (projectId: string, data: AdditionalFeature): Promise<AdditionalFeature> => {
-    const response = await axios.post(`${API_URL}/projects/${projectId}/additional-features`, data);
+    const response = await api.post<{ data: AdditionalFeature }>(`/projects/${projectId}/additional-features`, data);
     return response.data.data;
   },
 
+  uploadPO: async (file: File): Promise<{ file_url: string; file_name: string }> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await api.post<{ file_url: string; file_name: string }>('/additional-features/upload-po', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+
   update: async (id: string, data: AdditionalFeature): Promise<void> => {
-    await axios.put(`${API_URL}/additional-features/${id}`, data);
+    await api.put(`/additional-features/${id}`, data);
   },
 
   delete: async (id: string): Promise<void> => {
-    await axios.delete(`${API_URL}/additional-features/${id}`);
+    await api.delete(`/additional-features/${id}`);
   },
 };
+

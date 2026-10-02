@@ -1,0 +1,779 @@
+{
+  "id": "k6-challenges",
+  "title": "k6 Performance & Load Testing Challenges",
+  "subtitle": "Playground komprehensif untuk belajar load testing, performance engineering, backend scalability, dan system design menggunakan k6.",
+  "version": "1.0",
+  "overview": {
+    "description": "Project ini adalah playground untuk belajar load testing, performance engineering, backend scalability, dan system design menggunakan k6. Goal utamanya bukan sekadar mengetahui apakah API kuat 2.000 user, melainkan memahami bagaimana sistem berperforma di bawah load, kapan terjadi degradasi, apa bottleneck utama, pengaruh database/cache/queue, dan optimasi berbasis data.",
+    "coreQuestions": [
+      "Bagaimana API berperforma di bawah load?",
+      "Kapan sistem mulai mengalami degradation?",
+      "Apa bottleneck utama?",
+      "Bagaimana database memengaruhi performance?",
+      "Bagaimana horizontal scaling bekerja?",
+      "Bagaimana caching dan queue memengaruhi system?",
+      "Bagaimana sistem menghadapi traffic spike?",
+      "Bagaimana melakukan performance optimization berdasarkan data?"
+    ],
+    "finalGoal": "How many users can this system handle, what is the bottleneck, and what happens when we exceed its capacity?"
+  },
+  "learningGoals": [
+    "Load testing fundamentals",
+    "Concurrent users vs requests per second (VUs vs RPS)",
+    "Latency dan throughput",
+    "p50, p95, dan p99 latency percentiles",
+    "Error rate & failure thresholds",
+    "Database bottleneck & slow query analysis",
+    "Connection pooling & resource exhaustion",
+    "Race condition & concurrency anomalies",
+    "Horizontal scaling & stateless architecture",
+    "Load balancing & distribution strategies",
+    "Redis caching & cache hit ratio",
+    "Async processing & background job workers",
+    "Rate limiting & DDoS protection",
+    "Spike testing & system recovery",
+    "Capacity planning & breaking point detection",
+    "Performance optimization based on empirical data"
+  ],
+  "techStack": {
+    "recommended": [
+      "k6",
+      "Docker",
+      "Docker Compose",
+      "PostgreSQL",
+      "Redis",
+      "Backend API (.NET / NestJS / Go)",
+      "Prometheus",
+      "Grafana"
+    ],
+    "optional": [
+      "Nginx / HAProxy",
+      "RabbitMQ / Kafka / BullMQ",
+      "Kubernetes"
+    ],
+    "note": "Kubernetes tidak diperlukan untuk challenge awal. Fokus terlebih dahulu pada fundamental performance engineering."
+  },
+  "performanceMetrics": [
+    { "metric": "RPS", "description": "Requests per second (laju request per detik yang dikirim/diterima)" },
+    { "metric": "Throughput", "description": "Jumlah total request yang berhasil diproses per satuan waktu" },
+    { "metric": "p50", "description": "Median latency (50% user merasakan response time di bawah angka ini)" },
+    { "metric": "p95", "description": "Latency yang dialami 95% request (indikator SLA umum)" },
+    { "metric": "p99", "description": "Latency tail (dialami 1% request paling lambat, deteksi outlier)" },
+    { "metric": "Error Rate", "description": "Persentase request gagal (HTTP 5xx, 429, timeouts, ECONNRESET)" },
+    { "metric": "CPU", "description": "Persentase CPU utilization pada API server dan DB server" },
+    { "metric": "Memory", "description": "Memory utilization / RSS consumption dan deteksi leak" },
+    { "metric": "DB Connections", "description": "Jumlah active & idle connection pool di database" },
+    { "metric": "DB Query Latency", "description": "Waktu eksekusi query internal database engine" },
+    { "metric": "Cache Hit Ratio", "description": "Persentase request yang berhasil dilayani dari memory cache" }
+  ],
+  "categories": [
+    { "id": "basic", "label": "Level 1 — Basic Load Testing", "count": 2 },
+    { "id": "registration", "label": "Level 2 — Registration", "count": 2 },
+    { "id": "auth", "label": "Level 3 — Authentication", "count": 1 },
+    { "id": "realistic", "label": "Level 4 — Realistic Traffic", "count": 2 },
+    { "id": "spike", "label": "Level 5 — Spike Testing", "count": 1 },
+    { "id": "database", "label": "Level 6 — Database Performance", "count": 2 },
+    { "id": "scaling", "label": "Level 7 — Horizontal Scaling", "count": 1 },
+    { "id": "caching", "label": "Level 8 — Caching", "count": 1 },
+    { "id": "async", "label": "Level 9 — Async Processing", "count": 1 },
+    { "id": "rate-limit", "label": "Level 10 — Rate Limiting", "count": 1 },
+    { "id": "production", "label": "Final Boss — Production Simulation", "count": 1 }
+  ],
+  "challenges": [
+    {
+      "id": "ch-k6-01-api-baseline",
+      "number": "01",
+      "level": "Level 1 — Basic Load Testing",
+      "levelNumber": 1,
+      "title": "API Baseline",
+      "category": "basic",
+      "categoryLabel": "Level 1 — Basic Load Testing",
+      "difficulty": "EASY",
+      "severity": "MEDIUM",
+      "targetEndpoint": "GET /health",
+      "targetMethod": "GET",
+      "targetVus": 100,
+      "duration": "1 minute",
+      "objective": "Menentukan baseline performance API sebelum melakukan optimization.",
+      "scenario": "Menjalankan load test pada endpoint ringan (healthcheck) dengan 100 concurrent virtual users selama 1 menit untuk mengukur batas terendah latency jaringan dan runtime overhead.",
+      "loadProfile": "Constant 100 VUs for 1m",
+      "successCriteria": [
+        "Error Rate < 1%",
+        "p95 Latency < 500ms (idealnya < 20ms pada localhost/LAN)",
+        "Zero HTTP 500 / unhandled exceptions"
+      ],
+      "metricsToMeasure": [
+        "RPS (Requests Per Second)",
+        "p50, p95, p99 Latency",
+        "Error Rate",
+        "API CPU & Memory Utilization"
+      ],
+      "questions": [
+        "Berapa RPS yang dapat dicapai API pada endpoint minimal?",
+        "Berapa baseline p95 latency sistem tanpa keterlibatan database?",
+        "Apakah response time stabil sepanjang durasi 1 menit atau mengalami jitter?",
+        "Berapa CPU utilization API server ketika menangani 100 VUs?"
+      ],
+      "answersOrHints": [
+        "Baseline RPS pada endpoint `/health` mencerminkan batas atas throughput framework (routing + serialization overhead).",
+        "p95 latency pada endpoint murni in-memory tanpa I/O biasanya berada di rentang 2-15ms.",
+        "Jitter latency pada test baseline sering kali mengindikasikan Garbage Collection (GC) pause atau thread context switching.",
+        "Jika CPU mencapai 100% pada 100 VUs, periksa thread pooling atau event loop blocking."
+      ],
+      "k6Script": "import http from 'k6/http';\nimport { check, sleep } from 'k6';\n\nexport const options = {\n  vus: 100,\n  duration: '1m',\n  thresholds: {\n    http_req_failed: ['rate<0.01'],   // Error rate must be < 1%\n    http_req_duration: ['p(95)<500'], // 95% of requests must complete below 500ms\n  },\n};\n\nexport default function () {\n  const res = http.get('http://localhost:3000/health');\n  \n  check(res, {\n    'status is 200': (r) => r.status === 200,\n    'response time < 200ms': (r) => r.timings.duration < 200,\n  });\n\n  sleep(0.1); // 100ms think time between iterations\n}",
+      "tags": ["Baseline", "Health Check", "Latency", "p95", "Throughput"]
+    },
+    {
+      "id": "ch-k6-02-1000-concurrent-users",
+      "number": "02",
+      "level": "Level 1 — Basic Load Testing",
+      "levelNumber": 1,
+      "title": "1,000 Concurrent Users",
+      "category": "basic",
+      "categoryLabel": "Level 1 — Basic Load Testing",
+      "difficulty": "MEDIUM",
+      "severity": "MEDIUM",
+      "targetEndpoint": "GET /products",
+      "targetMethod": "GET",
+      "targetVus": 1000,
+      "duration": "3 minutes (staged ramp-up)",
+      "objective": "Mengetahui bagaimana API berperforma ketika concurrent users meningkat dari 100 hingga 1.000 VUs.",
+      "scenario": "Mengirimkan traffic bertahap ke endpoint GET /products yang membaca data dari database untuk mendeteksi kapan degradasi latency mulai terjadi.",
+      "loadProfile": "100 users (1m) → 500 users (1m) → 1,000 users (1m)",
+      "successCriteria": [
+        "Sistem tidak crash saat mencapai 1.000 VUs",
+        "Error Rate < 2%",
+        "Identifikasi titik awal kenaikan latency (knee point)"
+      ],
+      "metricsToMeasure": [
+        "Latency progression (100 vs 500 vs 1000 VUs)",
+        "Error Rate across stages",
+        "CPU vs Memory vs Database saturation"
+      ],
+      "questions": [
+        "Kapan latency mulai meningkat secara eksponensial?",
+        "Apakah error rate meningkat saat beralih dari 500 ke 1.000 users?",
+        "Apa resource pertama yang menjadi bottleneck: CPU, Memory, atau Database?",
+        "Apakah sistem mengalami TCP socket exhaustion (TIME_WAIT spikes)?"
+      ],
+      "answersOrHints": [
+        "Kenaikan latency tajam pada user count tertentu dikenal sebagai 'Knee of the Curve' yang menandakan antrian request mulai menumpuk.",
+        "Resource pertama yang biasanya jenuh pada GET query adalah Database Connection Pool atau CPU database akibat scanning baris.",
+        "Gunakan monitoring Grafana/Prometheus bersamaan dengan k6 untuk melihat kurva CPU vs p95."
+      ],
+      "k6Script": "import http from 'k6/http';\nimport { check, sleep } from 'k6';\n\nexport const options = {\n  stages: [\n    { duration: '1m', target: 100 },  // Ramp up to 100 users\n    { duration: '1m', target: 500 },  // Ramp up to 500 users\n    { duration: '1m', target: 1000 }, // Ramp up to 1,000 users\n    { duration: '30s', target: 0 },   // Ramp down\n  ],\n  thresholds: {\n    http_req_failed: ['rate<0.02'],\n    http_req_duration: ['p(95)<1000'],\n  },\n};\n\nexport default function () {\n  const res = http.get('http://localhost:3000/products');\n  check(res, {\n    'status is 200': (r) => r.status === 200,\n    'has products data': (r) => r.body && r.body.length > 0,\n  });\n  sleep(0.5);\n}",
+      "tags": ["Load Progression", "Ramp Up", "Capacity", "Bottleneck Detection"]
+    },
+    {
+      "id": "ch-k6-03-2000-registration-burst",
+      "number": "03",
+      "level": "Level 2 — Registration",
+      "levelNumber": 2,
+      "title": "2,000 Registration Burst",
+      "category": "registration",
+      "categoryLabel": "Level 2 — Registration",
+      "difficulty": "HARD",
+      "severity": "HIGH",
+      "targetEndpoint": "POST /register",
+      "targetMethod": "POST",
+      "targetVus": 2000,
+      "duration": "1 minute burst",
+      "objective": "Mengukur kemampuan API menangani registration spike dengan unique user payload per virtual user.",
+      "scenario": "2.000 virtual users mengirimkan request registrasi secara serempak. Setiap user menghasilkan email unik dinamis menggunakan UUID atau counter index.",
+      "loadProfile": "2,000 users burst → POST /register",
+      "successCriteria": [
+        "Semua 2.000 akun berhasil terdaftar tanpa duplicate",
+        "Password hashing (bcrypt/argon2) tidak menyebabkan timeout",
+        "Connection pool database tidak exhausted"
+      ],
+      "metricsToMeasure": [
+        "RPS, p50, p95, p99 Latency",
+        "Error Rate (500 internal errors vs 422 validation)",
+        "API Server CPU & Memory (Crypto / Hashing load)",
+        "Database CPU & Active Connections (Insert throughput)"
+      ],
+      "questions": [
+        "Apa bottleneck utama: Password hashing CPU load atau Database Write I/O?",
+        "Berapa cost bcrypt/argon2 yang ideal agar aman namun tahan load burst?",
+        "Apakah database mampu menangani 2.000 concurrent INSERT transactions?",
+        "Apakah connection pool database mencukupi atau terjadi connection timeout?"
+      ],
+      "answersOrHints": [
+        "Bcrypt cost 12 memakan ~300ms CPU per hash. 2.000 simultaneous hashes pada 4-core server akan langsung membuat CPU 100% dan latency melonjak hingga puluhan detik.",
+        "Pertimbangkan bcrypt cost 10 (atau Argon2id dengan resource tuning) atau delegasikan hashing ke worker thread/async queue jika memungkinkan.",
+        "Gunakan DB connection pool sizing yang proporsional dengan max database workers."
+      ],
+      "k6Script": "import http from 'k6/http';\nimport { check, sleep } from 'k6';\nimport { randomString } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';\n\nexport const options = {\n  vus: 2000,\n  duration: '1m',\n  thresholds: {\n    http_req_failed: ['rate<0.01'],\n    http_req_duration: ['p(95)<2000'],\n  },\n};\n\nexport default function () {\n  const uniqueEmail = `user-${__VU}-${__ITER}-${randomString(6)}@example.com`;\n  const payload = JSON.stringify({\n    email: uniqueEmail,\n    password: 'Password123!',\n  });\n\n  const params = {\n    headers: { 'Content-Type': 'application/json' },\n  };\n\n  const res = http.post('http://localhost:3000/register', payload, params);\n  check(res, {\n    'status is 201': (r) => r.status === 201,\n  });\n  sleep(1);\n}",
+      "tags": ["Registration", "CPU Intensive", "Bcrypt", "DB Write", "Spike"]
+    },
+    {
+      "id": "ch-k6-04-same-email-race-condition",
+      "number": "04",
+      "level": "Level 2 — Registration",
+      "levelNumber": 2,
+      "title": "Same Email Race Condition",
+      "category": "registration",
+      "categoryLabel": "Level 2 — Registration",
+      "difficulty": "HARD",
+      "severity": "CRITICAL",
+      "targetEndpoint": "POST /register",
+      "targetMethod": "POST",
+      "targetVus": 2000,
+      "duration": "10 seconds instantaneous shock",
+      "objective": "Menguji behavior sistem ketika 2.000 concurrent requests mencoba mendaftarkan email yang persis sama secara serentak.",
+      "scenario": "2.000 concurrent requests menembak POST /register dengan payload JSON email yang identik: `test@example.com`.",
+      "loadProfile": "2,000 concurrent requests sending identical email",
+      "mustHave": "Database table users WAJIB memiliki UNIQUE CONSTRAINT pada kolom email: `UNIQUE(email)`",
+      "expectedResult": "Tepat 1 request → 201 Created, dan 1.999 request → 409 Conflict (atau 400 Bad Request)",
+      "successCriteria": [
+        "Tidak ada duplicate record di database (tepat 1 record terbentuk)",
+        "Zero HTTP 500 errors (semua duplicate ditangani dengan 409 Conflict)",
+        "Database transaction rollback aman tanpa deadlocks"
+      ],
+      "metricsToMeasure": [
+        "HTTP 201 Count vs HTTP 409 Count",
+        "HTTP 500 Count (harus 0)",
+        "Database Deadlock count",
+        "Transaction rollback latency"
+      ],
+      "questions": [
+        "Apakah terjadi duplicate user di database jika hanya bergantung pada validasi aplikasi (SELECT then INSERT)?",
+        "Apakah API mengembalikan HTTP 409 Conflict yang bersih atau crash dengan HTTP 500 Unhandled UniqueConstraintViolation?",
+        "Bagaimana transaction isolation level database menangani collision?",
+        "Apakah terjadi database deadlock saat ribuan request mencoba lock index yang sama?"
+      ],
+      "answersOrHints": [
+        "Validasi 'SELECT WHERE email = ...' pada level aplikasi PASTI gagal (race condition) di bawah concurrent load tanpa database UNIQUE constraint.",
+        "Aplikasi harus menangkap database error code (seperti Postgres 23505 unique_violation) dan memetakannya menjadi HTTP 409 Conflict yang aman tanpa logging stack trace 500.",
+        "Gunakan DB unique index dan pastikan ORM / query runner mengeksekusi error translation."
+      ],
+      "k6Script": "import http from 'k6/http';\nimport { check } from 'k6';\nimport { Counter } from 'k6/metrics';\n\nconst createdCount = new Counter('status_201_created');\nconst conflictCount = new Counter('status_409_conflict');\nconst serverErrorCount = new Counter('status_500_error');\n\nexport const options = {\n  scenarios: {\n    race_condition: {\n      executor: 'shared-iterations',\n      vus: 2000,\n      iterations: 2000,\n      maxDuration: '30s',\n    },\n  },\n};\n\nexport default function () {\n  const payload = JSON.stringify({\n    email: 'race-condition-target@example.com',\n    password: 'Password123!',\n  });\n\n  const params = {\n    headers: { 'Content-Type': 'application/json' },\n  };\n\n  const res = http.post('http://localhost:3000/register', payload, params);\n\n  if (res.status === 201) {\n    createdCount.add(1);\n  } else if (res.status === 409) {\n    conflictCount.add(1);\n  } else if (res.status >= 500) {\n    serverErrorCount.add(1);\n  }\n\n  check(res, {\n    'is 201 or 409 (no 500)': (r) => r.status === 201 || r.status === 409,\n  });\n}",
+      "tags": ["Race Condition", "Unique Constraint", "Concurrency", "HTTP 409", "Data Integrity"]
+    },
+    {
+      "id": "ch-k6-05-login-storm",
+      "number": "05",
+      "level": "Level 3 — Authentication",
+      "levelNumber": 3,
+      "title": "Login Storm",
+      "category": "auth",
+      "categoryLabel": "Level 3 — Authentication",
+      "difficulty": "HARD",
+      "severity": "CRITICAL",
+      "targetEndpoint": "POST /login",
+      "targetMethod": "POST",
+      "targetVus": 5000,
+      "duration": "2 minutes",
+      "objective": "Mensimulasikan kondisi Login Storm ketika 5.000 user melakukan autentikasi bersamaan (misalnya saat pengumuman event atau jam masuk kantor).",
+      "scenario": "5.000 virtual users melakukan POST /login dengan valid credentials secara simultan.",
+      "focus": "Request → Validate DTO → Database Query User → Password Hash Verification (CPU Heavy) → JWT Sign Token → Response",
+      "successCriteria": [
+        "Login success rate > 99%",
+        "CPU throttling tidak menyebabkan request drop / timeout",
+        "JWT generation tidak memblokir event loop"
+      ],
+      "metricsToMeasure": [
+        "Login throughput (Logins per second)",
+        "p95 and p99 verification latency",
+        "API CPU Utilization %",
+        "Database Read Connection pool metrics"
+      ],
+      "questions": [
+        "Apakah CPU menjadi bottleneck absolut karena password hash verification?",
+        "Berapa login per detik (logins/sec) yang dapat diproses oleh 1 instance API?",
+        "Bagaimana perbedaan performa antara bcrypt vs Argon2id vs PBKDF2 under load?",
+        "Apakah database connection pool cepat habis karena proses hash menahan DB connection terlalu lama jika dalam 1 transaction?"
+      ],
+      "answersOrHints": [
+        "JANGAN menahan database connection saat melakukan hashing password! Ambil hash dari DB, segera tutup connection/transaction, baru jalankan password verification di memory.",
+        "Gunakan async worker pool untuk CPU intensive tasks di Node.js (seperti libuv thread pool `UV_THREADPOOL_SIZE` atau worker threads) atau thread pool di .NET.",
+        "Gunakan stateless JWT signing dengan asymmetric key (RS256/EdDSA) atau symmetric HS256 yang efisien."
+      ],
+      "k6Script": "import http from 'k6/http';\nimport { check, sleep } from 'k6';\n\nexport const options = {\n  stages: [\n    { duration: '30s', target: 1000 },\n    { duration: '1m', target: 5000 },\n    { duration: '30s', target: 0 },\n  ],\n  thresholds: {\n    http_req_failed: ['rate<0.02'],\n    http_req_duration: ['p(95)<2500'],\n  },\n};\n\nexport default function () {\n  const payload = JSON.stringify({\n    email: 'loadtest-user@example.com',\n    password: 'ValidPassword123!',\n  });\n\n  const params = { headers: { 'Content-Type': 'application/json' } };\n  const res = http.post('http://localhost:3000/login', payload, params);\n\n  check(res, {\n    'login success (200)': (r) => r.status === 200,\n    'token received': (r) => {\n      try {\n        return JSON.parse(r.body).token !== undefined;\n      } catch (e) { return false; }\n    },\n  });\n\n  sleep(1);\n}",
+      "tags": ["Authentication", "Login Storm", "JWT", "Bcrypt", "CPU Throttling"]
+    },
+    {
+      "id": "ch-k6-06-mixed-traffic",
+      "number": "06",
+      "level": "Level 4 — Realistic Traffic",
+      "levelNumber": 4,
+      "title": "Mixed Traffic Distribution",
+      "category": "realistic",
+      "categoryLabel": "Level 4 — Realistic Traffic",
+      "difficulty": "HARD",
+      "severity": "HIGH",
+      "targetEndpoint": "Multi-Endpoint Workflow",
+      "targetMethod": "GET / POST",
+      "targetVus": 5000,
+      "duration": "5 minutes",
+      "objective": "Mensimulasikan traffic realistis multi-endpoint dengan bobot persentase berbeda untuk meniru perilaku user sebenarnya.",
+      "scenario": "5.000 concurrent users mengeksekusi weighted scenario distribution:\n- 70% GET /products (Browsing catalog)\n- 20% GET /profile (User dashboard)\n- 5% POST /orders (Checkout write)\n- 5% POST /login (Auth flow)",
+      "loadProfile": "5,000 users for 5 minutes with weighted distribution",
+      "trafficDistribution": [
+        { "endpoint": "GET /products", "weight": "70%", "type": "Read (Heavy)" },
+        { "endpoint": "GET /profile", "weight": "20%", "type": "Read (Auth required)" },
+        { "endpoint": "POST /orders", "weight": "5%", "type": "Write (Transactional)" },
+        { "endpoint": "POST /login", "weight": "5%", "type": "Auth (CPU heavy)" }
+      ],
+      "successCriteria": [
+        "Overall Error Rate < 1.5%",
+        "Write requests (POST /orders) tidak mengalami starvation akibat lonjakan Read requests",
+        "Sistem stabil selama 5 menit penuh"
+      ],
+      "metricsToMeasure": [
+        "Per-endpoint latency (p50, p95, p99)",
+        "Per-endpoint RPS breakdown",
+        "Database read/write lock contention",
+        "Connection pool saturation"
+      ],
+      "questions": [
+        "Endpoint mana yang menjadi paling expensive dan menguras resource terbesar?",
+        "Apakah read traffic yang masif (70%) memperlambat response time write traffic (5% orders)?",
+        "Apa bottleneck sistem secara keseluruhan ketika read & write terjadi simultan?",
+        "Apakah pemisahan Read Replica database diperlukan?"
+      ],
+      "answersOrHints": [
+        "Terapkan CQRS atau Database Read-Replicas jika query GET /products mengunci tabel yang sedang di-insert oleh POST /orders.",
+        "k6 scenarios executor (seperti `ramping-arrival-rate` atau random weighted switch) sangat ideal untuk mixed traffic modeling."
+      ],
+      "k6Script": "import http from 'k6/http';\nimport { check, sleep } from 'k6';\n\nexport const options = {\n  scenarios: {\n    mixed_traffic: {\n      executor: 'ramping-vus',\n      startVUs: 0,\n      stages: [\n        { duration: '1m', target: 2000 },\n        { duration: '3m', target: 5000 },\n        { duration: '1m', target: 0 },\n      ],\n    },\n  },\n  thresholds: {\n    'http_req_duration{endpoint:products}': ['p(95)<300'],\n    'http_req_duration{endpoint:orders}': ['p(95)<800'],\n  },\n};\n\nexport default function () {\n  const rand = Math.random() * 100;\n\n  if (rand < 70) {\n    // 70% Products\n    const res = http.get('http://localhost:3000/products', { tags: { endpoint: 'products' } });\n    check(res, { 'products 200': (r) => r.status === 200 });\n  } else if (rand < 90) {\n    // 20% Profile\n    const res = http.get('http://localhost:3000/profile', {\n      headers: { Authorization: 'Bearer mock-jwt-token' },\n      tags: { endpoint: 'profile' },\n    });\n    check(res, { 'profile 200': (r) => r.status === 200 });\n  } else if (rand < 95) {\n    // 5% Orders\n    const res = http.post('http://localhost:3000/orders', JSON.stringify({ productId: 1, qty: 1 }), {\n      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer mock-jwt-token' },\n      tags: { endpoint: 'orders' },\n    });\n    check(res, { 'order 201': (r) => r.status === 201 });\n  } else {\n    // 5% Login\n    const res = http.post('http://localhost:3000/login', JSON.stringify({ email: 'user@test.com', password: '123' }), {\n      headers: { 'Content-Type': 'application/json' },\n      tags: { endpoint: 'login' },\n    });\n    check(res, { 'login 200': (r) => r.status === 200 });\n  }\n\n  sleep(0.5);\n}",
+      "tags": ["Mixed Traffic", "Workload Modeling", "Realistic", "CQRS", "Scenarios"]
+    },
+    {
+      "id": "ch-k6-07-ramp-up-breaking-point",
+      "number": "07",
+      "level": "Level 4 — Realistic Traffic",
+      "levelNumber": 4,
+      "title": "Ramp Up Test & Breaking Point",
+      "category": "realistic",
+      "categoryLabel": "Level 4 — Realistic Traffic",
+      "difficulty": "HARD",
+      "severity": "CRITICAL",
+      "targetEndpoint": "GET /products",
+      "targetMethod": "GET",
+      "targetVus": 10000,
+      "duration": "10 minutes step ramp-up",
+      "objective": "Menemukan kapasitas maksimal (Maximum Sustainable Capacity) dan titik hancur (Breaking Point) sistem.",
+      "scenario": "Menaikkan virtual users secara bertahap dalam tangga beban (stairs step) hingga sistem mulai melempar error atau timeout.",
+      "loadProfile": "100 users → 500 users → 1,000 users → 2,000 users → 5,000 users → 10,000 users",
+      "successCriteria": [
+        "Menemukan angka VU & RPS pasti di mana latency melonjak tajam",
+        "Mengetahui apakah sistem auto-recover setelah beban diturunkan kembali",
+        "Mendokumentasikan fail mode (graceful degradation vs hard crash)"
+      ],
+      "metricsToMeasure": [
+        "Throughput ceiling (RPS plateaus)",
+        "Latency vs Concurrency curve",
+        "Error rate emergence threshold",
+        "Mean Time to Recovery (MTTR) pasca ramp down"
+      ],
+      "questions": [
+        "Pada jumlah user berapa latency mulai meningkat?",
+        "Pada jumlah user berapa error mulai muncul (504 Gateway Timeout, 502 Bad Gateway)?",
+        "Apa breaking point sistem (misalnya: max 4.200 VUs / 1.800 RPS)?",
+        "Apakah sistem berhasil recovery secara otomatis setelah load dikurangi kembali ke 100 VUs atau membutuhkan restart server?"
+      ],
+      "answersOrHints": [
+        "Ketika RPS mendatar (plateau) namun latency terus naik, sistem telah mencapai throughput ceiling. Menambah VU hanya memperpanjang antrian.",
+        "Jika sistem TIDAK bisa recovery setelah load turun (misal memori bocor atau connection pool hang), ini menandakan 'Cascading Failure' yang fatal."
+      ],
+      "k6Script": "import http from 'k6/http';\nimport { check, sleep } from 'k6';\n\nexport const options = {\n  stages: [\n    { duration: '2m', target: 100 },\n    { duration: '2m', target: 500 },\n    { duration: '2m', target: 1000 },\n    { duration: '2m', target: 2000 },\n    { duration: '2m', target: 5000 },\n    { duration: '2m', target: 10000 },\n    { duration: '2m', target: 100 }, // Recovery test\n  ],\n  thresholds: {\n    http_req_failed: ['rate<0.05'],\n  },\n};\n\nexport default function () {\n  const res = http.get('http://localhost:3000/products');\n  check(res, {\n    'status 200': (r) => r.status === 200,\n  });\n  sleep(0.2);\n}",
+      "tags": ["Capacity Planning", "Breaking Point", "Stress Testing", "Recovery", "Staged Ramp"]
+    },
+    {
+      "id": "ch-k6-08-traffic-spike",
+      "number": "08",
+      "level": "Level 5 — Spike Testing",
+      "levelNumber": 5,
+      "title": "Sudden Traffic Spike",
+      "category": "spike",
+      "categoryLabel": "Level 5 — Spike Testing",
+      "difficulty": "HARD",
+      "severity": "CRITICAL",
+      "targetEndpoint": "GET /products/viral-promo",
+      "targetMethod": "GET",
+      "targetVus": 10000,
+      "duration": "2 minutes (spike 10s)",
+      "objective": "Mensimulasikan lonjakan traffic instan (100x dalam hitungan detik) seperti saat link promo viral di media sosial atau flash sale dibuka.",
+      "scenario": "100 users dalam kondisi tenang mendadak melonjak menjadi 10.000 users dalam 10 detik, bertahan selama 45 detik, lalu kembali ke 100 users.",
+      "loadProfile": "100 users → 10,000 users (dalam 10 detik) → 100 users",
+      "successCriteria": [
+        "API tidak mengalami OOM (Out of Memory) crash",
+        "Rate limiting / Circuit breaker melindungi database dari kegagalan total",
+        "Sistem kembali ke latency normal < 50ms dalam waktu < 15 detik pasca spike selesai"
+      ],
+      "metricsToMeasure": [
+        "Spike survival rate (% requests served during surge)",
+        "Degradation duration",
+        "System Recovery Time pasca spike",
+        "Socket timeouts & connection reset counts"
+      ],
+      "questions": [
+        "Apakah API tetap responsive atau langsung drop connection?",
+        "Berapa lama waktu yang dibutuhkan hingga sistem mulai mengalami degradation?",
+        "Berapa lama sistem membutuhkan waktu untuk fully recover setelah spike mereda?",
+        "Apakah database overload hingga menolak koneksi baru?",
+        "Apakah terjadi request timeout (504)?"
+      ],
+      "answersOrHints": [
+        "Spike test menguji apakah auto-scaling atau circuit breaker bereaksi cukup cepat. Seringkali auto-scaling cloud butuh 2-3 menit untuk booting node baru, sehingga software-level protection (caching + rate limiting + request queueing) mutlak diperlukan.",
+        "Pastikan OS level TCP backlog buffer (`somaxconn`) tidak drop SYN packets."
+      ],
+      "k6Script": "import http from 'k6/http';\nimport { check, sleep } from 'k6';\n\nexport const options = {\n  stages: [\n    { duration: '30s', target: 100 },   // Warm up\n    { duration: '10s', target: 10000 }, // Sudden 100x Spike!\n    { duration: '45s', target: 10000 }, // Hold peak\n    { duration: '15s', target: 100 },   // Quick drop\n    { duration: '30s', target: 100 },   // Recovery observation\n  ],\n};\n\nexport default function () {\n  const res = http.get('http://localhost:3000/products/viral-promo');\n  check(res, {\n    'status 200 or 429': (r) => r.status === 200 || r.status === 429,\n  });\n  sleep(0.1);\n}",
+      "tags": ["Spike Testing", "Flash Sale", "Traffic Surge", "Circuit Breaker", "Resilience"]
+    },
+    {
+      "id": "ch-k6-09-database-bottleneck-indexing",
+      "number": "09",
+      "level": "Level 6 — Database Performance",
+      "levelNumber": 6,
+      "title": "Database Query Bottleneck & Indexing",
+      "category": "database",
+      "categoryLabel": "Level 6 — Database Performance",
+      "difficulty": "HARD",
+      "severity": "HIGH",
+      "targetEndpoint": "GET /products?category=electronics",
+      "targetMethod": "GET",
+      "targetVus": 5000,
+      "duration": "2 minutes per experiment",
+      "objective": "Mengukur dampak langsung Database Indexing terhadap throughput API dan CPU database under load.",
+      "scenario": "Menjalankan query filtering dan sorting pada tabel berisi 1.000.000 records:\n```sql\nSELECT * FROM products WHERE category = ? ORDER BY created_at DESC;\n```\nMenjalankan test 1 (WITHOUT INDEX) lalu test 2 (WITH INDEX).",
+      "loadProfile": "5,000 concurrent users",
+      "experiment": "WITHOUT INDEX (Sequential Table Scan) vs WITH INDEX: CREATE INDEX idx_prod_cat_created ON products(category, created_at DESC);",
+      "benchmarkData": {
+        "metrics": ["p50 (ms)", "p95 (ms)", "p99 (ms)", "RPS", "DB CPU (%)"],
+        "before": ["450ms", "1,850ms", "3,400ms", "280 RPS", "98% (Saturated)"],
+        "after": ["12ms", "45ms", "90ms", "2,400 RPS", "18% (Healthy)"]
+      },
+      "successCriteria": [
+        "Peningkatan RPS minimal 5x - 10x setelah indexing",
+        "Penurunan p95 latency dari > 1s menjadi < 100ms",
+        "Penurunan drastis pada DB CPU utilization"
+      ],
+      "metricsToMeasure": [
+        "p50, p95, p99 Latency (Before vs After)",
+        "API Throughput (RPS)",
+        "Database CPU Utilization %",
+        "DB Disk Read I/O Ops"
+      ],
+      "questions": [
+        "Seberapa besar improvement throughput dan latency setelah composite index ditambahkan?",
+        "Apakah index selalu meningkatkan performance untuk semua operasi (bagaimana dengan write overhead)?",
+        "Apa trade-off dari penambahan index pada storage dan waktu INSERT/UPDATE?",
+        "Mengapa sequential scan pada jutaan rows dapat melumpuhkan seluruh connection pool?"
+      ],
+      "answersOrHints": [
+        "Sequential scan menahan lock dan CPU core database untuk waktu lama per query, menyebabkan query lain antre dan connection pool cepat habis (Connection Pool Starvation).",
+        "Composite index `(category, created_at DESC)` mengeliminasi in-memory sort dan filter sekaligus via B-Tree index scan."
+      ],
+      "k6Script": "import http from 'k6/http';\nimport { check, sleep } from 'k6';\n\nexport const options = {\n  vus: 5000,\n  duration: '2m',\n  thresholds: {\n    http_req_duration: ['p(95)<200'],\n    http_req_failed: ['rate<0.01'],\n  },\n};\n\nexport default function () {\n  const res = http.get('http://localhost:3000/products?category=electronics');\n  check(res, {\n    'status is 200': (r) => r.status === 200,\n    'received items': (r) => JSON.parse(r.body).length > 0,\n  });\n  sleep(0.5);\n}",
+      "tags": ["Database", "SQL Indexing", "Query Optimization", "B-Tree", "Disk I/O"]
+    },
+    {
+      "id": "ch-k6-10-connection-pool-tuning",
+      "number": "10",
+      "level": "Level 6 — Database Performance",
+      "levelNumber": 6,
+      "title": "Database Connection Pool Tuning",
+      "category": "database",
+      "categoryLabel": "Level 6 — Database Performance",
+      "difficulty": "HARD",
+      "severity": "HIGH",
+      "targetEndpoint": "GET /products",
+      "targetMethod": "GET",
+      "targetVus": 5000,
+      "duration": "3 benchmark runs",
+      "objective": "Memahami hubungan antara concurrent requests, connection pool size, context switching, dan database throughput.",
+      "scenario": "Menguji API yang sama di bawah 5.000 VUs dengan 3 konfigurasi database connection pool berbeda:\n- Test 1: `max_connections = 20`\n- Test 2: `max_connections = 50`\n- Test 3: `max_connections = 100` (atau 500)",
+      "loadProfile": "5,000 concurrent users across 3 pool sizes",
+      "successCriteria": [
+        "Menemukan nilai optimal pool size untuk hardware server yang digunakan",
+        "Memahami fenomena connection contention vs context switching overhead",
+        "Zero pool exhaustion crash (Timeout waiting for connection)"
+      ],
+      "metricsToMeasure": [
+        "RPS for pool size 20 vs 50 vs 100",
+        "Connection acquisition wait time",
+        "Database CPU Context Switches / sec",
+        "p95 Latency"
+      ],
+      "questions": [
+        "Apakah connection pool yang lebih besar selalu menghasilkan sistem yang lebih cepat?",
+        "Kapan database mulai overloaded akibat context switching ribuan active backend threads?",
+        "Berapa connection pool size yang optimal untuk PostgreSQL (formula: `(CPU_cores * 2) + effective_spindle_count`)?",
+        "Apa bahaya jika connection timeout diatur terlalu rendah atau terlalu tinggi?"
+      ],
+      "answersOrHints": [
+        "Menyetel pool terlalu besar (misal 500) pada 4-core database justru menurunkan performance drastis karena CPU habis untuk context switching dan disk thrashing.",
+        "Pool connection berukuran moderat (misal 30-50) yang melayani query cepat (<10ms) mampu menghasilkan throughput jauh lebih tinggi dan stabil."
+      ],
+      "k6Script": "import http from 'k6/http';\nimport { check, sleep } from 'k6';\n\nexport const options = {\n  vus: 5000,\n  duration: '2m',\n  thresholds: {\n    http_req_duration: ['p(95)<500'],\n    http_req_failed: ['rate<0.01'],\n  },\n};\n\nexport default function () {\n  const res = http.get('http://localhost:3000/products');\n  check(res, {\n    'status 200': (r) => r.status === 200,\n  });\n  sleep(0.3);\n}",
+      "tags": ["Connection Pool", "PostgreSQL", "Resource Tuning", "HikariCP", "Context Switching"]
+    },
+    {
+      "id": "ch-k6-11-horizontal-scaling",
+      "number": "11",
+      "level": "Level 7 — Horizontal Scaling",
+      "levelNumber": 7,
+      "title": "Horizontal Scaling & Load Balancing",
+      "category": "scaling",
+      "categoryLabel": "Level 7 — Horizontal Scaling",
+      "difficulty": "HARD",
+      "severity": "HIGH",
+      "targetEndpoint": "Load Balancer → Multiple API Instances",
+      "targetMethod": "GET /products",
+      "targetVus": 5000,
+      "duration": "3 scaling experiments",
+      "objective": "Menguji efektivitas horizontal scaling dengan membandingkan 1 vs 2 vs 4 API instances di belakang Nginx Load Balancer.",
+      "scenario": "Menjalankan load test 5.000 VUs ke Load Balancer (Round Robin / Least Connections) yang mendistribusikan traffic ke:\n- Test 1: 1 API Instance\n- Test 2: 2 API Instances\n- Test 3: 4 API Instances",
+      "architecture": "k6 → Nginx Load Balancer → [API #1, API #2, API #3, API #4] → Shared PostgreSQL",
+      "loadProfile": "5,000 concurrent users against scalable cluster",
+      "successCriteria": [
+        "Throughput meningkat signifikan saat menambah instance",
+        "Load Balancer mendistribusikan traffic secara merata",
+        "API instances terbukti stateless (session/cache tidak tersimpan di local memory instance)"
+      ],
+      "metricsToMeasure": [
+        "RPS scaling factor (1x vs 2x vs 4x)",
+        "Per-instance CPU utilization balance",
+        "Database bottleneck shift",
+        "Network overhead Load Balancer"
+      ],
+      "questions": [
+        "Apakah performance meningkat secara linear (2x instance = 2x throughput)?",
+        "Apa bottleneck baru yang muncul setelah API layer di-scale (apakah database menjadi bottleneck)?",
+        "Apakah aplikasi benar-benar stateless atau ada memory leak / state sharing issue?",
+        "Algoritma load balancing mana yang paling efisien: Round Robin, Least Connections, atau IP Hash?"
+      ],
+      "answersOrHints": [
+        "Horizontal scaling pada API layer biasanya linear sampai titik di mana shared single database server mencapai batas IOPS/CPU-nya.",
+        "Gunakan stateless architecture (JWT token, external Redis session) agar request dari user mana pun bisa dilayani oleh instance mana pun."
+      ],
+      "k6Script": "import http from 'k6/http';\nimport { check, sleep } from 'k6';\n\nexport const options = {\n  vus: 5000,\n  duration: '3m',\n  thresholds: {\n    http_req_duration: ['p(95)<300'],\n    http_req_failed: ['rate<0.01'],\n  },\n};\n\nexport default function () {\n  const res = http.get('http://localhost:8080/products'); // Load balancer port\n  check(res, {\n    'status 200': (r) => r.status === 200,\n  });\n  sleep(0.5);\n}",
+      "tags": ["Horizontal Scaling", "Load Balancer", "Nginx", "Stateless", "High Availability"]
+    },
+    {
+      "id": "ch-k6-12-redis-caching-impact",
+      "number": "12",
+      "level": "Level 8 — Caching",
+      "levelNumber": 8,
+      "title": "Redis Caching Impact",
+      "category": "caching",
+      "categoryLabel": "Level 8 — Caching",
+      "difficulty": "MEDIUM",
+      "severity": "HIGH",
+      "targetEndpoint": "GET /products",
+      "targetMethod": "GET",
+      "targetVus": 5000,
+      "duration": "2 minutes comparison",
+      "objective": "Mengukur secara kuantitatif dampak penambahan Redis In-Memory Cache terhadap throughput API dan penghematan beban database.",
+      "scenario": "Membandingkan response time dan throughput GET /products:\n- Before: Client → API → PostgreSQL (Setiap request melakukan DB query)\n- After: Client → API → Redis (Cache Hit) → PostgreSQL (Hanya saat Cache Miss)",
+      "loadProfile": "5,000 concurrent users (Read Heavy)",
+      "benchmarkData": {
+        "metrics": ["p95 Latency", "RPS Throughput", "DB CPU (%)", "DB Query Count/sec", "Cache Hit Ratio"],
+        "before": ["650ms", "450 RPS", "92%", "450 queries/s", "0% (No Cache)"],
+        "after": ["15ms", "4,200 RPS", "5%", "2 queries/s", "99.5% (Redis Hit)"]
+      },
+      "successCriteria": [
+        "Cache Hit Ratio > 95%",
+        "Throughput meningkat minimal 5x - 10x",
+        "Database CPU turun mendekati 0% untuk endpoint read-heavy"
+      ],
+      "metricsToMeasure": [
+        "p95 Latency (Before vs After)",
+        "RPS (Before vs After)",
+        "Database CPU & Query Count",
+        "Redis Memory & Hit Ratio"
+      ],
+      "questions": [
+        "Berapa Cache Hit Ratio yang didapatkan selama load test berlangsung?",
+        "Seberapa besar database query load berkurang?",
+        "Apakah caching selalu meningkatkan performa (kapan caching bisa menjadi bottleneck atau overhead)?",
+        "Bagaimana strategi cache invalidation (TTL vs event-driven purge) saat ada update data?"
+      ],
+      "answersOrHints": [
+        "Redis cache menyimpan serialization JSON langsung di RAM, memotong jalur query parsing, planner, table scan, dan mapping ORM.",
+        "Waspadai 'Cache Stampede' / 'Thundering Herd' ketika cache key expired under 5.000 concurrent load. Gunakan mutex locking atau probabilistic early expiration."
+      ],
+      "k6Script": "import http from 'k6/http';\nimport { check, sleep } from 'k6';\n\nexport const options = {\n  vus: 5000,\n  duration: '2m',\n  thresholds: {\n    http_req_duration: ['p(95)<50'], // Redis cached should be ultra-fast\n    http_req_failed: ['rate<0.01'],\n  },\n};\n\nexport default function () {\n  const res = http.get('http://localhost:3000/products');\n  check(res, {\n    'status is 200': (r) => r.status === 200,\n  });\n  sleep(0.2);\n}",
+      "tags": ["Redis", "Caching", "Cache Hit Ratio", "Throughput", "Latency Reduction"]
+    },
+    {
+      "id": "ch-k6-13-async-queue-processing",
+      "number": "13",
+      "level": "Level 9 — Async Processing",
+      "levelNumber": 9,
+      "title": "Queue-Based Asynchronous Processing",
+      "category": "async",
+      "categoryLabel": "Level 9 — Async Processing",
+      "difficulty": "HARD",
+      "severity": "HIGH",
+      "targetEndpoint": "POST /register",
+      "targetMethod": "POST",
+      "targetVus": 2000,
+      "duration": "2 minutes comparison",
+      "objective": "Membandingkan latency dan resilience antara synchronous processing (kirim email langsung saat request) dengan asynchronous message queue processing (BullMQ / RabbitMQ).",
+      "scenario": "Alur Before (Sync):\nPOST /register → Create User → Send Welcome Email (SMTP 2s) → Response\n\nAlur After (Async Queue):\nPOST /register → Create User → Push Job to Queue (5ms) → Response (202 Accepted)\nWorker Background Service → Pop Job → Send Email",
+      "loadProfile": "2,000 concurrent registration requests",
+      "successCriteria": [
+        "API Response time turun drastis dari > 2.000ms menjadi < 50ms",
+        "Throughput registrasi meningkat > 20x lipat",
+        "Jika email server / SMTP provider down, registrasi user tetap berhasil 100%"
+      ],
+      "metricsToMeasure": [
+        "API Latency (Sync vs Async)",
+        "API Throughput (Registrations/sec)",
+        "Queue depth & processing lag",
+        "Failed jobs retry count"
+      ],
+      "questions": [
+        "Berapa banyak latency API yang terpangkas setelah memindahkan task lambat ke background worker?",
+        "Apakah throughput API meningkat drastis?",
+        "Bagaimana jika background worker down: apakah data hilang atau tersimpan aman di queue persistence?",
+        "Bagaimana menangani failed jobs dengan Dead Letter Queue (DLQ) dan exponential backoff?"
+      ],
+      "answersOrHints": [
+        "Operasi external I/O yang tidak wajib selesai seketika (seperti email, notifikasi push, generate PDF, webhook dispatch) HARUS selalu dipindahkan ke async message broker.",
+        "Hal ini mendecouple availability API server dari availability third-party services."
+      ],
+      "k6Script": "import http from 'k6/http';\nimport { check, sleep } from 'k6';\nimport { randomString } from 'https://jslib.k6.io/k6-utils/1.2.0/index.js';\n\nexport const options = {\n  vus: 2000,\n  duration: '2m',\n  thresholds: {\n    http_req_duration: ['p(95)<150'], // Async API responds immediately\n    http_req_failed: ['rate<0.01'],\n  },\n};\n\nexport default function () {\n  const payload = JSON.stringify({\n    email: `async-user-${__VU}-${__ITER}-${randomString(4)}@test.com`,\n    password: 'Password123!',\n  });\n\n  const params = { headers: { 'Content-Type': 'application/json' } };\n  const res = http.post('http://localhost:3000/register', payload, params);\n\n  check(res, {\n    'status 201 or 202': (r) => r.status === 201 || r.status === 202,\n  });\n  sleep(0.5);\n}",
+      "tags": ["Async Queue", "RabbitMQ", "BullMQ", "Decoupling", "Worker Architecture"]
+    },
+    {
+      "id": "ch-k6-14-rate-limiting-ddos",
+      "number": "14",
+      "level": "Level 10 — Rate Limiting",
+      "levelNumber": 10,
+      "title": "Rate Limiting & Abuse Protection",
+      "category": "rate-limit",
+      "categoryLabel": "Level 10 — Rate Limiting",
+      "difficulty": "HARD",
+      "severity": "HIGH",
+      "targetEndpoint": "POST /login",
+      "targetMethod": "POST",
+      "targetVus": 2000,
+      "duration": "1 minute flood test",
+      "objective": "Melindungi resource API dan database dari abuse, credential stuffing, dan excessive traffic flood menggunakan Rate Limiting algorithm (Token Bucket / Sliding Window).",
+      "scenario": "Simulasi flood attack dengan 10.000 requests/sec ke POST /login. Rate limit rule: `100 requests / minute / IP`.",
+      "loadProfile": "Aggressive traffic flood attack",
+      "expectedResult": "Normal traffic (< 100 req/min) → 200 OK. Excessive traffic (> 100 req/min) → 429 Too Many Requests dengan `Retry-After` header.",
+      "successCriteria": [
+        "Rate limiter sukses memblokir > 95% malicious flood requests dengan HTTP 429",
+        "API CPU & Database tetap aman di bawah 30% karena request ditolak sebelum menyentuh DB / hashing",
+        "Legitimate users pada IP berbeda tetap bisa login tanpa gangguan"
+      ],
+      "metricsToMeasure": [
+        "HTTP 200 vs HTTP 429 distribution",
+        "Rate limiter check overhead (latency < 2ms via Redis)",
+        "API & DB CPU utilization during flood attack",
+        "Memory footprint of rate limit store"
+      ],
+      "questions": [
+        "Apakah rate limiter berhasil memblokir kelebihan request dengan cepat?",
+        "Apakah middleware rate limiter itu sendiri menjadi bottleneck?",
+        "Mengapa in-memory rate limiter lokal gagal pada multi-instance setup dan mengapa Redis sliding window diperlukan?",
+        "Bagaimana behavior sistem jika Redis rate limiter server tiba-tiba down (fail open vs fail close)?"
+      ],
+      "answersOrHints": [
+        "Rate limiter harus dievaluasi di layer terluar (Nginx / API Gateway / awal middleware) sebelum body parser atau DB connection di-acquire.",
+        "Gunakan Redis Lua script untuk atomic sliding window rate limiting di multi-instance architecture."
+      ],
+      "k6Script": "import http from 'k6/http';\nimport { check, sleep } from 'k6';\nimport { Counter } from 'k6/metrics';\n\nconst allowedCount = new Counter('rate_limit_allowed_200');\nconst blockedCount = new Counter('rate_limit_blocked_429');\n\nexport const options = {\n  vus: 500,\n  duration: '1m',\n};\n\nexport default function () {\n  const payload = JSON.stringify({\n    email: 'attacker@test.com',\n    password: 'Password123!',\n  });\n\n  const params = { headers: { 'Content-Type': 'application/json' } };\n  const res = http.post('http://localhost:3000/login', payload, params);\n\n  if (res.status === 200) {\n    allowedCount.add(1);\n  } else if (res.status === 429) {\n    blockedCount.add(1);\n  }\n\n  check(res, {\n    'is 200 or 429': (r) => r.status === 200 || r.status === 429,\n  });\n  // No sleep to simulate rapid flooding\n}",
+      "tags": ["Rate Limiting", "HTTP 429", "Security", "Token Bucket", "Redis Lua"]
+    },
+    {
+      "id": "ch-k6-15-production-ready-simulation",
+      "number": "15",
+      "level": "Final Boss — Production Simulation",
+      "levelNumber": 11,
+      "title": "Build a Production-Ready System",
+      "category": "production",
+      "categoryLabel": "Final Boss — Production Simulation",
+      "difficulty": "EXPERT",
+      "severity": "CRITICAL",
+      "targetEndpoint": "Full Architecture Cluster",
+      "targetMethod": "ALL Endpoints",
+      "targetVus": 10000,
+      "duration": "10 minutes comprehensive stress test",
+      "objective": "Menggabungkan seluruh 14 konsep sebelumnya ke dalam satu sistem enterprise production-ready yang teruji mampu menangani 10.000 concurrent users secara stabil.",
+      "scenario": "Simulasi end-to-end production load:\n- 10.000 concurrent users\n- Mixed traffic + Registration burst + Login storm + Sudden spike\n- Validasi race condition duplicate prevention\n- Verifikasi database indexing & connection pool tuning\n- Verifikasi Redis caching hit ratio > 90%\n- Verifikasi async queue background processing\n- Verifikasi rate limiting protection\n- Multi-instance API horizontal scaling behind Load Balancer",
+      "architecture": "k6 Cluster → Load Balancer → [API #1, API #2, API #3] → Redis (Cache & RateLimit) & PostgreSQL (Pooled & Indexed) → RabbitMQ/BullMQ → Async Worker Service",
+      "loadProfile": "10,000 VUs complex multistage production scenario",
+      "requirements": [
+        "Handle 10,000 concurrent users with p95 < 500ms",
+        "Handle registration burst without dropping database",
+        "Handle login storm without CPU lockup",
+        "Handle sudden 100x traffic spike with graceful degradation",
+        "Prevent duplicate registration via database unique constraints (100% data integrity)",
+        "Use database indexing & connection pooling",
+        "Use Redis caching for read-heavy entities",
+        "Use asynchronous queue for background jobs",
+        "Implement rate limiting at API perimeter",
+        "Scale API horizontally across at least 3 instances"
+      ],
+      "successCriteria": [
+        "Total Error Rate < 0.5%",
+        "p95 Latency < 500ms across all endpoints",
+        "Zero data corruption or duplicate records",
+        "System auto-recovers immediately after surge"
+      ],
+      "metricsToMeasure": [
+        "Overall Cluster Throughput (Target: > 5,000 RPS)",
+        "p50, p95, p99 Latency SLA",
+        "Overall Error Rate (< 0.5%)",
+        "Per-service CPU, Memory, Connection counts",
+        "Worker queue processing lag"
+      ],
+      "questions": [
+        "Apakah sistem Anda memenuhi seluruh 10 persyaratan production readiness?",
+        "Berapa throughput maksimal (RPS) yang dapat dipertahankan cluster?",
+        "Apa bottleneck terakhir yang tersisa ketika traffic melebihi 10.000 VUs?",
+        "Berapa biaya infrastruktur vs kapasitas yang didapatkan (Cost-to-Performance ratio)?"
+      ],
+      "answersOrHints": [
+        "Sistem production-grade sejati dicapai ketika semua komponen (Load Balancer, API, Cache, DB, Queue, Worker) seimbang dan memiliki failure isolation.",
+        "Dokumentasikan seluruh temuan menggunakan template Performance Report resmi."
+      ],
+      "k6Script": "import http from 'k6/http';\nimport { check, group, sleep } from 'k6';\n\nexport const options = {\n  scenarios: {\n    production_load: {\n      executor: 'ramping-vus',\n      stages: [\n        { duration: '2m', target: 2000 },\n        { duration: '3m', target: 10000 }, // Peak production load\n        { duration: '3m', target: 10000 },\n        { duration: '2m', target: 0 },\n      ],\n    },\n  },\n  thresholds: {\n    http_req_failed: ['rate<0.005'],   // Less than 0.5% error rate\n    http_req_duration: ['p(95)<500'], // 95% requests under 500ms\n    http_req_duration: ['p(99)<1500'],// 99% requests under 1.5s\n  },\n};\n\nexport default function () {\n  group('Public Catalog Browsing', function () {\n    const res = http.get('http://localhost:8080/products');\n    check(res, { 'status is 200': (r) => r.status === 200 });\n  });\n\n  group('Authenticated Operations', function () {\n    const res = http.get('http://localhost:8080/profile', {\n      headers: { Authorization: 'Bearer valid-jwt-token' },\n    });\n    check(res, { 'status is 200': (r) => r.status === 200 });\n  });\n\n  sleep(0.5);\n}",
+      "tags": ["Production Ready", "Final Boss", "End to End", "System Design", "Scalability", "High Availability"]
+    }
+  ],
+  "reportTemplate": {
+    "title": "Performance Report Template",
+    "sections": [
+      { "name": "Challenge XX — [Name]", "type": "header" },
+      { "name": "Objective", "content": "What are we trying to learn?" },
+      { "name": "Hypothesis", "content": "What do we expect to happen?" },
+      { "name": "Test Configuration", "fields": ["Virtual Users (VUs)", "Duration", "Ramp Up Profile", "Target Endpoint", "Environment (Hardware/Docker)"] },
+      { "name": "Results Table", "columns": ["Metric", "Result"], "rows": ["RPS", "p50", "p95", "p99", "Error Rate", "CPU Utilization", "Memory Utilization", "DB Query Latency"] },
+      { "name": "Bottleneck", "content": "What became the bottleneck?" },
+      { "name": "Root Cause", "content": "Why did it happen?" },
+      { "name": "Solution", "content": "What did we change?" },
+      { "name": "Before vs After", "columns": ["Metric", "Before", "After"] },
+      { "name": "Conclusion", "content": "What did we learn?" },
+      { "name": "Trade-offs", "content": "What are the disadvantages of the solution?" }
+    ]
+  },
+  "importantConcepts": [
+    {
+      "concept": "Concurrent Users ≠ RPS",
+      "summary": "2.000 concurrent users tidak berarti 2.000 requests/sec. Jika setiap request membutuhkan waktu 500ms ditambah think time, jumlah request per detik akan berbeda tergantung behavior workload.",
+      "detail": "Selalu dokumentasikan 4 variabel fundamental: VUs (Virtual Users), Request Rate (RPS), Latency (p50/p95/p99), dan Test Duration."
+    },
+    {
+      "concept": "Latency Percentiles (p50, p95, p99) vs Average",
+      "summary": "Rata-rata (Average) sering menyembunyikan masalah serius. p95 dan p99 (tail latency) menunjukkan apa yang dialami 5% dan 1% user paling sial.",
+      "detail": "Di sistem high-concurrency, 1% tail latency sering kali adalah indikator bottleneck database lock contention atau GC freeze."
+    },
+    {
+      "concept": "Throughput Ceiling & Knee Point",
+      "summary": "Menambah VUs melebihi kapasitas tidak akan menambah throughput (RPS mendatar), melainkan hanya memperpanjang antrian dan melipatgandakan response time.",
+      "detail": "Knee point adalah titik optimum di mana sistem menghasilkan throughput tertinggi dengan latency terendah sebelum degradasi."
+    },
+    {
+      "concept": "Stateless API Design for True Horizontal Scaling",
+      "summary": "Horizontal scaling hanya efektif jika API layer 100% stateless.",
+      "detail": "Session data, in-memory cache, dan rate-limit counter harus didelegasikan ke external distributed store seperti Redis."
+    }
+  ]
+}

@@ -27,12 +27,14 @@ import {
   Shield,
   Flame,
   ArrowRight,
+  Zap,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { useAuthStore } from '@/store/auth.store';
 import { useLogout } from '@/features/auth/hooks/use-logout';
 import { dotnetChallengesData, getAllDotnetChallenges, ALL_TECH_STACK_CHALLENGES } from '@/data/dotnet-challenges';
 import { nestChallengesData } from '@/data/nest-challenges';
+import { k6ChallengesData } from '@/data/k6-challenges';
 
 interface PortalLayoutProps {
   children: React.ReactNode;
@@ -152,6 +154,13 @@ export function PortalLayout({ children }: PortalLayoutProps) {
       description: 'Modular architecture, microservices, idempotency & streaming',
       icon: Server,
       badge: `${(nestChallengesData.challenges || []).length} Topics`,
+    },
+    {
+      name: 'k6 Load Testing',
+      href: '/technology/k6-challenges',
+      description: 'Load testing, bottleneck identification, scalability & performance engineering',
+      icon: Zap,
+      badge: `${(k6ChallengesData.challenges || []).length} Challenges`,
     },
     {
       name: 'React.js Challenges',
@@ -335,7 +344,7 @@ export function PortalLayout({ children }: PortalLayoutProps) {
                 <div className="absolute left-0 mt-2 w-96 rounded-2xl border border-zinc-200/90 bg-white/95 dark:border-zinc-800 dark:bg-zinc-900/95 backdrop-blur-xl p-2.5 shadow-xl ring-1 ring-black/5 animate-in fade-in zoom-in-95 duration-150 z-50">
                   <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 flex items-center justify-between">
                     <span>Engineering Challenges</span>
-                    <span className="text-[10px] font-normal text-zinc-400">3 Stacks</span>
+                    <span className="text-[10px] font-normal text-zinc-400">4 Tracks</span>
                   </div>
                   <div className="space-y-0.5 mt-0.5">
                     {challengeItems.map((item) => {
@@ -343,7 +352,8 @@ export function PortalLayout({ children }: PortalLayoutProps) {
                       const isActive =
                         pathname === item.href ||
                         (item.name.includes('.NET') && pathname.includes('dotnet-challenges')) ||
-                        (item.name.includes('NestJS') && pathname.includes('nestjs-challenges'));
+                        (item.name.includes('NestJS') && pathname.includes('nestjs-challenges')) ||
+                        (item.name.includes('k6') && pathname.includes('k6-challenges'));
                       return (
                         <Link
                           key={item.name}
@@ -540,7 +550,8 @@ export function PortalLayout({ children }: PortalLayoutProps) {
                     const isActive =
                       pathname === item.href ||
                       (item.name.includes('.NET') && pathname.includes('dotnet-challenges')) ||
-                      (item.name.includes('NestJS') && pathname.includes('nestjs-challenges'));
+                      (item.name.includes('NestJS') && pathname.includes('nestjs-challenges')) ||
+                      (item.name.includes('k6') && pathname.includes('k6-challenges'));
                     return (
                       <Link
                         key={item.name}

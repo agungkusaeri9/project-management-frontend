@@ -22,6 +22,7 @@ import {
   LogOut,
   TrendingUp,
   Flame,
+  Zap,
 } from 'lucide-react';
 import { useAuthStore } from '@/store/auth.store';
 import { useLogout } from '@/features/auth/hooks/use-logout';
@@ -74,6 +75,7 @@ export function PortalSidebar({ onCloseMobile }: PortalSidebarProps) {
   const challengesChildren: NavChild[] = [
     { name: '.NET Challenges', href: '/technology/dotnet-challenges', icon: Code2 },
     { name: 'NestJS Challenges', href: '/technology/nestjs-challenges', icon: Server },
+    { name: 'k6 Load Testing', href: '/technology/k6-challenges', icon: Zap },
     { name: 'React.js Challenges', href: '/technology/dotnet-challenges', icon: Layers },
   ];
 
@@ -232,7 +234,8 @@ export function PortalSidebar({ onCloseMobile }: PortalSidebarProps) {
                 const isActive =
                   pathname === child.href ||
                   (child.name.includes('.NET') && pathname.includes('dotnet-challenges')) ||
-                  (child.name.includes('NestJS') && pathname.includes('nestjs-challenges'));
+                  (child.name.includes('NestJS') && pathname.includes('nestjs-challenges')) ||
+                  (child.name.includes('k6') && pathname.includes('k6-challenges'));
                 const ChildIcon = child.icon;
 
                 return (

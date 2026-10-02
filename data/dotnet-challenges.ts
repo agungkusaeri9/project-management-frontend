@@ -72,17 +72,18 @@ export interface StackChallengeItem {
 }
 
 export interface TechStackGroup {
-  id: 'dotnet' | 'nestjs' | 'react';
+  id: 'dotnet' | 'nestjs' | 'k6' | 'react';
   name: string;
   fullName: string;
   badge: string;
-  iconName: 'Code2' | 'Server' | 'Layers';
+  iconName: 'Code2' | 'Server' | 'Layers' | 'Zap' | 'Flame' | 'Activity';
   description: string;
   viewAllHref?: string;
   challenges: StackChallengeItem[];
 }
 
 import { nestChallengesData } from './nest-challenges';
+import { k6ChallengesData } from './k6-challenges';
 
 export const ALL_TECH_STACK_CHALLENGES: TechStackGroup[] = [
   {
@@ -117,6 +118,24 @@ export const ALL_TECH_STACK_CHALLENGES: TechStackGroup[] = [
       title: c.title,
       href: `/technology/nestjs-challenges/${c.id}`,
       severity: (c.severity as ChallengeSeverity) || (c.difficulty === 'HARD' ? 'HIGH' : 'MEDIUM'),
+      category: c.categoryLabel || c.category,
+      isAvailable: true,
+    })),
+  },
+  {
+    id: 'k6',
+    name: 'k6 Testing',
+    fullName: 'k6 Performance & Load Testing',
+    badge: `${(k6ChallengesData.challenges || []).length} Challenges`,
+    iconName: 'Zap',
+    description: 'Load testing, bottleneck identification, scalability & performance engineering',
+    viewAllHref: '/technology/k6-challenges',
+    challenges: (k6ChallengesData.challenges || []).map((c) => ({
+      id: c.id,
+      number: c.number,
+      title: c.title,
+      href: `/technology/k6-challenges/${c.id}`,
+      severity: (c.severity as ChallengeSeverity) || (c.difficulty === 'HARD' || c.difficulty === 'EXPERT' ? 'HIGH' : 'MEDIUM'),
       category: c.categoryLabel || c.category,
       isAvailable: true,
     })),
